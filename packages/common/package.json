@@ -1,0 +1,29 @@
+{
+  "name": "@repo/common",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "watch": "tsc -w",
+    "alias": "tsc-alias -w",
+    "build": "tsc && tsc-alias",
+    "check": "rm -rf .next && tsc --noEmit",
+    "clean": "rm -rf node_modules .next .turbo dist build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tsc-alias": "^1.8.10"
+  },
+  "dependencies": {
+    "date-fns": "^4.1.0",
+    "phone": "^3.1.58",
+    "zod": "^4.0.0"
+  },
+  "browser": {
+    "fs": false,
+    "path": false,
+    "os": false
+  }
+}

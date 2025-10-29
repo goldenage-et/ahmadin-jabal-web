@@ -1,0 +1,422 @@
+generator client {
+  provider   = "prisma-client-js"
+  output     = "./generated"
+  engineType = "client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id          String  @id @default(uuid())
+  provider    String
+  providerId  String
+  userId      String
+  accessToken String?
+  tokenType   String?
+  idToken     String?
+  expiresIn   Int?
+  scope       String?
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("accounts")
+}
+
+model Address {
+  id        String  @id @default(uuid())
+  userId    String
+  street    String  @db.VarChar(255)
+  city      String  @db.VarChar(100)
+  state     String  @db.VarChar(100)
+  zipCode   String  @db.VarChar(20)
+  country   String  @db.VarChar(100)
+  isDefault Boolean @default(false)
+  user      User    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("addresses")
+}
+
+model Category {
+  id               String     @id @default(uuid())
+  name             String     @default("No Name") @db.VarChar(255)
+  description      String?
+  image            Json?
+  iconName         String?    @db.VarChar(50)
+  backgroundColor  String?    @db.VarChar(7)
+  parentId         String?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  parentCategory   Category?  @relation("categories_to_categories", fields: [parentId], references: [id], onUpdate: NoAction)
+  subcategories    Category[] @relation("categories_to_categories")
+  booksCategory    Book[]     @relation("books_category_id_to_categories")
+  booksSubcategory Book[]     @relation("books_subcategory_id_to_categories")
+
+  @@map("categories")
+}
+
+model Invitation {
+  id         String           @id @default(uuid())
+  email      String
+  invitedBy  String
+  targetId   String
+  status     InvitationStatus @default(pending)
+  roles      String[]
+  token      String?
+  acceptedAt DateTime?
+  declinedAt DateTime?
+  expiresAt  DateTime?
+  message    String?
+  user       User?            @relation(fields: [invitedBy], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  @@map("invitation")
+}
+
+model Order {
+  id                String         @id @default(uuid())
+  userId            String
+  bookId            String
+  orderNumber       String         @unique(map: "orders_order_number_unique") @db.VarChar(50)
+  status            OrderStatus
+  paymentStatus     PaymentStatus
+  paymentMethod     PaymentMethod
+  shippingAddress   Json
+  subtotal          Float
+  tax               Float
+  shipping          Float
+  discount          Float
+  total             Float
+  quantity          Int
+  currency          String         @db.VarChar(8)
+  shippingMethod    ShippingMethod
+  trackingNumber    String?        @db.VarChar(100)
+  estimatedDelivery DateTime?
+  notes             String?
+  customerNotes     String?
+  statusHistory     Json?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  book              Book           @relation(fields: [bookId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user              User           @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  bookReviews       BookReview[]
+  payments          Payment[]
+  transactions      Transaction[]
+
+  @@map("orders")
+}
+
+model Payment {
+  id              String        @id @default(uuid())
+  orderId         String
+  userId          String
+  amount          Float
+  currency        String        @db.VarChar(8)
+  paymentMethod   PaymentMethod
+  paymentStatus   PaymentStatus @default(pending)
+  transactionId   String?       @unique @db.VarChar(255)
+  referenceNumber String?       @db.VarChar(255)
+  bankCode        String?       @db.VarChar(50)
+  bankAccountId   String?
+  receiptData     Json?
+  metadata        Json?
+  failureReason   String?
+  paidAt          DateTime?
+  refundedAt      DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  order           Order         @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user            User          @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  bankAccount     BankAccount?  @relation(fields: [bankAccountId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  transactions    Transaction[]
+
+  @@index([orderId])
+  @@index([userId])
+  @@index([paymentStatus])
+  @@map("payments")
+}
+
+model Transaction {
+  id              String            @id @default(uuid())
+  paymentId       String?
+  orderId         String?
+  userId          String
+  type            TransactionType
+  amount          Float
+  currency        String            @db.VarChar(8)
+  status          TransactionStatus @default(pending)
+  description     String?
+  referenceNumber String?           @db.VarChar(255)
+  metadata        Json?
+  processedAt     DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  payment         Payment?          @relation(fields: [paymentId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  order           Order?            @relation(fields: [orderId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  user            User              @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([paymentId])
+  @@index([orderId])
+  @@index([userId])
+  @@index([status])
+  @@index([type])
+  @@map("transactions")
+}
+
+model BookReview {
+  id            String          @id @default(uuid())
+  bookId        String
+  userId        String
+  orderId       String?
+  rating        Int
+  title         String?         @db.VarChar(255)
+  comment       String?
+  images        String[]
+  verified      Boolean         @default(false)
+  helpful       Int             @default(0)
+  status        ReviewStatus    @default(pending)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  order         Order?          @relation(fields: [orderId], references: [id], onUpdate: NoAction)
+  book          Book            @relation(fields: [bookId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  reviewHelpful ReviewHelpful[]
+  reviewReports ReviewReport[]
+
+  @@map("book_reviews")
+}
+
+model Book {
+  id                         String       @id @default(uuid())
+  categoryId                 String?
+  subcategoryId              String?
+  title                      String       @db.VarChar(255)
+  description                String?
+  price                      Float
+  purchasePrice              Float?
+  images                     Json?        @default("[]")
+  publisher                  String?      @db.VarChar(255)
+  isbn                       String?      @db.VarChar(100)
+  author                     String?      @db.VarChar(255)
+  inventoryQuantity          Int?
+  inventoryLowStockThreshold Int?
+  status                     BookStatus   @default(active)
+  featured                   Boolean      @default(false)
+  rating                     Float        @default(0)
+  reviewCount                Int          @default(0)
+  viewCount                  Int          @default(0)
+  saleCount                  Int          @default(0)
+  saleAmount                 Float        @default(0)
+  tags                       String[]
+  specifications             Json?        @default("[]")
+  expiresAt                  DateTime?
+  publishedAt                DateTime?
+  createdAt                  DateTime     @default(now())
+  updatedAt                  DateTime     @updatedAt
+  bookReviews                BookReview[]
+  category                   Category?    @relation("books_category_id_to_categories", fields: [categoryId], references: [id], onUpdate: NoAction)
+  subcategory                Category?    @relation("books_subcategory_id_to_categories", fields: [subcategoryId], references: [id], onUpdate: NoAction)
+  orders                     Order[]
+
+  @@map("books")
+}
+
+model ReviewHelpful {
+  id         String     @id @default(uuid())
+  reviewId   String
+  userId     String
+  helpful    Boolean
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  bookReview BookReview @relation(fields: [reviewId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("review_helpful")
+}
+
+model ReviewReport {
+  id          String     @id @default(uuid())
+  reviewId    String
+  userId      String
+  reason      String     @db.VarChar(100)
+  description String?
+  status      String     @default("pending") @db.VarChar(20)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  bookReview  BookReview @relation(fields: [reviewId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("review_reports")
+}
+
+model SearchAnalyticsEvent {
+  id          String                @id @default(uuid())
+  userId      String?
+  query       String                @db.VarChar(255)
+  resultCount Int?
+  filters     Json?
+  source      SearchAnalyticsSource
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+  searchCount Int                   @default(0)
+  location    String?               @db.VarChar(255)
+  user        User?                 @relation(fields: [userId], references: [id], onUpdate: NoAction)
+
+  @@map("search_analytics_events")
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  sessionId String   @unique(map: "session_session_id_unique")
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("session")
+}
+
+model User {
+  id                    String                 @id @default(uuid())
+  firstName             String
+  middleName            String
+  lastName              String?
+  email                 String                 @unique()
+  phone                 String?
+  emailVerified         Boolean
+  active                Boolean
+  image                 String?
+  ltpHash               String?
+  otpHash               String?
+  deletedAt             DateTime?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  accounts              Account[]
+  addresses             Address[]
+  invitations           Invitation[]
+  orders                Order[]
+  payments              Payment[]
+  bookReviews           BookReview[]
+  reviewHelpful         ReviewHelpful[]
+  reviewReports         ReviewReport[]
+  searchAnalyticsEvents SearchAnalyticsEvent[]
+  sessions              Session[]
+  transactions          Transaction[]
+
+  roles Role[] @relation("user_roles")
+
+  @@map("user")
+}
+
+model Role {
+  id         String   @id @default(uuid())
+  name       String
+  active     Boolean
+  permission Json?    @default("{}")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  users User[] @relation("user_roles")
+
+  @@map("roles")
+}
+
+model BankAccount {
+  id            String    @id @default(uuid())
+  accountName   String    @db.VarChar(255)
+  accountNumber String    @db.VarChar(50)
+  bankName      String    @db.VarChar(255)
+  bankCode      String    @db.VarChar(50)
+  payments      Payment[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([bankName, accountNumber])
+  @@map("bank_accounts")
+}
+
+enum PaymentMethod {
+  onDelivery   @map("onDelivery")
+  bankTransfer @map("bankTransfer")
+}
+
+enum InvitationStatus {
+  pending   @map("pending")
+  accepted  @map("accepted")
+  rejected  @map("rejected")
+  expired   @map("expired")
+  cancelled @map("cancelled")
+}
+
+enum OrderStatus {
+  pending    @map("pending")
+  confirmed  @map("confirmed")
+  processing @map("processing")
+  shipped    @map("shipped")
+  delivered  @map("delivered")
+  cancelled  @map("cancelled")
+  refunded   @map("refunded")
+}
+
+enum PaymentStatus {
+  pending  @map("pending")
+  paid     @map("paid")
+  failed   @map("failed")
+  refunded @map("refunded")
+}
+
+enum TransactionType {
+  payment @map("payment")
+  refund  @map("refund")
+  payout  @map("payout")
+}
+
+enum TransactionStatus {
+  pending    @map("pending")
+  processing @map("processing")
+  completed  @map("completed")
+  failed     @map("failed")
+  cancelled  @map("cancelled")
+}
+
+enum BookStatus {
+  active   @map("active")
+  draft    @map("draft")
+  archived @map("archived")
+}
+
+enum ReviewStatus {
+  pending  @map("pending")
+  approved @map("approved")
+  rejected @map("rejected")
+  hidden   @map("hidden")
+}
+
+enum SearchAnalyticsSource {
+  navigation      @map("navigation")
+  shopPage        @map("shop-page")
+  suggestionClick @map("suggestion-click")
+}
+
+enum ShippingMethod {
+  standard @map("standard")
+  express  @map("express")
+  pickup   @map("pickup")
+}
+
+enum UserStatus {
+  active   @map("active")
+  inactive @map("inactive")
+  blocked  @map("blocked")
+}

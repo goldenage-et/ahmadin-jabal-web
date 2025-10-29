@@ -1,0 +1,22 @@
+{
+  "name": "@repo/prisma",
+  "main": "./index.js",
+  "types": "./index.js",
+  "browser": "./index.js",
+  "sideEffects": false,
+  "scripts": {
+    "build": "prisma generate ./schema.prisma && tsc",
+    "db:generate": "prisma generate ./schema.prisma",
+    "db:migrate": "prisma migrate dev --name ",
+    "db:deploy": "prisma migrate deploy",
+    "db:drop": "prisma migrate reset",
+    "db:pull": "prisma db pull",
+    "clean": "rm -rf node_modules .next .turbo dist build"
+  },
+  "devDependencies": {
+    "prisma": "^6.18.0"
+  },
+  "dependencies": {
+    "@prisma/client": "6.18.0"
+  }
+}

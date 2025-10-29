@@ -1,0 +1,87 @@
+{
+  "navigation": {
+    "home": "Mana",
+    "about": "Waa'ee",
+    "publications": "Maxxannee",
+    "media": "Meediyaa",
+    "articles": "Qorannoo",
+    "advocacy": "Hawaasni",
+    "contact": "Qunnamii",
+    "shop": "Dukaana"
+  },
+  "hero": {
+    "title": "Ustaz Ahmedin Jebel",
+    "subtitle": "Barreessaa · Qorataa Seenaa · Hawaasni",
+    "tagline": "Amantii, aadaa fi haqaa Muslimoota Itoophiyaa irratti",
+    "cta": "Dabalataan Baradhu"
+  },
+  "biography": {
+    "title": "Waa'ee Ustaz Ahmedin Jebel",
+    "shortIntro": "Barreessaa amantii Islaamaa, qorataa seenaa, fi hawaasni kan jireenya isaa amantii, aadaa, fi haqaa Muslimoota Itoophiyaa irratti dabarsuuf kennu.",
+    "readMore": "Seenaa Jireenyaa Guutuu Dubbisi",
+    "timeline": "Seenaa Jireenyaa",
+    "quotes": "Jechoota Beekkamaa"
+  },
+  "focusAreas": {
+    "title": "Giddugalee Hojii",
+    "education": {
+      "title": "Barnootaa fi Daawaa",
+      "description": "Barnootaa amantii Islaamaa fi barsiisuu hawaasa fooyyessuuf"
+    },
+    "research": {
+      "title": "Qorannoo Seenaa",
+      "description": "Seenaa qabeenyaa Muslimoota Itoophiyaa eeguu"
+    },
+    "rights": {
+      "title": "Haqaa Hawaasaa",
+      "description": "Walqixxummaa fi haqaa hawaasaa hundaaf loluu"
+    },
+    "youth": {
+      "title": "Hawaasni",
+      "description": "Gosoota itti aanan akeekkachiisuu fi walitti qabuu"
+    }
+  },
+  "publications": {
+    "title": "Maxxannee",
+    "books": "Kitaabota",
+    "articles": "Qorannoo",
+    "download": "Buufi",
+    "purchase": "Bitadhu"
+  },
+  "media": {
+    "title": "Meediyaa",
+    "videos": "Vidiyoo",
+    "audio": "Dhaggeeffachuu",
+    "gallery": "Galaree Suuraa",
+    "watch": "Ilaali",
+    "listen": "Dhaggeeffachi"
+  },
+  "advocacy": {
+    "title": "Hawaasni",
+    "description": "Walqixxummaa, haqaa, fi haqaa Muslimoota Itoophiyaa irratti loluu",
+    "impact": "Dhiibbaa Keenya",
+    "events": "Tarkaanfii Gurguddoo"
+  },
+  "contact": {
+    "title": "Qunnamii",
+    "subtitle": "Gaaffii dubbii, gaaffii, ykn hojii keenya irratti dabalataan beekuuf",
+    "name": "Maqaa",
+    "email": "Imeelii",
+    "subject": "Mata duree",
+    "message": "Ergaa",
+    "send": "Ergaa Ergi",
+    "newsletter": "Newsletter Galchi"
+  },
+  "common": {
+    "learnMore": "Dabalataan Baradhu",
+    "readMore": "Dabalataan Dubbisi",
+    "viewAll": "Hunda Ilaali",
+    "loading": "Buufataa jira...",
+    "error": "Dogoggora",
+    "success": "Milkaa'e",
+    "close": "Cufi",
+    "back": "Deebi",
+    "next": "Ita aanan",
+    "previous": "Duraan"
+  }
+}

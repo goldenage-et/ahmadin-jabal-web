@@ -1,0 +1,67 @@
+x-environment: &shared-env
+  NODE_ENV: production
+  DATABASE_URL: '${DATABASE_URL:-postgresql://postgres:password@localhost:5432/ahmadin}'
+  MAIL_HOST: '${MAIL_HOST:-mail.example.com}'
+  MAIL_PORT: '${MAIL_PORT:-587}'
+  MAIL_USERNAME: '${MAIL_USERNAME:-no-reply@example.com}'
+  MAIL_PASSWORD: '${MAIL_PASSWORD:-your_mail_user_password}'
+  FILE_STORAGE_TYPE: '${FILE_STORAGE_TYPE:-minio}'
+  WEB_PUSH_PUBLIC_VAPID_KEY: '${WEB_PUSH_PUBLIC_VAPID_KEY:-}'
+  WEB_PUSH_PRIVATE_VAPID_KEY: '${WEB_PUSH_PRIVATE_VAPID_KEY:-}'
+  WEB_PUSH_SUBJECT: '${WEB_PUSH_SUBJECT:-}'
+  MINIO_BUCKET_NAME: '${MINIO_BUCKET_NAME:-ahmadinwebsite}'
+  MINIO_ENDPOINT: '${MINIO_ENDPOINT:-localhost}'
+  MINIO_PORT: '${MINIO_PORT:-9000}'
+  MINIO_USE_SSL: '${MINIO_USE_SSL:-false}'
+  MINIO_ACCESS_KEY: '${MINIO_ACCESS_KEY:-minioadmin}'
+  MINIO_SECRET_KEY: '${MINIO_SECRET_KEY:-minioadmin}'
+
+  OAUTH_REDIRECT_URL_BASE: '${OAUTH_REDIRECT_URL_BASE:-http://localhost:3010}'
+  GOOGLE_CLIENT_ID: '${GOOGLE_CLIENT_ID:-your_google_client_id}'
+  GOOGLE_CLIENT_SECRET: '${GOOGLE_CLIENT_SECRET:-your_google_client_secret}'
+
+  JWT_SECRETE_KEY: '${JWT_SECRETE_KEY:-your_jwt_secret}'
+  CHAPA_SECRETE_KEY: '${CHAPA_SECRETE_KEY:-your_service_jwt_secret}'
+  MINIO_SERVER_HOST: '${MINIO_SERVER_HOST:-http://localhost:9000}'
+  NEXT_PUBLIC_MINIO_HOST: '${NEXT_PUBLIC_MINIO_HOST:-http://localhost:9000}'
+  NEXT_PUBLIC_SERVER_HOST: '${NEXT_PUBLIC_SERVER_HOST:-http://localhost:8010}'
+  NEXT_PUBLIC_CLIENT_HOST: '${NEXT_PUBLIC_CLIENT_HOST:-http://localhost:3010}'
+  ROOT_HOST: '${ROOT_HOST:-http://localhost:3000}'
+  SERVER_HOST: '${SERVER_HOST:-http://localhost:8010}'
+  SERVER_PORT: '${SERVER_PORT:-8010}'
+  CLIENT_HOST: '${CLIENT_HOST:-http://localhost:3010}'
+  CLIENT_PORT: '${CLIENT_PORT:-3010}'
+
+
+
+services:
+  ahmadin_server:
+    build:
+      context: .
+      dockerfile: ./apps/server/Dockerfile
+    container_name: ahmadin_server
+    restart: always
+    ports:
+      - '${SERVER_PORT:-8010}:8010'
+    environment:
+      <<: *shared-env
+      PORT: '${SERVER_PORT:-8010}'
+      SERVER_HOST: '${SERVER_HOST:-http://localhost:8010}'
+      CLIENT_HOST: '${CLIENT_HOST:-http://localhost:3010}'
+    command: ['node', 'apps/server/dist/main.js']
+
+  ahmadin_client:
+    build:
+      context: .
+      dockerfile: ./apps/client/Dockerfile
+    container_name: ahmadin_client
+    restart: always
+    ports:
+      - '${CLIENT_PORT:-3010}:3010'
+    environment:
+      <<: *shared-env
+      PORT: '${CLIENT_PORT:-3010}'
+      NEXT_PUBLIC_MINIO_HOST: '${NEXT_PUBLIC_MINIO_HOST:-http://localhost:9000}'
+      NEXT_PUBLIC_SERVER_HOST: '${NEXT_PUBLIC_SERVER_HOST:-http://localhost:8010}'
+      NEXT_PUBLIC_CLIENT_HOST: '${NEXT_PUBLIC_CLIENT_HOST:-http://localhost:3010}'
+    command: ['node', 'server.js']

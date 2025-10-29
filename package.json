@@ -1,0 +1,49 @@
+{
+  "name": "ecommerce@ahmadin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:all": "turbo run dev",
+    "dev:server": "turbo run dev --filter=@repo/server",
+    "dev:client": "turbo run dev --filter=@repo/client",
+    "start": "turbo run start",
+    "start:all": "turbo run start",
+    "build": "turbo run build",
+    "build:all": "turbo run build",
+    "build:server": "turbo run build --filter=@repo/server",
+    "build:client": "turbo run build --filter=@repo/client",
+    "build:pack": "turbo run build --filter=@repo/common --filter=@repo/prisma",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "db:generate": "turbo run db:generate --filter=@repo/prisma",
+    "db:migrate": "turbo run db:migrate --filter=@repo/prisma",
+    "db:drop": "turbo run db:drop --filter=@repo/prisma",
+    "db:pull": "turbo run db:pull --filter=@repo/prisma",
+    "db:deploy": "turbo run db:deploy --filter=@repo/prisma",
+    "format": "biome format --write",
+    "check:all": "turbo run check",
+    "clean": "turbo run clean --parallel"
+  },
+  "keywords": [],
+  "author": "",
+  "devDependencies": {
+    "@biomejs/biome": "2.2.0",
+    "@types/lodash": "^4.17.16",
+    "@types/node": "^22.13.13",
+    "globals": "^16.0.0",
+    "tsx": "^4.19.3",
+    "turbo": "^2.5.8",
+    "typedoc": "^0.27.9",
+    "typescript": "^5.8.2"
+  },
+  "packageManager": "pnpm@10.18.0",
+  "engines": {
+    "node": ">=22.18.0",
+    "pnpm": ">=10.18.0"
+  },
+  "engines-strict": true
+}
