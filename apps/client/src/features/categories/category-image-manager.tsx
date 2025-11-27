@@ -216,7 +216,7 @@ export default function CategoryImageManager({
                 )}
               </div>
 
-              <div className='flex-grow min-w-0'>
+              <div className='grow min-w-0'>
                 <p className='font-medium truncate'>{file.originalname}</p>
                 <p className='text-xs text-muted-foreground'>
                   {(file.size / 1024 / 1024).toFixed(2)} MB

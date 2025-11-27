@@ -35,7 +35,7 @@ export default function UserHoverCard({
             <HoverCardTrigger asChild className="">
                 <div
                     key={user.id}
-                    className="flex items-center gap-2 cursor-pointer z-[0]"
+                    className="flex items-center gap-2 cursor-pointer z-0"
                 >
                     <Avatar
                         className={cn(
@@ -74,7 +74,7 @@ export default function UserHoverCard({
             <HoverCardContent
                 side="bottom"
                 align="start"
-                className="w-fit z-[100000]"
+                className="w-fit z-100000"
             >
                 <div className="flex justify-between space-x-4">
                     <Avatar>

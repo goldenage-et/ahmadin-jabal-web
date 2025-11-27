@@ -9,13 +9,6 @@ export enum EInvitationStatus {
     expired = 'expired',
 }
 
-export enum EMemberInvitationStatus {
-    pending = 'pending',
-    accepted = 'accepted',
-    expired = 'expired',
-    cancelled = 'cancelled',
-}
-
 // ========================================
 // User & Authentication Related Enums
 // ========================================

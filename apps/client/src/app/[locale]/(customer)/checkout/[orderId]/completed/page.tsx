@@ -185,42 +185,17 @@ export default async function OrderCompletedPage({ params }: { params: Promise<{
                     </CardContent>
                 </Card>
 
-                {/* Order Items */}
+                {/* Order Items (details removed from schema) */}
                 <Card className="mb-6">
                     <CardHeader>
                         <CardTitle className="flex items-center space-x-2">
                             <ShoppingBag className="h-5 w-5" />
-                            <span>Order Items ({order.totalItems})</span>
+                            <span>Order Quantity</span>
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="space-y-4">
-                            {order.items.map((item) => (
-                                <div key={item.id} className="flex items-start space-x-4 pb-4 border-b last:border-0">
-                                    {item.bookImage && (
-                                        <img
-                                            src={item.bookImage}
-                                            alt={item.bookName || 'Book'}
-                                            className="w-16 h-16 object-cover rounded-lg"
-                                        />
-                                    )}
-                                    <div className="flex-1">
-                                        <h3 className="font-medium text-gray-900">{item.bookName}</h3>
-                                        {item.bookSku && (
-                                            <p className="text-sm text-gray-500">SKU: {item.bookSku}</p>
-                                        )}
-                                        {item.variantName && (
-                                            <p className="text-sm text-gray-500">Variant: {item.variantName}</p>
-                                        )}
-                                        <p className="text-sm text-gray-600 mt-1">
-                                            Qty: {item.quantity} × ${item.price.toFixed(2)}
-                                        </p>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="font-semibold text-gray-900">${item.total.toFixed(2)}</p>
-                                    </div>
-                                </div>
-                            ))}
+                        <div className="text-sm text-gray-700">
+                            Total items: <span className="font-medium">{order.quantity}</span>
                         </div>
                     </CardContent>
                 </Card>
@@ -304,7 +279,7 @@ export default async function OrderCompletedPage({ params }: { params: Promise<{
                 </Card>
 
                 {/* What's Next */}
-                <Card className="mb-6 bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
+                <Card className="mb-6 bg-linear-to-r from-blue-50 to-purple-50 border-blue-200">
                     <CardHeader>
                         <CardTitle className="text-blue-900">What's Next?</CardTitle>
                         <CardDescription className="text-blue-700">

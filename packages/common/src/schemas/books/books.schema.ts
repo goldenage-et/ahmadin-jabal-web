@@ -281,6 +281,9 @@ export const ZBookQueryFilter = z.object({
     .optional()
     .nullable(),
   featured: z.coerce.boolean().optional(),
+
+  // Price type filters
+  priceType: z.enum(['free', 'paid', 'all']).optional(),
   // Price range filters
   minPrice: z.coerce
     .number()

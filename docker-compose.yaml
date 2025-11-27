@@ -1,6 +1,6 @@
 x-environment: &shared-env
   NODE_ENV: production
-  DATABASE_URL: '${DATABASE_URL:-postgresql://postgres:password@localhost:5432/ahmadin}'
+  DATABASE_URL: '${DATABASE_URL:-postgresql://postgres:postgres@localhost:5432/ahmadin}'
   MAIL_HOST: '${MAIL_HOST:-mail.example.com}'
   MAIL_PORT: '${MAIL_PORT:-587}'
   MAIL_USERNAME: '${MAIL_USERNAME:-no-reply@example.com}'
@@ -11,7 +11,7 @@ x-environment: &shared-env
   WEB_PUSH_SUBJECT: '${WEB_PUSH_SUBJECT:-}'
   MINIO_BUCKET_NAME: '${MINIO_BUCKET_NAME:-ahmadinwebsite}'
   MINIO_ENDPOINT: '${MINIO_ENDPOINT:-localhost}'
-  MINIO_PORT: '${MINIO_PORT:-9000}'
+  MINIO_PORT: '${MINIO_PORT:-9010}'
   MINIO_USE_SSL: '${MINIO_USE_SSL:-false}'
   MINIO_ACCESS_KEY: '${MINIO_ACCESS_KEY:-minioadmin}'
   MINIO_SECRET_KEY: '${MINIO_SECRET_KEY:-minioadmin}'
@@ -22,8 +22,8 @@ x-environment: &shared-env
 
   JWT_SECRETE_KEY: '${JWT_SECRETE_KEY:-your_jwt_secret}'
   CHAPA_SECRETE_KEY: '${CHAPA_SECRETE_KEY:-your_service_jwt_secret}'
-  MINIO_SERVER_HOST: '${MINIO_SERVER_HOST:-http://localhost:9000}'
-  NEXT_PUBLIC_MINIO_HOST: '${NEXT_PUBLIC_MINIO_HOST:-http://localhost:9000}'
+  MINIO_SERVER_HOST: '${MINIO_SERVER_HOST:-http://localhost:9010}'
+  NEXT_PUBLIC_MINIO_HOST: '${NEXT_PUBLIC_MINIO_HOST:-http://localhost:9010}'
   NEXT_PUBLIC_SERVER_HOST: '${NEXT_PUBLIC_SERVER_HOST:-http://localhost:8010}'
   NEXT_PUBLIC_CLIENT_HOST: '${NEXT_PUBLIC_CLIENT_HOST:-http://localhost:3010}'
   ROOT_HOST: '${ROOT_HOST:-http://localhost:3000}'
@@ -61,7 +61,7 @@ services:
     environment:
       <<: *shared-env
       PORT: '${CLIENT_PORT:-3010}'
-      NEXT_PUBLIC_MINIO_HOST: '${NEXT_PUBLIC_MINIO_HOST:-http://localhost:9000}'
+      NEXT_PUBLIC_MINIO_HOST: '${NEXT_PUBLIC_MINIO_HOST:-http://localhost:9010}'
       NEXT_PUBLIC_SERVER_HOST: '${NEXT_PUBLIC_SERVER_HOST:-http://localhost:8010}'
       NEXT_PUBLIC_CLIENT_HOST: '${NEXT_PUBLIC_CLIENT_HOST:-http://localhost:3010}'
     command: ['node', 'server.js']

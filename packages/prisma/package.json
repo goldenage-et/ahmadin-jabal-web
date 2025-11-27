@@ -7,7 +7,7 @@
   "scripts": {
     "build": "prisma generate ./schema.prisma && tsc",
     "db:generate": "prisma generate ./schema.prisma",
-    "db:migrate": "prisma migrate dev --name ",
+    "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:drop": "prisma migrate reset",
     "db:pull": "prisma db pull",

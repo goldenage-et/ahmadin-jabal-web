@@ -16,7 +16,6 @@ import {
   Truck,
 } from 'lucide-react';
 import { TBookBasic } from '@repo/common';
-import { AddToCartButton } from '@/features/cart/components/add-to-cart-button';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -99,10 +98,10 @@ export function FeaturedBooksSection({
 
   if (featuredBooks.length === 0) {
     return (
-      <section className='py-20 bg-gradient-to-br from-gray-50 via-white to-gray-50'>
+      <section className='py-20 bg-linear-to-br from-gray-50 via-white to-gray-50'>
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center'>
           <div className='max-w-md mx-auto'>
-            <div className='w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center'>
+            <div className='w-24 h-24 mx-auto mb-6 bg-linear-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center'>
               <Sparkles className='h-12 w-12 text-gray-400' />
             </div>
             <h2 className='text-3xl font-bold text-gray-900 mb-4'>
@@ -125,7 +124,7 @@ export function FeaturedBooksSection({
   }
 
   return (
-    <section className='py-20 bg-gradient-to-br from-gray-50 via-white to-gray-50 relative overflow-hidden'>
+    <section className='py-20 bg-linear-to-br from-gray-50 via-white to-gray-50 relative overflow-hidden'>
       {/* Background decoration */}
       <div className='absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(120,119,198,0.1),transparent_50%)] pointer-events-none' />
       <div className='absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(255,119,198,0.1),transparent_50%)] pointer-events-none' />
@@ -133,11 +132,11 @@ export function FeaturedBooksSection({
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative'>
         {/* Header */}
         <div className='text-center mb-16'>
-          <div className='inline-flex items-center gap-2 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 px-4 py-2 rounded-full text-sm font-medium mb-6'>
+          <div className='inline-flex items-center gap-2 bg-linear-to-r from-purple-100 to-pink-100 text-purple-700 px-4 py-2 rounded-full text-sm font-medium mb-6'>
             <Sparkles className='h-4 w-4' />
             Curated Collection
           </div>
-          <h2 className='text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-gray-900 via-purple-900 to-gray-900 bg-clip-text text-transparent mb-6'>
+          <h2 className='text-4xl md:text-5xl lg:text-6xl font-bold bg-linear-to-r from-gray-900 via-purple-900 to-gray-900 bg-clip-text text-transparent mb-6'>
             Featured Books
           </h2>
           <p className='text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed'>
@@ -190,20 +189,20 @@ export function FeaturedBooksSection({
                 onMouseEnter={() => setHoveredBook(book.id)}
                 onMouseLeave={() => setHoveredBook(null)}
                 role='article'
-                aria-label={`Book: ${book.name}`}
+                aria-label={`Book: ${book.title}`}
               >
                 {/* Book Image */}
-                <div className='aspect-square relative overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200'>
+                <div className='aspect-square relative overflow-hidden bg-linear-to-br from-gray-100 to-gray-200'>
                   {/* Loading skeleton */}
                   {imageLoadingStates[book.id] && (
-                    <div className='absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 animate-pulse flex items-center justify-center'>
+                    <div className='absolute inset-0 bg-linear-to-br from-gray-200 to-gray-300 animate-pulse flex items-center justify-center'>
                       <div className='w-12 h-12 bg-gray-400 rounded-full animate-spin'></div>
                     </div>
                   )}
 
                   {/* Error state */}
                   {imageErrorStates[book.id] ? (
-                    <div className='absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center'>
+                    <div className='absolute inset-0 bg-linear-to-br from-gray-200 to-gray-300 flex items-center justify-center'>
                       <div className='text-center text-gray-500'>
                         <div className='w-12 h-12 mx-auto mb-2 bg-gray-400 rounded-full flex items-center justify-center'>
                           <span className='text-white text-xs'>?</span>
@@ -214,7 +213,7 @@ export function FeaturedBooksSection({
                   ) : (
                     <Image
                       src={book.images?.[0]?.url || '/placeholder.jpg'}
-                      alt={book.name}
+                      alt={book.title}
                       fill
                       className='object-cover group-hover:scale-110 transition-transform duration-700'
                       sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw'
@@ -226,11 +225,11 @@ export function FeaturedBooksSection({
                   )}
 
                   {/* Overlay gradient */}
-                  <div className='absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
+                  <div className='absolute inset-0 bg-linear-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
 
                   {/* Featured badge */}
                   {book.featured && (
-                    <Badge className='absolute top-3 left-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-white border-0 shadow-lg'>
+                    <Badge className='absolute top-3 left-3 bg-linear-to-r from-yellow-400 to-orange-500 text-white border-0 shadow-lg'>
                       <Sparkles className='h-3 w-3 mr-1' />
                       Featured
                     </Badge>
@@ -238,7 +237,7 @@ export function FeaturedBooksSection({
 
                   {/* Discount badge */}
                   {/* {discountPercentage > 0 && (
-                    <Badge className='absolute top-3 right-3 bg-gradient-to-r from-red-500 to-pink-500 text-white border-0 shadow-lg'>
+                    <Badge className='absolute top-3 right-3 bg-linear-to-r from-red-500 to-pink-500 text-white border-0 shadow-lg'>
                       -{discountPercentage}%
                     </Badge>
                   )} */}
@@ -252,8 +251,8 @@ export function FeaturedBooksSection({
                       onClick={() => toggleWishlist(book.id)}
                       aria-label={
                         isWishlisted
-                          ? `Remove ${book.name} from wishlist`
-                          : `Add ${book.name} to wishlist`
+                          ? `Remove ${book.title} from wishlist`
+                          : `Add ${book.title} to wishlist`
                       }
                     >
                       <Heart
@@ -268,7 +267,7 @@ export function FeaturedBooksSection({
                     >
                       <Link
                         href={`/books/${book.id}`}
-                        aria-label={`View details for ${book.name}`}
+                        aria-label={`View details for ${book.title}`}
                       >
                         <Eye className='h-4 w-4 text-gray-600' />
                       </Link>
@@ -291,7 +290,7 @@ export function FeaturedBooksSection({
                   {/* Book name */}
                   <div className='mb-3'>
                     <h3 className='font-bold text-lg line-clamp-2 text-gray-900 group-hover:text-purple-700 transition-colors duration-200'>
-                      {book.name}
+                      {book.title}
                     </h3>
                     {book.description && (
                       <p className='text-sm text-gray-500 line-clamp-2 mt-1'>
@@ -331,9 +330,9 @@ export function FeaturedBooksSection({
                           </span>
                         )} */}
                     </div>
-                    {book.sku && (
+                    {book.isbn && (
                       <span className='text-xs text-gray-400 font-mono'>
-                        {book.sku}
+                        {book.isbn}
                       </span>
                     )}
                   </div>
@@ -357,14 +356,6 @@ export function FeaturedBooksSection({
                       )}
                     </div>
                   )}
-
-                  {/* Add to cart button */}
-                  <AddToCartButton
-                    book={book}
-                    variant='default'
-                    size='default'
-                    className='w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-200'
-                  />
                 </CardContent>
               </Card>
             );
@@ -376,7 +367,7 @@ export function FeaturedBooksSection({
           <Button
             asChild
             size='lg'
-            className='bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 px-8 py-3'
+            className='bg-linear-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 px-8 py-3'
           >
             <Link href='/books'>
               View All Books

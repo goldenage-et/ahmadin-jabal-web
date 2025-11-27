@@ -10,7 +10,7 @@ export function PortfolioHero() {
     const t = useTranslations('hero');
 
     return (
-        <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-green-50 via-white to-blue-50 dark:from-green-950/20 dark:via-background dark:to-blue-950/20">
+        <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-linear-to-br from-green-50 via-white to-blue-50 dark:from-green-950/20 dark:via-background dark:to-blue-950/20">
             <div className="absolute inset-0" />
 
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
@@ -69,7 +69,7 @@ export function PortfolioHero() {
                                 className="object-cover"
                                 priority
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                            <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent" />
                         </div>
 
                         {/* Floating Cards */}

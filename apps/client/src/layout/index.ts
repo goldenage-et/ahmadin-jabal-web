@@ -2,7 +2,6 @@
 export { MainLayout } from './main-layout';
 export { NavMain } from './nav-main';
 export { NavUser } from './nav-user';
-export { StoreSwitcher } from './store-switcher';
 
 // Sub-components
 export { TopBar } from './components/top-bar';

@@ -57,7 +57,6 @@ export const ZOrder = z.object({
 export type TOrder = z.infer<typeof ZOrder>;
 
 export const ZOrderMini = ZOrder.omit({
-  items: true,
   subtotal: true,
   tax: true,
   shipping: true,
@@ -71,7 +70,6 @@ export const ZOrderMini = ZOrder.omit({
 export type TOrderMini = z.infer<typeof ZOrderMini>;
 
 export const ZOrderBasic = ZOrder.omit({
-  items: true,
   subtotal: true,
   tax: true,
   shipping: true,
@@ -84,7 +82,6 @@ export const ZOrderBasic = ZOrder.omit({
   shippingAddress: true,
 }).extend({
   user: ZUserBasic,
-  totalItems: z.coerce.number(),
 });
 export type TOrderBasic = z.infer<typeof ZOrderBasic>;
 

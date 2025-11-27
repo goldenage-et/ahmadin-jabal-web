@@ -1,7 +1,7 @@
 'use server';
 
 import { api } from '@/lib/api';
-import { TOrderBasic, TWishlist, TUserBasic, TOrderQueryFilter, TOrderDetail, TWishlistBasic } from '@repo/common';
+import { TOrderBasic, TUserBasic, TOrderQueryFilter, TOrderDetail, TBookBasic } from '@repo/common';
 
 // Get current user's orders with query parameters
 export async function getMyOrders(query: TOrderQueryFilter = {}): Promise<{ orders: TOrderBasic[]; total: number }> {
@@ -27,11 +27,9 @@ export async function cancelMyOrder(orderId: string, reason?: string): Promise<T
 export async function requestReturn(
   orderId: string,
   reason?: string,
-  items?: string[]
 ): Promise<TOrderDetail> {
   const response = await api.post<TOrderDetail>(`/orders/my/${orderId}/return`, {
     reason,
-    items
   });
   if ('error' in response) throw response;
   return response;
@@ -58,13 +56,6 @@ export async function getMyOrderTracking(orderId: string): Promise<{
   return response;
 }
 
-// Get current user's wishlist
-export async function getMyWishlist(): Promise<TWishlistBasic[]> {
-  const response = await api.get<TWishlist>('/wishlist/my');
-  if ('error' in response) return [];
-  return response;
-}
-
 // Get current user's profile with statistics
 export async function getMyProfile(): Promise<{
   user: TUserBasic;
@@ -78,19 +69,6 @@ export async function getMyProfile(): Promise<{
     totalSpent: number;
     addresses: any[];
   }>('/profile/my');
-  if ('error' in response) throw response;
-  return response;
-}
-
-// Add item to wishlist
-export async function toggleWishlist(
-  bookId: string,
-  variantId?: string,
-): Promise<TWishlist> {
-  const response = await api.post<TWishlist>('/wishlist/toggle', {
-    bookId,
-    variantId,
-  });
   if ('error' in response) throw response;
   return response;
 }

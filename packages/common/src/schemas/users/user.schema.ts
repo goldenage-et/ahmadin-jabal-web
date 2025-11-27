@@ -109,7 +109,7 @@ export const ZUserQueryFilter = z.object({
 
   // Sorting parameters
   sortBy: z
-    .enum(['firstName', 'email', 'active', 'createdAt'])
+    .enum(['firstName', 'email', 'active', 'roles', 'createdAt'])
     .default('createdAt'),
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
 });

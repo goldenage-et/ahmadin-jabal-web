@@ -36,14 +36,14 @@ export function PaymentMethodSelector({ order, bankAccounts, banks }: PaymentMet
     };
 
     // Get bank codes that the store has accounts in (for recommended badge)
-    const storeBankCodes = bankAccounts?.map((account) => account.bankCode) ?? [];
+    const BankCodes = bankAccounts?.map((account) => account.bankCode) ?? [];
 
     // Group banks by whether the store has an account in them (recommended) or not
     const recommendedBanks = banks.filter(bank =>
-        storeBankCodes.includes(bank.code)
+        BankCodes.includes(bank.code)
     );
     const otherBanks = banks.filter(bank =>
-        !storeBankCodes.includes(bank.code)
+        !BankCodes.includes(bank.code)
     );
 
     return (
@@ -83,7 +83,7 @@ export function PaymentMethodSelector({ order, bankAccounts, banks }: PaymentMet
                                                         <div className="flex items-center justify-between">
                                                             <div className="flex items-center space-x-3">
                                                                 {bank.logoUrl && (
-                                                                    <div className="w-12 h-12 relative flex-shrink-0 bg-white rounded-lg p-1 border">
+                                                                    <div className="w-12 h-12 relative shrink-0 bg-white rounded-lg p-1 border">
                                                                         {/* <Image
                                                                             src={bank.logoUrl}
                                                                             alt={`${bank.name} logo`}
@@ -109,7 +109,7 @@ export function PaymentMethodSelector({ order, bankAccounts, banks }: PaymentMet
                                                                 </div>
                                                             </div>
                                                             {selectedBank === bank.code && (
-                                                                <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 ml-2" />
+                                                                <CheckCircle className="h-5 w-5 text-green-600 shrink-0 ml-2" />
                                                             )}
                                                         </div>
                                                     </CardContent>
@@ -141,7 +141,7 @@ export function PaymentMethodSelector({ order, bankAccounts, banks }: PaymentMet
                                                         <div className="flex items-center justify-between">
                                                             <div className="flex items-center space-x-3">
                                                                 {bank.logoUrl && (
-                                                                    <div className="w-12 h-12 relative flex-shrink-0 bg-white rounded-lg p-1 border">
+                                                                    <div className="w-12 h-12 relative shrink-0 bg-white rounded-lg p-1 border">
                                                                         {/* <Image
                                                                             src={bank.logoUrl}
                                                                             alt={`${bank.name} logo`}
@@ -162,7 +162,7 @@ export function PaymentMethodSelector({ order, bankAccounts, banks }: PaymentMet
                                                                 </div>
                                                             </div>
                                                             {selectedBank === bank.code && (
-                                                                <CheckCircle className="h-5 w-5 text-blue-600 flex-shrink-0 ml-2" />
+                                                                <CheckCircle className="h-5 w-5 text-blue-600 shrink-0 ml-2" />
                                                             )}
                                                         </div>
                                                     </CardContent>
@@ -213,7 +213,7 @@ export function PaymentMethodSelector({ order, bankAccounts, banks }: PaymentMet
                 <Card className="bg-blue-50 border-blue-200">
                     <CardContent className="pt-6">
                         <div className="flex items-start space-x-3">
-                            <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                            <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" />
                             <div className="text-sm text-blue-900">
                                 <p className="font-medium mb-1">How Bank Transfer Works</p>
                                 <ol className="list-decimal list-inside space-y-1 text-blue-800">

@@ -26,7 +26,6 @@ import {
   Search,
   X,
   Calendar,
-  DollarSign,
   Package,
   Star,
   Tag,
@@ -42,7 +41,9 @@ interface FilterState {
   search: string;
   categories: string[];
   status: string[];
-  priceRange: [number, number];
+  priceType: 'all' | 'free' | 'paid';
+  minPrice?: number;
+  maxPrice?: number;
   ratingRange: [number, number];
   inventoryStatus: string[];
   dateRange: {
@@ -67,7 +68,9 @@ const defaultFilters: FilterState = {
   search: '',
   categories: [],
   status: [],
-  priceRange: [0, 1000],
+  priceType: 'all',
+  minPrice: undefined,
+  maxPrice: undefined,
   ratingRange: [0, 5],
   inventoryStatus: [],
   dateRange: {},
@@ -122,7 +125,8 @@ export default function AdvancedFilters({
     if (filters.search) count++;
     if (filters.categories.length > 0) count++;
     if (filters.status.length > 0) count++;
-    if (filters.priceRange[0] !== 0 || filters.priceRange[1] !== 1000) count++;
+    if (filters.priceType !== 'all') count++;
+    if (typeof filters.minPrice === 'number' || typeof filters.maxPrice === 'number') count++;
     if (filters.ratingRange[0] !== 0 || filters.ratingRange[1] !== 5) count++;
     if (filters.inventoryStatus.length > 0) count++;
     if (filters.dateRange.start || filters.dateRange.end) count++;
@@ -308,18 +312,50 @@ export default function AdvancedFilters({
                 </TabsContent>
 
                 <TabsContent value='advanced' className='p-4 space-y-4'>
+                  {/* Price */}
+                  <div>
+                    <Label className='text-sm font-medium'>Price</Label>
+                    <div className='mt-2'>
+                      <Select
+                        value={filters.priceType}
+                        onValueChange={(value) =>
+                          updateFilter('priceType', value as FilterState['priceType'])
+                        }
+                      >
+                        <SelectTrigger className='w-full'>
+                          <SelectValue placeholder='All prices' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='all'>All</SelectItem>
+                          <SelectItem value='free'>Free</SelectItem>
+                          <SelectItem value='paid'>Paid</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
                   {/* Price Range */}
                   <div>
                     <Label className='text-sm font-medium'>
-                      Price Range: ${filters.priceRange[0]} - $
-                      {filters.priceRange[1]}
+                      Price Range: ${filters.minPrice ?? 0} - ${filters.maxPrice ?? 1000}
                     </Label>
                     <div className='mt-2'>
                       <Slider
-                        value={filters.priceRange}
-                        onValueChange={(value) =>
-                          updateFilter('priceRange', value)
-                        }
+                        value={[filters.minPrice ?? 0, filters.maxPrice ?? 1000]}
+                        onValueChange={(value) => {
+                          const [min, max] = value as [number, number];
+                          const next: FilterState = { ...filters, minPrice: min, maxPrice: max };
+                          // Sync priceType based on range
+                          if (min === 0 && max === 0) {
+                            next.priceType = 'free';
+                          } else if (min > 0) {
+                            next.priceType = 'paid';
+                          } else {
+                            next.priceType = 'all';
+                          }
+                          setFilters(next);
+                          onFiltersChange(next);
+                        }}
                         max={1000}
                         min={0}
                         step={10}
@@ -508,14 +544,30 @@ export default function AdvancedFilters({
                   </Button>
                 </div>
               )}
-              {(filters.priceRange[0] !== 0 ||
-                filters.priceRange[1] !== 1000) && (
+              {filters.priceType !== 'all' && (
                 <div className='flex items-center gap-1 bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs'>
-                  Price: ${filters.priceRange[0]} - ${filters.priceRange[1]}
+                  Price: {filters.priceType === 'free' ? 'Free' : 'Paid'}
                   <Button
                     variant='ghost'
                     size='sm'
-                    onClick={() => updateFilter('priceRange', [0, 1000])}
+                    onClick={() => updateFilter('priceType', 'all')}
+                    className='h-4 w-4 p-0 hover:bg-blue-200'
+                  >
+                    <X className='h-2 w-2' />
+                  </Button>
+                </div>
+              )}
+              {(typeof filters.minPrice === 'number' || typeof filters.maxPrice === 'number') && (
+                <div className='flex items-center gap-1 bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs'>
+                  Range: ${filters.minPrice ?? 0} - ${filters.maxPrice ?? 1000}
+                  <Button
+                    variant='ghost'
+                    size='sm'
+                    onClick={() => {
+                      const next: FilterState = { ...filters, minPrice: undefined, maxPrice: undefined };
+                      setFilters(next);
+                      onFiltersChange(next);
+                    }}
                     className='h-4 w-4 p-0 hover:bg-blue-200'
                   >
                     <X className='h-2 w-2' />

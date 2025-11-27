@@ -1,6 +1,5 @@
 import { getBanks } from '@/actions/bank-transfer.action';
 import { getMyOrderDetails } from '@/actions/profile.action';
-import { getStoreBankAccounts } from '@/app/_actions/store.action';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,6 +8,7 @@ import { AlertCircle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { PaymentMethodSelector } from './_components/payment-method-selector';
+import { getBankAccounts } from '@/actions/bank-account.action';
 
 export default async function PaymentMethodSelectionPage({ params }: { params: Promise<{ orderId: string }> }) {
     const { orderId } = await params;
@@ -19,13 +19,12 @@ export default async function PaymentMethodSelectionPage({ params }: { params: P
         notFound();
     }
 
-    const storeBankAccounts = await getStoreBankAccounts(response.storeId as string);
+    const bankAccounts = await getBankAccounts();
 
-    if (!storeBankAccounts || storeBankAccounts.error) {
+    if (!bankAccounts || bankAccounts.length === 0) {
         notFound();
     }
 
-    const bankAccounts = storeBankAccounts as TBankAccount[];
 
     const banks = await getBanks();
 
@@ -65,7 +64,6 @@ export default async function PaymentMethodSelectionPage({ params }: { params: P
                     <CardContent>
                         <div className="flex justify-between items-center">
                             <div>
-                                <p className="text-sm text-gray-500">{order.totalItems} item(s)</p>
                                 <p className="text-2xl font-bold text-gray-900">${order.total.toFixed(2)}</p>
                             </div>
                             <Badge className="bg-yellow-100 text-yellow-800">

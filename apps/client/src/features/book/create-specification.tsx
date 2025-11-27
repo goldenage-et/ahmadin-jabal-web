@@ -28,7 +28,7 @@ import {
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { createBookSpecification } from '../actions/book.action';
+import { createBookSpecification } from '@/actions/book.action';
 
 interface CreateSpecificationFormProps {
   bookId: string;

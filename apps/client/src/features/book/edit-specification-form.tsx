@@ -29,7 +29,7 @@ import {
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { updateBookSpecification } from '../actions/book.action';
+import { updateBookSpecification } from '@/actions/book.action';
 
 interface UpdateSpecificationFormProps {
   specificationId: string;

@@ -42,7 +42,7 @@ export function CategorySidebar({ categories }: CategorySidebarProps) {
                 <Card className='hover:shadow-md transition-shadow cursor-pointer'>
                   <CardContent className='p-3'>
                     <div className='flex items-center space-x-3'>
-                      <div className='w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0'>
+                      <div className='w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center shrink-0'>
                         <IconComponent className='h-5 w-5 text-gray-600' />
                       </div>
 
@@ -52,7 +52,7 @@ export function CategorySidebar({ categories }: CategorySidebarProps) {
                         </p>
                       </div>
 
-                      <ChevronRight className='h-4 w-4 text-gray-400 flex-shrink-0' />
+                      <ChevronRight className='h-4 w-4 text-gray-400 shrink-0' />
                     </div>
                   </CardContent>
                 </Card>

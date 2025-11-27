@@ -1,6 +1,6 @@
 'use client';
 
-import { useBuyNowStore } from '@/features/cart/store/buy-now-store';
+import { useBuyNow } from '@/actions/buy-now.action';
 import { BookReviewSection } from '@/features/reviews/components/book-review-section';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -34,7 +34,7 @@ export default function BookDetails({
   const [selectedImage, setSelectedImage] = useState(0);
   const [activeSection, setActiveSection] = useState('reviews');
   const [isAddingToCart, setIsAddingToCart] = useState(false);
-  const { setBuyNowItem } = useBuyNowStore();
+  const { setBuyNowItem } = useBuyNow();
 
   // Refs for sections
   const reviewsRef = useRef<HTMLDivElement>(null);

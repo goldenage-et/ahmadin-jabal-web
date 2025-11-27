@@ -8,7 +8,6 @@ import {
   TCreateCategory,
   TUpdateCategory,
   ZCreateCategory,
-  TCategoryImage,
 } from '@repo/common';
 import { Button } from '@/components/ui/button';
 import {
@@ -37,8 +36,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Loader2 } from 'lucide-react';
-import CategoryImageManager from '@/features/categories/category-image-manager';
-import MediaManager from '../../components/media-manager';
 import SingleFileUploader from '../../components/single-file-uploader';
 import { IconDropdown } from '@/components/ui/icon-dropdown';
 import { ColorPicker } from '@/components/ui/color-picker';

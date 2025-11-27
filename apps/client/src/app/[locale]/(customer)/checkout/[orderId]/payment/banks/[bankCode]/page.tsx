@@ -1,6 +1,5 @@
 import { getBanks } from '@/actions/bank-transfer.action';
 import { getMyOrderDetails } from '@/actions/profile.action';
-import { getStoreBankAccounts } from '@/app/_actions/store.action';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,6 +14,7 @@ import {
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { BankAccountSelector } from './_components/bank-account-selector';
+import { getBankAccounts } from '@/actions/bank-account.action';
 
 export default async function BankTransferPaymentPage({
     params
@@ -44,24 +44,18 @@ export default async function BankTransferPaymentPage({
         redirect(`/checkout/${orderId}/completed`);
     }
 
-    // Fetch store's bank accounts
-    const storeBankAccountsResponse = await getStoreBankAccounts(order.storeId as string);
-    if (!storeBankAccountsResponse || 'error' in storeBankAccountsResponse) {
-        notFound();
-    }
-
-    const storeBankAccounts = storeBankAccountsResponse as TBankAccount[];
-
+    const bankAccounts = await getBankAccounts();
+    // Fetch bank accounts
     // Group accounts by whether they match the selected bank code
-    const recommendedAccounts = storeBankAccounts.filter(account =>
+    const recommendedAccounts = bankAccounts.filter(account =>
         account.bankCode === bankCode
     );
-    const otherAccounts = storeBankAccounts.filter(account =>
+    const otherAccounts = bankAccounts.filter(account =>
         account.bankCode !== bankCode
     );
 
     // If there are no accounts at all
-    if (storeBankAccounts.length === 0) {
+    if (bankAccounts.length === 0) {
         return (
             <div className="min-h-screen bg-gray-50 py-12">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -70,7 +64,7 @@ export default async function BankTransferPaymentPage({
                             <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
                             <h2 className="text-xl font-bold text-gray-900 mb-2">No Bank Accounts Available</h2>
                             <p className="text-gray-600 mb-4">
-                                The store hasn't set up any bank accounts yet. Please contact support or try another payment method.
+                                The accounts haven't set up any bank accounts yet. Please contact support or try another payment method.
                             </p>
                             <Link href={`/checkout/${orderId}/payment`}>
                                 <Button>
@@ -108,7 +102,7 @@ export default async function BankTransferPaymentPage({
                 </div>
 
                 {/* Progress Steps */}
-                <Card className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+                <Card className="mb-6 bg-linear-to-r from-blue-50 to-indigo-50 border-blue-200">
                     <CardContent className="pt-6">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div className="flex items-start space-x-3">
@@ -166,7 +160,7 @@ export default async function BankTransferPaymentPage({
                             <CardContent className="text-blue-900">
                                 <ol className="space-y-3">
                                     <li className="flex items-start space-x-3">
-                                        <span className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</span>
+                                        <span className="shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</span>
                                         <div>
                                             <p className="font-medium">Select a store account from the list above</p>
                                             <p className="text-sm text-blue-700">
@@ -177,35 +171,35 @@ export default async function BankTransferPaymentPage({
                                         </div>
                                     </li>
                                     <li className="flex items-start space-x-3">
-                                        <span className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</span>
+                                        <span className="shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</span>
                                         <div>
                                             <p className="font-medium">Open your {selectedBank.name} mobile app or visit a branch</p>
                                             <p className="text-sm text-blue-700">Use the app for faster processing</p>
                                         </div>
                                     </li>
                                     <li className="flex items-start space-x-3">
-                                        <span className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</span>
+                                        <span className="shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</span>
                                         <div>
                                             <p className="font-medium">Transfer ${order.total.toFixed(2)} to the selected account</p>
                                             <p className="text-sm text-blue-700">Use the exact amount shown in the order summary</p>
                                         </div>
                                     </li>
                                     <li className="flex items-start space-x-3">
-                                        <span className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">4</span>
+                                        <span className="shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">4</span>
                                         <div>
                                             <p className="font-medium">Save your transfer receipt</p>
                                             <p className="text-sm text-blue-700">You'll need the {selectedBank.referenceLabel || 'reference number'} from it</p>
                                         </div>
                                     </li>
                                     <li className="flex items-start space-x-3">
-                                        <span className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">5</span>
+                                        <span className="shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">5</span>
                                         <div>
                                             <p className="font-medium">Enter the reference number and click "Validate"</p>
                                             <p className="text-sm text-blue-700">We'll verify your payment automatically</p>
                                         </div>
                                     </li>
                                     <li className="flex items-start space-x-3">
-                                        <span className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">6</span>
+                                        <span className="shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">6</span>
                                         <div>
                                             <p className="font-medium">Confirm payment to complete your order</p>
                                             <p className="text-sm text-blue-700">Your order will be processed immediately</p>
@@ -226,7 +220,7 @@ export default async function BankTransferPaymentPage({
                             <CardContent className="space-y-4">
                                 <div className="flex justify-between items-center pb-3 border-b">
                                     <span className="text-sm text-gray-600">Items</span>
-                                    <span className="font-semibold">{order.totalItems}</span>
+                                    <span className="font-semibold">{order.quantity}</span>
                                 </div>
                                 <div className="flex justify-between items-center pb-3 border-b">
                                     <span className="text-sm text-gray-600">Subtotal</span>

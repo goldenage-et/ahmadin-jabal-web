@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { useRef, useState } from 'react';
-import MediaManager from '../../../components/media-manager';
+import MediaManager from '@/components/media-manager';
 
 interface ImageManagerProps {
   images: TBookImage[];

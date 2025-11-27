@@ -47,7 +47,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { createBook } from '../actions/book.action';
+import { createBook } from '@/actions/book.action';
 import ImageManager from './image-manager';
 
 export default function CreateBookForm({
@@ -134,7 +134,6 @@ export default function CreateBookForm({
   // console.log(form.formState.errors);
   // console.log({ images });
 
-  // Fix: Remove unknown storeId reference and add disabled/validation improvements
   return (
     <div className="space-y-6 p-6 mx-auto">
       {/* Header */}
@@ -164,10 +163,10 @@ export default function CreateBookForm({
                 <div key={step.id} className="flex items-center">
                   <div
                     className={`flex items-center gap-2 px-3 py-2 rounded-md ${isActive
-                        ? 'bg-primary text-primary-foreground'
-                        : isCompleted
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-600'
+                      ? 'bg-primary text-primary-foreground'
+                      : isCompleted
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-gray-100 text-gray-600'
                       }`}
                   >
                     <Icon className="h-4 w-4" />

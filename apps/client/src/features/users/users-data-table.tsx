@@ -134,8 +134,8 @@ export function UsersDataTable({
     let newSortBy = columnId as
       | 'firstName'
       | 'email'
-      | 'active'
       | 'roles'
+      | 'active'
       | 'createdAt';
     let newSortOrder: 'asc' | 'desc' = 'asc';
 

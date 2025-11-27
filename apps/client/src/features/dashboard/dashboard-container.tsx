@@ -1,9 +1,7 @@
 'use client';
 
-import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { Skeleton } from '@/components/ui/skeleton';
-import { TrendingUp, TrendingDown, ShoppingCart, DollarSign, BarChart3, Package } from 'lucide-react';
+import { TrendingUp, TrendingDown, BarChart3, Package } from 'lucide-react';
 import { TAdminDashboardStats } from '@repo/common';
 
 type TDashboardContainerProps = {
@@ -203,7 +201,7 @@ export function DashboardContainer({ stats }: TDashboardContainerProps) {
                           }
                         }}
                       />
-                      <div className='hidden w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 items-center justify-center text-white font-semibold text-sm'>
+                      <div className='hidden w-full h-full bg-linear-to-br from-blue-400 to-purple-500 items-center justify-center text-white font-semibold text-sm'>
                         {customer.name.split(' ').map(n => n[0]).join('')}
                       </div>
                     </div>
@@ -277,10 +275,10 @@ export function DashboardContainer({ stats }: TDashboardContainerProps) {
                     <td className='px-2 py-3'>
                       <span
                         className={`rounded-full px-3 py-1 text-xs font-medium ${o.status === 'Paid'
-                            ? 'bg-green-100 text-green-700'
-                            : o.status === 'Pending'
-                              ? 'bg-yellow-100 text-yellow-700'
-                              : 'bg-red-100 text-red-700'
+                          ? 'bg-green-100 text-green-700'
+                          : o.status === 'Pending'
+                            ? 'bg-yellow-100 text-yellow-700'
+                            : 'bg-red-100 text-red-700'
                           }`}
                       >
                         {o.status}

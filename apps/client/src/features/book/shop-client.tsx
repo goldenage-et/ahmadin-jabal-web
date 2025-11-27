@@ -131,7 +131,7 @@ export function ShopClient({
           {/* Desktop Filters Sidebar */}
           <aside
             id='filters'
-            className='hidden lg:block w-64 space-y-6 sticky top-[19rem]'
+            className='hidden lg:block w-64 space-y-6 sticky top-76'
             role='complementary'
             aria-label='Book filters'
           >
@@ -139,7 +139,6 @@ export function ShopClient({
               filters={currentFilters}
               categories={categories}
               onFilterChange={handleFilterChange}
-              onPriceRangeChange={handlePriceRangeChange}
               onResetFilters={resetFilters}
             />
           </aside>
@@ -155,7 +154,6 @@ export function ShopClient({
                   filters={currentFilters}
                   categories={categories}
                   onFilterChange={handleFilterChange}
-                  onPriceRangeChange={handlePriceRangeChange}
                   onResetFilters={resetFilters}
                 />
               </div>

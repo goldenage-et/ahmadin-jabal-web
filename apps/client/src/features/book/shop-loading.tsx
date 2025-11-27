@@ -7,7 +7,7 @@ export function ShopLoadingSkeleton() {
   return (
     <div className='min-h-screen bg-gray-50'>
       {/* Header Skeleton */}
-      <div className='bg-white border-b sticky top-[7rem] z-40'>
+      <div className='bg-white border-b sticky top-28 z-40'>
         <div className='px-4 sm:px-6 lg:px-8 py-4'>
           <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4'>
             <div>

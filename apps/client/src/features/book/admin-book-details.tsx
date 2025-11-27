@@ -42,9 +42,9 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import BookAnalytics from './components/book-analytics';
-import ImageManager from './components/image-manager';
-import ReviewManagement from './components/review-management';
+import BookAnalytics from './book-analytics';
+import ImageManager from './image-manager';
+import ReviewManagement from './review-management';
 import EditBookForm from './edit-book-form';
 import SpecificationsManagement from './specifications-management';
 
@@ -227,7 +227,7 @@ export default function AdminBookDetail({
               </CardContent>
             </Card>
 
-            <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-gradient-to-br from-blue-50 to-indigo-50'>
+            <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-linear-to-br from-blue-50 to-indigo-50'>
               <CardContent className='p-6'>
                 <div className='flex items-center justify-between'>
                   <div className='space-y-2'>
@@ -260,7 +260,7 @@ export default function AdminBookDetail({
               </CardContent>
             </Card>
 
-            <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-gradient-to-br from-yellow-50 to-amber-50'>
+            <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-linear-to-br from-yellow-50 to-amber-50'>
               <CardContent className='p-6'>
                 <div className='flex items-center justify-between'>
                   <div className='space-y-2'>
@@ -286,7 +286,7 @@ export default function AdminBookDetail({
               </CardContent>
             </Card>
 
-            <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-gradient-to-br from-purple-50 to-violet-50'>
+            <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-linear-to-br from-purple-50 to-violet-50'>
               <CardContent className='p-6'>
                 <div className='flex items-center justify-between'>
                   <div className='space-y-2'>
@@ -468,7 +468,7 @@ export default function AdminBookDetail({
             <TabsContent value='reviews' className='space-y-8 mt-8'>
               {/* Review Analytics Overview */}
               <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
-                <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-gradient-to-br from-yellow-50 to-amber-50'>
+                <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-linear-to-br from-yellow-50 to-amber-50'>
                   <CardContent className='p-6'>
                     <div className='flex items-center justify-between'>
                       <div className='space-y-2'>
@@ -497,7 +497,7 @@ export default function AdminBookDetail({
                   </CardContent>
                 </Card>
 
-                <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-gradient-to-br from-green-50 to-emerald-50'>
+                <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-linear-to-br from-green-50 to-emerald-50'>
                   <CardContent className='p-6'>
                     <div className='flex items-center justify-between'>
                       <div className='space-y-2'>
@@ -516,7 +516,7 @@ export default function AdminBookDetail({
                   </CardContent>
                 </Card>
 
-                <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-gradient-to-br from-blue-50 to-indigo-50'>
+                <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-linear-to-br from-blue-50 to-indigo-50'>
                   <CardContent className='p-6'>
                     <div className='flex items-center justify-between'>
                       <div className='space-y-2'>
@@ -537,7 +537,7 @@ export default function AdminBookDetail({
                   </CardContent>
                 </Card>
 
-                <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-gradient-to-br from-purple-50 to-violet-50'>
+                <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-linear-to-br from-purple-50 to-violet-50'>
                   <CardContent className='p-6'>
                     <div className='flex items-center justify-between'>
                       <div className='space-y-2'>

@@ -37,7 +37,7 @@ import { TBookBasic, TCategoryBasic, EBookStatus } from '@repo/common';
 import { format } from 'date-fns';
 import Link from 'next/link';
 import { useApiMutation } from '@/hooks/use-api-mutation';
-import { deleteBook } from '@/features/book/actions/book.action';
+import { deleteBook } from '@/actions/book.action';
 import { toast } from 'sonner';
 
 interface BooksGridProps {

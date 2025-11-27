@@ -11,7 +11,7 @@ export function CTASection() {
   const t = useTranslations('contact');
 
   return (
-    <section className="py-20 bg-gradient-to-r from-green-600 to-blue-600 dark:from-green-700 dark:to-blue-700">
+    <section className="py-20 bg-linear-to-r from-green-600 to-blue-600 dark:from-green-700 dark:to-blue-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center text-white mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">

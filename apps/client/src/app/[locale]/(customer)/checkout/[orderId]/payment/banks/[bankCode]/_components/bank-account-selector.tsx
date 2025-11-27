@@ -41,7 +41,7 @@ export function BankAccountSelector({
                 <CardHeader className="bg-blue-50">
                     <CardTitle className="flex items-center space-x-2">
                         <Building2 className="h-5 w-5 text-blue-600" />
-                        <span>Select Store Account to Transfer To</span>
+                        <span>Select Account to Transfer To</span>
                     </CardTitle>
                     <CardDescription>
                         Choose the account you want to transfer money to
@@ -88,7 +88,7 @@ export function BankAccountSelector({
                                                     </div>
                                                 </div>
                                                 {selectedAccount?.id === account.id && (
-                                                    <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 ml-2" />
+                                                    <CheckCircle className="h-5 w-5 text-green-600 shrink-0 ml-2" />
                                                 )}
                                             </div>
                                         </CardContent>
@@ -137,7 +137,7 @@ export function BankAccountSelector({
                                                     </div>
                                                 </div>
                                                 {selectedAccount?.id === account.id && (
-                                                    <CheckCircle className="h-5 w-5 text-blue-600 flex-shrink-0 ml-2" />
+                                                    <CheckCircle className="h-5 w-5 text-blue-600 shrink-0 ml-2" />
                                                 )}
                                             </div>
                                         </CardContent>
@@ -151,7 +151,7 @@ export function BankAccountSelector({
                         <Alert className="bg-amber-50 border-amber-200">
                             <AlertCircle className="h-4 w-4 text-amber-600" />
                             <AlertDescription className="text-amber-900">
-                                No bank accounts available for this store. Please contact support.
+                                No bank accounts available for this. Please contact support.
                             </AlertDescription>
                         </Alert>
                     )}
@@ -171,7 +171,7 @@ export function BankAccountSelector({
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="pt-6 space-y-4">
-                        <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border-2 border-green-200 space-y-4">
+                        <div className="p-4 bg-linear-to-r from-green-50 to-emerald-50 rounded-lg border-2 border-green-200 space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <Label className="text-xs text-gray-500 uppercase tracking-wider">Bank Name</Label>

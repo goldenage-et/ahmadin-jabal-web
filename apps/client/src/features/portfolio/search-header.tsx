@@ -15,12 +15,12 @@ export function SearchHeader() {
         <div className='flex items-center justify-between py-4'>
           {/* Logo with unique styling */}
           <div className='flex items-center space-x-2'>
-            <div className='w-10 h-10 bg-gradient-to-br from-teal-500 to-purple-600 rounded-xl flex items-center justify-center'>
+            <div className='w-10 h-10 bg-linear-to-br from-teal-500 to-purple-600 rounded-xl flex items-center justify-center'>
               <span className='text-white font-bold text-lg'>A</span>
             </div>
             <Link
               href='/'
-              className='text-2xl font-bold bg-gradient-to-r from-teal-600 to-purple-600 bg-clip-text text-transparent'
+              className='text-2xl font-bold bg-linear-to-r from-teal-600 to-purple-600 bg-clip-text text-transparent'
             >
               ahmadin
             </Link>
@@ -36,7 +36,7 @@ export function SearchHeader() {
               />
               <Button
                 size='sm'
-                className='absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-teal-600 to-purple-600 hover:from-teal-700 hover:to-purple-700 rounded-full'
+                className='absolute right-2 top-1/2 transform -translate-y-1/2 bg-linear-to-r from-teal-600 to-purple-600 hover:from-teal-700 hover:to-purple-700 rounded-full'
               >
                 <Search className='h-4 w-4' />
               </Button>

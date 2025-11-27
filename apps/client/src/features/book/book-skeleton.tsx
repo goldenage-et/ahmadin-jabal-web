@@ -13,7 +13,7 @@ export function BookSkeleton({ viewMode }: BookSkeletonProps) {
     return (
       <Card className='overflow-hidden animate-pulse'>
         <div className='flex'>
-          <div className='w-32 h-32 bg-gray-200 flex-shrink-0' />
+          <div className='w-32 h-32 bg-gray-200 shrink-0' />
           <CardContent className='flex-1 p-4'>
             <div className='h-4 bg-gray-200 rounded mb-2' />
             <div className='h-3 bg-gray-200 rounded w-2/3 mb-2' />

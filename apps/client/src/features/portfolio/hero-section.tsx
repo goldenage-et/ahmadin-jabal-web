@@ -183,7 +183,7 @@ export function HeroSection({ featuredBooks = [], categories = [] }: HeroSection
             />
 
             {/* Overlay gradient */}
-            <div className='absolute inset-0 bg-gradient-to-br from-black/20 via-black/10 to-black/40'></div>
+            <div className='absolute inset-0 bg-linear-to-br from-black/20 via-black/10 to-black/40'></div>
 
             {/* Navigation arrows */}
             <button
@@ -262,7 +262,7 @@ export function HeroSection({ featuredBooks = [], categories = [] }: HeroSection
             />
 
             {/* Overlay gradient */}
-            <div className='absolute inset-0 bg-gradient-to-br from-black/40 via-black/30 to-black/50'></div>
+            <div className='absolute inset-0 bg-linear-to-br from-black/40 via-black/30 to-black/50'></div>
 
             {/* Content with auto-rotation */}
             <div className='relative z-10 p-4 sm:p-6 h-full flex flex-col justify-between'>
@@ -357,7 +357,7 @@ export function HeroSection({ featuredBooks = [], categories = [] }: HeroSection
                 <Link
                   key={category.id}
                   href={categoryUrl}
-                  className='flex flex-col items-center gap-1.5 sm:gap-2 min-w-[60px] sm:min-w-[70px] lg:min-w-[80px] group flex-shrink-0'
+                  className='flex flex-col items-center gap-1.5 sm:gap-2 min-w-[60px] sm:min-w-[70px] lg:min-w-[80px] group shrink-0'
                 >
                   <div
                     className={`w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow`}

@@ -91,7 +91,6 @@ export default async function OnlinePaymentPage({
                     <CardContent>
                         <div className="flex justify-between items-center">
                             <div>
-                                <p className="text-sm text-gray-500">{order.totalItems} item(s)</p>
                                 <p className="text-2xl font-bold text-gray-900">${order.total.toFixed(2)}</p>
                             </div>
                             <Badge className="bg-yellow-100 text-yellow-800">

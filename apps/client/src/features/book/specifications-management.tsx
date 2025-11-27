@@ -42,7 +42,7 @@ import { useForm } from 'react-hook-form';
 import {
   deleteBookSpecification,
   updateBookSpecification,
-} from '../actions/book.action';
+} from '@/actions/book.action';
 import { CreateSpecificationDialog } from './create-specification';
 import UpdateSpecificationForm from './edit-specification-form';
 

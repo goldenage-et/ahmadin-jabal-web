@@ -333,7 +333,6 @@ export default function AdminDashboard({
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>Order ID</TableHead>
-                                        <TableHead>Store</TableHead>
                                         <TableHead>Customer</TableHead>
                                         <TableHead>Amount</TableHead>
                                         <TableHead>Status</TableHead>
@@ -344,7 +343,6 @@ export default function AdminDashboard({
                                     {recentOrders.map((order) => (
                                         <TableRow key={order.id}>
                                             <TableCell className='font-medium'>{order.orderNumber}</TableCell>
-                                            <TableCell>{order.store}</TableCell>
                                             <TableCell>{order.customer}</TableCell>
                                             <TableCell>${order.amount}</TableCell>
                                             <TableCell>

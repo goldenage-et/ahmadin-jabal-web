@@ -13,11 +13,11 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
-export function AdminHeader({ 
-  onMenu, 
-  sidebarCollapsed, 
-  onToggleSidebar 
-}: { 
+export function AdminHeader({
+  onMenu,
+  sidebarCollapsed,
+  onToggleSidebar
+}: {
   onMenu: () => void;
   sidebarCollapsed?: boolean;
   onToggleSidebar?: () => void;
@@ -44,7 +44,7 @@ export function AdminHeader({
     const checkScreenSize = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkScreenSize(); // Check on mount
     window.addEventListener('resize', checkScreenSize);
     return () => window.removeEventListener('resize', checkScreenSize);
@@ -78,9 +78,9 @@ export function AdminHeader({
               Back to Home
             </Link>
           </Button>
-          
-          
-          
+
+
+
           {/* Search Bar */}
           <div className='hidden md:flex items-center gap-2 bg-gray-100 rounded-md px-3 py-1.5'>
             <Search size={16} className='text-gray-500' />
@@ -90,7 +90,7 @@ export function AdminHeader({
             />
           </div>
         </div>
-        
+
         {/* Right Section - Icons and Time */}
         <div className='flex items-center gap-1 sm:gap-2'>
           {/* Dark Mode Toggle */}
@@ -142,7 +142,7 @@ export function AdminHeader({
                 e.stopPropagation();
                 setProfileOpen((v) => !v);
               }}
-              className='h-6 w-6 sm:h-7 sm:w-7 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 shadow-sm flex items-center justify-center'
+              className='h-6 w-6 sm:h-7 sm:w-7 rounded-full bg-linear-to-br from-yellow-400 to-orange-500 shadow-sm flex items-center justify-center'
               aria-haspopup='menu'
               aria-expanded={profileOpen}
               aria-label='Profile menu'

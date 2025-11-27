@@ -5,7 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { TUserBasic, TUserQueryFilter } from '@repo/common';
 import { UsersDataTable } from './users-data-table';
 import { UserModal } from './user-modal';
-import useSearchState from '@/app/hooks/use-search-state';
+import useSearchState from '@/hooks/use-search-state';
 
 type TUsersContainerProps = {
   users: TUserBasic[];

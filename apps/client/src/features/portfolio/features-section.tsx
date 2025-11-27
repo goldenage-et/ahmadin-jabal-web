@@ -86,7 +86,7 @@ export function FeaturesSection() {
   return (
     <section
       id='features-section'
-      className='py-20 bg-gradient-to-br from-white via-blue-50 to-purple-50 relative overflow-hidden'
+      className='py-20 bg-linear-to-br from-white via-blue-50 to-purple-50 relative overflow-hidden'
     >
       {/* Background decorations */}
       <div className='absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(120,119,198,0.05),transparent_50%)] pointer-events-none' />
@@ -95,11 +95,11 @@ export function FeaturesSection() {
       <div className='relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         {/* Header */}
         <div className='text-center mb-16'>
-          <div className='inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-6'>
+          <div className='inline-flex items-center gap-2 bg-linear-to-r from-blue-100 to-purple-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-6'>
             <Award className='h-4 w-4' />
             Why Choose Us
           </div>
-          <h2 className='text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-gray-900 bg-clip-text text-transparent mb-6'>
+          <h2 className='text-4xl md:text-5xl lg:text-6xl font-bold bg-linear-to-r from-gray-900 via-blue-900 to-gray-900 bg-clip-text text-transparent mb-6'>
             Why Choose ahmadin?
           </h2>
           <p className='text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed'>
@@ -126,7 +126,7 @@ export function FeaturesSection() {
                 >
                   {/* Background gradient */}
                   <div
-                    className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-5 rounded-3xl transition-opacity duration-300`}
+                    className={`absolute inset-0 bg-linear-to-br ${feature.gradient} opacity-0 group-hover:opacity-5 rounded-3xl transition-opacity duration-300`}
                   ></div>
 
                   {/* Icon */}
@@ -139,14 +139,14 @@ export function FeaturesSection() {
                       />
                       {/* Glow effect */}
                       <div
-                        className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-xl`}
+                        className={`absolute inset-0 bg-linear-to-br ${feature.gradient} rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-xl`}
                       ></div>
                     </div>
                   </div>
 
                   {/* Content */}
                   <div className='text-center'>
-                    <h3 className='font-bold text-xl mb-3 text-gray-900 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text transition-all duration-300'>
+                    <h3 className='font-bold text-xl mb-3 text-gray-900 group-hover:text-transparent group-hover:bg-linear-to-r group-hover:bg-clip-text transition-all duration-300'>
                       {feature.title}
                     </h3>
                     <p className='text-gray-600 leading-relaxed mb-4'>
@@ -163,13 +163,13 @@ export function FeaturesSection() {
                   </div>
 
                   {/* Floating elements */}
-                  <div className='absolute -top-2 -right-2 w-4 h-4 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full opacity-0 group-hover:opacity-60 transition-all duration-300 animate-pulse'></div>
-                  <div className='absolute -bottom-1 -left-1 w-3 h-3 bg-gradient-to-r from-pink-400 to-yellow-400 rounded-full opacity-0 group-hover:opacity-60 transition-all duration-300 animate-pulse delay-300'></div>
+                  <div className='absolute -top-2 -right-2 w-4 h-4 bg-linear-to-r from-blue-400 to-purple-400 rounded-full opacity-0 group-hover:opacity-60 transition-all duration-300 animate-pulse'></div>
+                  <div className='absolute -bottom-1 -left-1 w-3 h-3 bg-linear-to-r from-pink-400 to-yellow-400 rounded-full opacity-0 group-hover:opacity-60 transition-all duration-300 animate-pulse delay-300'></div>
 
                   {/* Progress indicator */}
                   <div className='absolute bottom-0 left-0 right-0 h-1 bg-gray-200'>
                     <div
-                      className={`h-full bg-gradient-to-r ${feature.gradient} transition-all duration-1000 ease-out`}
+                      className={`h-full bg-linear-to-r ${feature.gradient} transition-all duration-1000 ease-out`}
                       style={{
                         width: isVisible ? '100%' : '0%',
                         transitionDelay: `${index * 200}ms`,
@@ -196,7 +196,7 @@ export function FeaturesSection() {
 
           <div className='grid grid-cols-2 md:grid-cols-4 gap-8'>
             <div className='text-center'>
-              <div className='w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg'>
+              <div className='w-16 h-16 bg-linear-to-br from-green-400 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg'>
                 <Star className='h-8 w-8 text-white' />
               </div>
               <h4 className='font-bold text-lg text-gray-900 mb-2'>
@@ -206,7 +206,7 @@ export function FeaturesSection() {
             </div>
 
             <div className='text-center'>
-              <div className='w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg'>
+              <div className='w-16 h-16 bg-linear-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg'>
                 <Heart className='h-8 w-8 text-white' />
               </div>
               <h4 className='font-bold text-lg text-gray-900 mb-2'>
@@ -216,7 +216,7 @@ export function FeaturesSection() {
             </div>
 
             <div className='text-center'>
-              <div className='w-16 h-16 bg-gradient-to-br from-purple-400 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg'>
+              <div className='w-16 h-16 bg-linear-to-br from-purple-400 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg'>
                 <Award className='h-8 w-8 text-white' />
               </div>
               <h4 className='font-bold text-lg text-gray-900 mb-2'>
@@ -226,7 +226,7 @@ export function FeaturesSection() {
             </div>
 
             <div className='text-center'>
-              <div className='w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg'>
+              <div className='w-16 h-16 bg-linear-to-br from-yellow-400 to-yellow-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg'>
                 <Sparkles className='h-8 w-8 text-white' />
               </div>
               <h4 className='font-bold text-lg text-gray-900 mb-2'>
@@ -239,7 +239,7 @@ export function FeaturesSection() {
 
         {/* CTA */}
         <div className='text-center mt-16'>
-          <div className='inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-full font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200'>
+          <div className='inline-flex items-center gap-2 bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-full font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200'>
             <span>Start Shopping Today</span>
             <ArrowRight className='h-5 w-5' />
           </div>

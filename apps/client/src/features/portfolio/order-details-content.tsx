@@ -83,7 +83,7 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
   });
 
   const handleCancelOrder = () => {
-    cancelMutation.mutate(cancellationReason.trim() || undefined);
+    cancelMutation.mutate(cancellationReason.trim() || "");
   };
 
   // Return request mutation
@@ -106,7 +106,7 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
   });
 
   const handleReturnRequest = () => {
-    returnMutation.mutate(returnReason.trim() || undefined);
+    returnMutation.mutate(returnReason.trim() || "");
   };
 
   const getOrderStatusColor = (status: EOrderStatus) => {
@@ -234,7 +234,7 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
               <div>
                 <p className="text-xs text-gray-500 uppercase tracking-wider">Total Items</p>
                 <p className="text-lg font-semibold text-gray-900 mt-1">
-                  {order.items?.length || 0}
+                  {order.quantity}
                 </p>
               </div>
             </div>
@@ -267,53 +267,35 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
                 <span>Order Items</span>
               </CardTitle>
               <CardDescription>
-                {order.items?.length || 0} item(s) in this order
+                {order.quantity} item(s) in this order
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {order.items && order.items.length > 0 ? (
-                  order.items.map((item, index) => (
+                {order.quantity > 0 ? (
+                  Array.from({ length: order.quantity }).map((_, index) => (
                     <div key={index}>
                       <div className="flex items-start space-x-4">
-                        <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
-                          {item.bookImage ? (
-                            <img
-                              src={item.bookImage}
-                              alt={item.bookName || "Book"}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <Package className="h-8 w-8 text-gray-400" />
-                          )}
+                        <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
+                          <Package className="h-8 w-8 text-gray-400" />
                         </div>
 
                         <div className="flex-1 min-w-0">
                           <h4 className="font-semibold text-gray-900 mb-1">
-                            {item.bookName || "Book"}
+                            Book {index + 1}
                           </h4>
-                          {item.variantName && (
-                            <p className="text-sm text-gray-600 mb-1">
-                              Variant: <span className="font-medium">{item.variantName}</span>
-                            </p>
-                          )}
-                          {item.bookSku && (
-                            <p className="text-xs text-gray-500 mb-2">
-                              SKU: {item.bookSku}
-                            </p>
-                          )}
                           <div className="flex items-center space-x-4 text-sm text-gray-600">
-                            <span>Quantity: <span className="font-medium text-gray-900">{item.quantity}</span></span>
+                            <span>Quantity: <span className="font-medium text-gray-900">{order.quantity}</span></span>
                             <span>•</span>
-                            <span>Price: <span className="font-medium text-gray-900">${item.price.toFixed(2)}</span></span>
+                            <span>Price: <span className="font-medium text-gray-900">{formatCurrency(order.total, order.currency)}</span></span>
                           </div>
                         </div>
 
-                        <div className="text-right flex-shrink-0">
-                          <p className="font-bold text-lg text-gray-900">${item.total.toFixed(2)}</p>
+                        <div className="text-right shrink-0">
+                          <p className="font-bold text-lg text-gray-900">{formatCurrency(order.total, order.currency)}</p>
                         </div>
                       </div>
-                      {index < order.items.length - 1 && <Separator className="mt-4" />}
+                      {index < order.quantity - 1 && <Separator className="mt-4" />}
                     </div>
                   ))
                 ) : (
@@ -438,7 +420,7 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
                       key={history.id}
                       className="flex items-start space-x-4 relative"
                     >
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 z-10 ${index === 0 ? 'bg-blue-500' : 'bg-gray-300'
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 z-10 ${index === 0 ? 'bg-blue-500' : 'bg-gray-300'
                         }`}>
                         <div className={`w-3 h-3 rounded-full ${index === 0 ? 'bg-white' : 'bg-gray-100'
                           }`} />

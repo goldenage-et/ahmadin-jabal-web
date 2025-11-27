@@ -191,7 +191,7 @@ export default function BookAnalytics({
                 className='flex-1 flex flex-col items-center gap-2'
               >
                 <div
-                  className='w-full bg-gradient-to-t from-blue-600 to-blue-400 rounded-t transition-all duration-300 hover:from-blue-700 hover:to-blue-500'
+                  className='w-full bg-linear-to-t from-blue-600 to-blue-400 rounded-t transition-all duration-300 hover:from-blue-700 hover:to-blue-500'
                   style={{ height: `${height}%`, minHeight: '4px' }}
                 />
                 <div className='text-xs text-gray-600 text-center'>
@@ -338,7 +338,7 @@ export default function BookAnalytics({
                     </div>
                     <div className='w-full bg-gray-200 rounded-full h-2'>
                       <div
-                        className='bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-300'
+                        className='bg-linear-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-300'
                         style={{ width: `${item.percentage}%` }}
                       />
                     </div>

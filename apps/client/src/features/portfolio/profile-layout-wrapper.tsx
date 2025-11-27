@@ -1,18 +1,17 @@
 import { getAddresses } from '@/actions/address.action';
 import {
   TAddress,
+  TAuthUser,
   TFetcherResponse,
   TOrderBasic,
   TUserBasic,
-  TWishlist,
 } from '@repo/common';
 import { redirect } from 'next/navigation';
-import { getAuth } from '../../../../actions/auth.action';
+import { getAuth } from '@/actions/auth.action';
 import {
   getMyOrders,
   getMyProfile,
-  getMyWishlist,
-} from '../../../../actions/profile.action';
+} from '@/actions/profile.action';
 import { ProfileLayout } from './profile-layout';
 
 // Force dynamic rendering since we use authentication and server actions
@@ -54,16 +53,15 @@ export async function ProfileLayoutWrapper({
   };
 
   let profileData: ProfileData = {
-    user,
+    user: user!,
     totalOrders: 0,
     totalSpent: 0,
   };
 
   let orders: TOrderBasic[] = [];
-  let wishlist: TWishlist[] = [];
 
   try {
-    const [addresses, profile, userOrders, userWishlist] = await Promise.all([
+    const [addresses, profile, userOrders] = await Promise.all([
       getAddresses({
         page: 1,
         limit: 10,
@@ -72,12 +70,10 @@ export async function ProfileLayoutWrapper({
       }),
       getMyProfile(),
       getMyOrders(),
-      getMyWishlist(),
     ]);
     initialAddresses = addresses;
     profileData = profile;
     orders = userOrders.orders;
-    wishlist = userWishlist;
   } catch (err) {
     console.error('Error fetching profile data:', err);
     // Fallbacks already set above
@@ -98,7 +94,6 @@ export async function ProfileLayoutWrapper({
       user={user}
       initialProfileData={profileData}
       initialOrders={orders}
-      initialWishlist={wishlist}
       initialAddresses={safeAddresses}
     >
       {children}

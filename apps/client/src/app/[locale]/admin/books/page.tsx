@@ -1,6 +1,6 @@
 import { getCategories } from '@/actions/categories.action';
 import { getManyBooks } from '@/actions/book.action';
-import BookList from '@/features/book/components/book-list';
+import BookList from '@/features/book/book-list';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { EBookStatus, TBookQueryFilter } from '@repo/common';

@@ -1,4 +1,4 @@
-import { CategoriesSection } from '../components/categories-section';
+import { CategoriesSection } from '@/features/portfolio/categories-section';
 import { getParentCategories } from '../lib/categories';
 
 // Force dynamic rendering since we use cookies for authentication

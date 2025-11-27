@@ -1,12 +1,12 @@
 'use client';
 
+import { useBuyNow } from '@/actions/buy-now.action';
 import { Button } from '@/components/ui/button';
 import { TBookBasic } from '@repo/common';
 import { ShoppingBag } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { useBuyNowStore } from '../store/buy-now-store';
 
 interface BuyNowButtonProps {
   book: TBookBasic;
@@ -25,7 +25,7 @@ export function BuyNowButton({
   disabled = false,
   quantity = 1,
 }: BuyNowButtonProps) {
-  const { setBuyNowItem } = useBuyNowStore();
+  const { setBuyNowItem } = useBuyNow();
   const [isProcessing, setIsProcessing] = useState(false);
   const router = useRouter();
 

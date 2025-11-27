@@ -86,46 +86,6 @@ export default async function OrderReviewPage({ params }: { params: Promise<{ or
                     </Card>
                 </div>
 
-                {/* Order Items */}
-                <Card className="mb-6">
-                    <CardHeader>
-                        <CardTitle className="flex items-center space-x-2">
-                            <Package className="h-5 w-5" />
-                            <span>Order Items ({order.totalItems})</span>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            {order.items.map((item) => (
-                                <div key={item.id} className="flex items-start space-x-4">
-                                    {item.bookImage && (
-                                        <img
-                                            src={item.bookImage}
-                                            alt={item.bookName || 'Book'}
-                                            className="w-20 h-20 object-cover rounded-lg"
-                                        />
-                                    )}
-                                    <div className="flex-1">
-                                        <h3 className="font-medium text-gray-900">{item.bookName}</h3>
-                                        {item.bookSku && (
-                                            <p className="text-sm text-gray-500">SKU: {item.bookSku}</p>
-                                        )}
-                                        {item.variantName && (
-                                            <p className="text-sm text-gray-500">Variant: {item.variantName}</p>
-                                        )}
-                                        <p className="text-sm text-gray-600 mt-1">
-                                            Quantity: {item.quantity} × ${item.price.toFixed(2)}
-                                        </p>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="font-semibold text-gray-900">${item.total.toFixed(2)}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-
                 {/* Shipping Address */}
                 <Card className="mb-6">
                     <CardHeader>

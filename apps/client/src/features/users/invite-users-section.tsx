@@ -1,5 +1,6 @@
 'use client';
 
+import { getRoles } from '@/actions/role.action';
 import { inviteUsers } from '@/actions/users.action';
 import { DataImport } from '@/components/data-import';
 import { Button } from '@/components/ui/button';
@@ -22,7 +23,8 @@ import {
 } from '@/components/ui/select';
 import { useApiMutation } from '@/hooks/use-api-mutation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { EUserRole } from '@repo/common';
+import { TFetcherResponse, TRole } from '@repo/common';
+import { useQuery } from '@tanstack/react-query';
 import { Mail, Plus, Send, Upload, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -32,7 +34,7 @@ import { z } from 'zod';
 
 const inviteSchema = z.object({
     emails: z.array(z.email('Invalid email address')).min(1, 'At least one email is required'),
-    roles: z.array(z.enum(EUserRole))
+    roles: z.array(z.string())
 });
 
 type InviteFormData = z.infer<typeof inviteSchema>;
@@ -54,7 +56,7 @@ export function InviteUsersSection() {
         resolver: zodResolver(inviteSchema),
         defaultValues: {
             emails: [],
-            roles: [EUserRole.user],
+            roles: [],
         },
     });
 
@@ -100,11 +102,14 @@ export function InviteUsersSection() {
         });
     };
 
-    const roles = [
-        { value: EUserRole.user, label: 'User' },
-        { value: EUserRole.admin, label: 'Admin' },
-        { value: EUserRole.superAdmin, label: 'Super Admin' },
-    ];
+    const { data: rolesResponse, isLoading: rolesLoading } = useQuery({
+        queryKey: ['roles'],
+        queryFn: () => getRoles(),
+    });
+
+    const roles: TRole[] = Array.isArray(rolesResponse) && !(rolesResponse as any).error
+        ? (rolesResponse as TRole[])
+        : [];
 
     return (
         <Card>
@@ -246,18 +251,27 @@ export function InviteUsersSection() {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Default Role</FormLabel>
-                                    <Select onValueChange={(value) => field.onChange(field.value.includes(value as EUserRole) ? field.value.filter((role) => role !== value as EUserRole) : [...field.value, value as EUserRole])}>
+                                    <Select
+                                        onValueChange={(value) => field.onChange(field.value.includes(value) ? field.value.filter((role) => role !== value) : [...field.value, value])}
+                                        disabled={rolesLoading}
+                                    >
                                         <FormControl>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Select role" />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            {roles.map((role) => (
-                                                <SelectItem key={role.value} value={role.value}>
-                                                    {role.label}
-                                                </SelectItem>
-                                            ))}
+                                            {rolesLoading ? (
+                                                <div className="px-3 py-2 text-sm text-muted-foreground">Loading roles...</div>
+                                            ) : roles.length === 0 ? (
+                                                <div className="px-3 py-2 text-sm text-muted-foreground">No roles available</div>
+                                            ) : (
+                                                roles.map((role) => (
+                                                    <SelectItem key={role.id} value={role.id}>
+                                                        {role.name}
+                                                    </SelectItem>
+                                                ))
+                                            )}
                                         </SelectContent>
                                     </Select>
                                     <FormMessage />

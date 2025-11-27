@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { TAddress, TOrderBasic, TUserBasic, TWishlist } from '@repo/common';
+import { TAddress, TOrderBasic, TUserBasic } from '@repo/common';
 import {
   Heart,
   ShoppingBag,
@@ -37,7 +37,6 @@ interface ProfileLayoutProps {
     totalSpent: number;
   };
   initialOrders: TOrderBasic[];
-  initialWishlist: TWishlist[];
   initialAddresses: {
     data: TAddress[];
     total: number;
@@ -52,7 +51,6 @@ export function ProfileLayout({
   user,
   initialProfileData,
   initialOrders,
-  initialWishlist,
   initialAddresses,
   children,
 }: ProfileLayoutProps) {
@@ -96,8 +94,8 @@ export function ProfileLayout({
                 href={item.href}
                 onClick={() => setIsMobileSidebarOpen(false)}
                 className={`flex items-center space-x-3 px-4 py-3 text-left text-sm font-medium transition-colors ${activeSection === item.id
-                    ? 'bg-red-50 text-red-700 border-r-2 border-red-500'
-                    : 'text-gray-700 hover:bg-gray-50'
+                  ? 'bg-red-50 text-red-700 border-r-2 border-red-500'
+                  : 'text-gray-700 hover:bg-gray-50'
                   }`}
               >
                 <Icon className='h-4 w-4' />
@@ -136,7 +134,7 @@ export function ProfileLayout({
 
         <div className='flex gap-4 md:gap-8'>
           {/* Desktop Sidebar - Sticky */}
-          <div className='hidden lg:block w-64 flex-shrink-0 sticky top-6 self-start max-h-[calc(100vh-8rem)] overflow-y-auto'>
+          <div className='hidden lg:block w-64 shrink-0 sticky top-6 self-start max-h-[calc(100vh-8rem)] overflow-y-auto'>
             <SidebarContent />
           </div>
 

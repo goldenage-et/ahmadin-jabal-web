@@ -33,9 +33,8 @@ import {
 import { useRef, useState } from 'react';
 import {
   bulkModerateBookReviews,
-  moderateBookReview,
-  respondToBookReview,
-} from '../../reviews/actions/review.action';
+  moderateBookReview
+} from '@/features/reviews/actions/review.action';
 
 export default function ReviewManagement({
   bookId,
@@ -335,11 +334,10 @@ export default function ReviewManagement({
                             {[1, 2, 3, 4, 5].map((star) => (
                               <Star
                                 key={star}
-                                className={`h-4 w-4 ${
-                                  star <= review.rating
-                                    ? 'text-yellow-400 fill-current'
-                                    : 'text-gray-300'
-                                }`}
+                                className={`h-4 w-4 ${star <= review.rating
+                                  ? 'text-yellow-400 fill-current'
+                                  : 'text-gray-300'
+                                  }`}
                               />
                             ))}
                           </div>

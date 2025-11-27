@@ -106,7 +106,7 @@ function UserMenu({ TriggerComponent, className, user, side }: UserMenuProps) {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
-        className='min-w-56 rounded-xl z-[52]'
+        className='min-w-56 rounded-xl z-52'
         side={side}
         align='end'
         sideOffset={4}

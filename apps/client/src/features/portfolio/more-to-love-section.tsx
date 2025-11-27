@@ -4,10 +4,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TBookBasic, EBookStatus } from '@repo/common';
-import { AddToCartButton } from '@/features/cart/components/add-to-cart-button';
 import {
   Star,
-  ShoppingCart,
   Heart,
   Eye,
   ArrowRight,
@@ -20,7 +18,7 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getBookImage } from '../lib/books';
+import { getBookImage } from '@/app/[locale]/(customer)/lib/books';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
@@ -120,11 +118,11 @@ export function MoreToLoveSection({ books }: MoreToLoveSectionProps) {
     return (
       <section
         id='more-to-love-section'
-        className='py-20 bg-gradient-to-br from-gray-50 via-white to-gray-50'
+        className='py-20 bg-linear-to-br from-gray-50 via-white to-gray-50'
       >
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center'>
           <div className='max-w-md mx-auto'>
-            <div className='w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center'>
+            <div className='w-24 h-24 mx-auto mb-6 bg-linear-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center'>
               <TrendingUp className='h-12 w-12 text-gray-400' />
             </div>
             <h2 className='text-3xl font-bold text-gray-900 mb-4'>
@@ -148,7 +146,7 @@ export function MoreToLoveSection({ books }: MoreToLoveSectionProps) {
   return (
     <section
       id='more-to-love-section'
-      className='py-20 bg-gradient-to-br from-gray-50 via-white to-purple-50 relative overflow-hidden'
+      className='py-20 bg-linear-to-br from-gray-50 via-white to-purple-50 relative overflow-hidden'
     >
       {/* Background decorations */}
       <div className='absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(120,119,198,0.05),transparent_50%)] pointer-events-none' />
@@ -157,11 +155,11 @@ export function MoreToLoveSection({ books }: MoreToLoveSectionProps) {
       <div className='relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         {/* Header */}
         <div className='text-center mb-16'>
-          <div className='inline-flex items-center gap-2 bg-gradient-to-r from-green-100 to-blue-100 text-green-700 px-4 py-2 rounded-full text-sm font-medium mb-6'>
+          <div className='inline-flex items-center gap-2 bg-linear-to-r from-green-100 to-blue-100 text-green-700 px-4 py-2 rounded-full text-sm font-medium mb-6'>
             <TrendingUp className='h-4 w-4' />
             Trending Now
           </div>
-          <h2 className='text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-gray-900 via-green-900 to-gray-900 bg-clip-text text-transparent mb-6'>
+          <h2 className='text-4xl md:text-5xl lg:text-6xl font-bold bg-linear-to-r from-gray-900 via-green-900 to-gray-900 bg-clip-text text-transparent mb-6'>
             More to Love
           </h2>
           <p className='text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed'>
@@ -215,17 +213,17 @@ export function MoreToLoveSection({ books }: MoreToLoveSectionProps) {
                 onMouseLeave={() => setHoveredBook(null)}
               >
                 {/* Book Image */}
-                <div className='aspect-square relative overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200'>
+                <div className='aspect-square relative overflow-hidden bg-linear-to-br from-gray-100 to-gray-200'>
                   {/* Loading skeleton */}
                   {imageLoadingStates[book.id] && (
-                    <div className='absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 animate-pulse flex items-center justify-center'>
+                    <div className='absolute inset-0 bg-linear-to-br from-gray-200 to-gray-300 animate-pulse flex items-center justify-center'>
                       <div className='w-8 h-8 bg-gray-400 rounded-full animate-spin'></div>
                     </div>
                   )}
 
                   {/* Error state */}
                   {imageErrorStates[book.id] ? (
-                    <div className='absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center'>
+                    <div className='absolute inset-0 bg-linear-to-br from-gray-200 to-gray-300 flex items-center justify-center'>
                       <div className='text-center text-gray-500'>
                         <div className='w-8 h-8 mx-auto mb-2 bg-gray-400 rounded-full flex items-center justify-center'>
                           <span className='text-white text-xs'>?</span>
@@ -235,8 +233,8 @@ export function MoreToLoveSection({ books }: MoreToLoveSectionProps) {
                     </div>
                   ) : (
                     <Image
-                      src={getBookImage(book.images)}
-                      alt={book.name}
+                      src={getBookImage(book.images || [])}
+                      alt={book.title}
                       fill
                       className='object-cover group-hover:scale-110 transition-transform duration-700'
                       sizes='(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 16vw'
@@ -248,11 +246,11 @@ export function MoreToLoveSection({ books }: MoreToLoveSectionProps) {
                   )}
 
                   {/* Overlay gradient */}
-                  <div className='absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
+                  <div className='absolute inset-0 bg-linear-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
 
                   {/* Discount badge */}
                   {/* {discountPercentage > 0 && (
-                    <Badge className='absolute top-2 left-2 bg-gradient-to-r from-red-500 to-pink-500 text-white border-0 shadow-lg text-xs'>
+                    <Badge className='absolute top-2 left-2 bg-linear-to-r from-red-500 to-pink-500 text-white border-0 shadow-lg text-xs'>
                       -{discountPercentage}%
                     </Badge>
                   )} */}
@@ -298,7 +296,7 @@ export function MoreToLoveSection({ books }: MoreToLoveSectionProps) {
                   <div className='mb-2'>
                     <Link href={`/books/${book.id}`}>
                       <h4 className='font-medium text-sm line-clamp-2 leading-tight text-gray-900 group-hover:text-purple-700 transition-colors duration-200'>
-                        {book.name}
+                        {book.title}
                       </h4>
                     </Link>
                   </div>
@@ -346,17 +344,11 @@ export function MoreToLoveSection({ books }: MoreToLoveSectionProps) {
                     )} */}
 
                   {/* Add to cart button */}
-                  <AddToCartButton
-                    book={book}
-                    size='sm'
-                    className='w-full text-xs h-8 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200'
-                    showQuantityControls={true}
-                  />
                 </CardContent>
 
                 {/* Floating elements */}
-                <div className='absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full opacity-0 group-hover:opacity-60 transition-all duration-300 animate-pulse'></div>
-                <div className='absolute -bottom-1 -left-1 w-2 h-2 bg-gradient-to-r from-pink-400 to-yellow-400 rounded-full opacity-0 group-hover:opacity-60 transition-all duration-300 animate-pulse delay-300'></div>
+                <div className='absolute -top-1 -right-1 w-3 h-3 bg-linear-to-r from-blue-400 to-purple-400 rounded-full opacity-0 group-hover:opacity-60 transition-all duration-300 animate-pulse'></div>
+                <div className='absolute -bottom-1 -left-1 w-2 h-2 bg-linear-to-r from-pink-400 to-yellow-400 rounded-full opacity-0 group-hover:opacity-60 transition-all duration-300 animate-pulse delay-300'></div>
               </Card>
             );
           })}
@@ -367,7 +359,7 @@ export function MoreToLoveSection({ books }: MoreToLoveSectionProps) {
           <Button
             asChild
             size='lg'
-            className='bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white border-0 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 px-8 py-3'
+            className='bg-linear-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white border-0 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 px-8 py-3'
           >
             <Link href='/books'>
               <Zap className='mr-2 h-5 w-5' />

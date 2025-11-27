@@ -102,7 +102,7 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
   return (
     <section
       id='categories-section'
-      className='py-16 bg-gradient-to-br from-gray-50 via-white to-gray-50 relative overflow-hidden'
+      className='py-16 bg-linear-to-br from-gray-50 via-white to-gray-50 relative overflow-hidden'
     >
       {/* Background decorations */}
       <div className='absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(59,130,246,0.05),transparent_50%)] pointer-events-none' />
@@ -118,7 +118,7 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
           </div>
           <h2 className='text-4xl md:text-5xl font-bold text-gray-900 mb-4'>
             Shop by{' '}
-            <span className='bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent'>
+            <span className='bg-linear-to-r from-primary to-purple-600 bg-clip-text text-transparent'>
               Category
             </span>
           </h2>
@@ -144,7 +144,7 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
                   >
                     {/* Icon */}
                     <div
-                      className={`w-16 h-16 mx-auto mb-4 bg-gradient-to-br ${colors.primary} rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                      className={`w-16 h-16 mx-auto mb-4 bg-linear-to-br ${colors.primary} rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}
                     >
                       {category.image?.url ? (
                         <img
@@ -184,7 +184,7 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
           ) : (
             <div className='text-center py-20'>
               <div className='max-w-md mx-auto'>
-                <div className='w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center'>
+                <div className='w-24 h-24 mx-auto mb-6 bg-linear-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center'>
                   <Star className='h-12 w-12 text-gray-400' />
                 </div>
                 <h3 className='text-2xl font-bold text-gray-900 mb-4'>

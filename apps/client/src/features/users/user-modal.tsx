@@ -22,8 +22,8 @@ import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   TCreateUser,
+  TAuthUser,
   TUpdateUser,
-  TUserDetail,
   ZCreateUser
 } from '@repo/common';
 import { useEffect } from 'react';
@@ -32,7 +32,7 @@ import { useForm } from 'react-hook-form';
 interface UserModalProps {
   isOpen: boolean;
   onClose: () => void;
-  initialData?: TUserDetail | null;
+  initialData?: TAuthUser | null;
   isSubmitting: boolean;
   onSubmit: (data: TCreateUser | TUpdateUser) => void;
   readOnly?: boolean;
@@ -223,7 +223,7 @@ export function UserModal({
                     </label>
                     <div className='mt-1'>
                       <Badge variant='secondary' className='capitalize'>
-                        {initialData.roles.join(', ')}
+                        {initialData.roles?.map((role) => role.name).join(', ')}
                       </Badge>
                     </div>
                   </div>

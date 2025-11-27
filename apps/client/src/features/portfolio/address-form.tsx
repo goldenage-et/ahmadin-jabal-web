@@ -14,7 +14,7 @@ import { z } from 'zod';
 import {
   addShippingAddress,
   updateShippingAddress,
-} from '../../../../actions/profile.action';
+} from '@/actions/profile.action';
 
 const addressSchema = z.object({
   street: z.string().min(1, 'Street address is required'),

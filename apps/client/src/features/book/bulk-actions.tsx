@@ -13,7 +13,7 @@ import {
 import { Trash2 } from 'lucide-react';
 import { EBookStatus } from '@repo/common';
 import { useApiMutation } from '@/hooks/use-api-mutation';
-import { bookBulkOperation } from '@/features/book/actions/book.action';
+import { bookBulkOperation } from '@/actions/book.action';
 import { toast } from 'sonner';
 
 interface BulkActionsProps {

@@ -1,10 +1,5 @@
 import z from "zod";
 
-export enum ERoleScope {
-  ROOT = "root",
-  STORE = "store",
-}
-
 export enum EResources {
   USER = "user",
   BOOK = "book",

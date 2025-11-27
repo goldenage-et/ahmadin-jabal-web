@@ -81,7 +81,7 @@ export class UsersService {
       createdAt: newUser.createdAt,
       updatedAt: newUser.updatedAt,
     };
-    return mappedUser as TUserBasic;
+    return mappedUser as any as TUserBasic;
   }
 
   async getMany(filters?: TUserQueryFilter): Promise<{
@@ -184,7 +184,7 @@ export class UsersService {
       updatedAt: user.updatedAt,
     }));
 
-    const data = mappedUsers as TUserBasic[];
+    const data = mappedUsers as any as TUserBasic[];
     const totalPages = Math.ceil(total / limit);
     return {
       data,
@@ -218,7 +218,7 @@ export class UsersService {
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     }));
-    return mappedUsers as TUserDetail[];
+    return mappedUsers as any as TUserDetail[];
   }
 
   async search(filters: TUserQueryFilter): Promise<TUserBasic[]> {
@@ -274,7 +274,7 @@ export class UsersService {
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     }));
-    return mappedUsers as TUserBasic[];
+    return mappedUsers as any as TUserBasic[];
   }
 
   async getOne({
@@ -321,7 +321,7 @@ export class UsersService {
       updatedAt: foundUser.updatedAt,
     };
 
-    return detail ? (mappedUser as TUserDetail) : (mappedUser as TUserBasic);
+    return detail ? (mappedUser as any as TUserDetail) : (mappedUser as any as TUserBasic);
   }
 
   async update(
@@ -377,13 +377,14 @@ export class UsersService {
       phone: updatedUser.phone,
       emailVerified: updatedUser.emailVerified,
       active: updatedUser.active,
+      roles: updatedUser.roles,
       image: updatedUser.image,
       systemOwner: false,
       createdAt: updatedUser.createdAt,
       updatedAt: updatedUser.updatedAt,
     };
 
-    return mappedUser as TUserBasic;
+    return mappedUser as any as TUserBasic;
   }
 
   async delete(filters: TUserQueryUnique): Promise<boolean> {

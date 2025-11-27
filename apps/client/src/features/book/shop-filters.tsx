@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Slider } from '@/components/ui/slider';
+// slider removed; using checkbox group for price type
 import { TCategoryBasic, TBookQueryFilter } from '@repo/common';
 import { Star } from 'lucide-react';
 
@@ -11,7 +11,6 @@ interface ShopFiltersProps {
   filters: TBookQueryFilter;
   categories: TCategoryBasic[];
   onFilterChange: (key: keyof TBookQueryFilter, value: any) => void;
-  onPriceRangeChange: (value: number[]) => void;
   onResetFilters: () => void;
 }
 
@@ -19,9 +18,25 @@ export function ShopFilters({
   filters,
   categories,
   onFilterChange,
-  onPriceRangeChange,
   onResetFilters,
 }: ShopFiltersProps) {
+  const priceType: 'all' | 'free' | 'paid' = (filters as any).priceType || ((filters.minPrice === 0 && filters.maxPrice === 0)
+    ? 'free'
+    : (typeof filters.minPrice === 'number' && filters.minPrice > 0) ? 'paid' : 'all');
+
+  const setPriceType = (value: 'all' | 'free' | 'paid') => {
+    onFilterChange('priceType', value);
+    if (value === 'all') {
+      onFilterChange('minPrice', undefined);
+      onFilterChange('maxPrice', undefined);
+    } else if (value === 'free') {
+      onFilterChange('minPrice', 0);
+      onFilterChange('maxPrice', 0);
+    } else {
+      onFilterChange('minPrice', 0.01);
+      onFilterChange('maxPrice', undefined);
+    }
+  };
   return (
     <Card>
       <div className='p-4 border-b'>
@@ -38,20 +53,24 @@ export function ShopFilters({
         </div>
       </div>
       <div className='p-4 space-y-6'>
-        {/* Price Range */}
+        {/* Price */}
         <div className='space-y-3'>
-          <label className='text-sm font-medium'>Price Range</label>
-          <Slider
-            value={[filters.minPrice || 0, filters.maxPrice || 1000]}
-            onValueChange={onPriceRangeChange}
-            max={1000}
-            min={0}
-            step={10}
-            className='w-full'
-          />
-          <div className='flex justify-between text-sm text-gray-500'>
-            <span>${filters.minPrice || 0}</span>
-            <span>${filters.maxPrice || 1000}</span>
+          <label className='text-sm font-medium'>Price</label>
+          <div className='flex items-center space-x-2'>
+            {['free', 'paid', 'all'].map((priceType) => (
+              <div key={priceType} className='flex items-center space-x-2'>
+                <Checkbox
+                  id={`price-type-${priceType}`}
+                  checked={filters.priceType === priceType}
+                  onCheckedChange={(checked) =>
+                    onFilterChange('priceType', checked ? priceType : 'all')
+                  }
+                />
+                <label htmlFor={`price-type-${priceType}`} className='text-sm cursor-pointer'>
+                  {priceType.charAt(0).toUpperCase() + priceType.slice(1)}
+                </label>
+              </div>
+            ))}
           </div>
         </div>
 

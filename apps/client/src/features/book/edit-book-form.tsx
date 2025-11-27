@@ -49,7 +49,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { updateBook } from '../actions/book.action';
+import { updateBook } from '@/actions/book.action';
 import ImageManager from './image-manager';
 import { Separator } from '@/components/ui/separator';
 

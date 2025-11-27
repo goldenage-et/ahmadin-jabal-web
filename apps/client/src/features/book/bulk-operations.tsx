@@ -613,7 +613,7 @@ export default function BulkOperations({
                     <div className='flex gap-2 justify-center'>
                       <Button
                         onClick={() => fileInputRef.current?.click()}
-                        className='bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
+                        className='bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
                       >
                         <Upload className='h-4 w-4 mr-2' />
                         Choose File

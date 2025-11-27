@@ -2,7 +2,8 @@ import { EStorageType, formatZodError } from '@repo/common';
 import { z } from 'zod';
 
 const envSchema = z.object({
-  DATABASE_URL: z.url(),
+  // DATABASE_URL can be a non-HTTP URL (e.g., postgresql://), so don't use z.url()
+  DATABASE_URL: z.string().min(1),
   CLIENT_HOST: z.url(),
   CLIENT_PORT: z.coerce.number().int(),
   SERVER_HOST: z.url(),

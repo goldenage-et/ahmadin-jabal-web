@@ -2,7 +2,7 @@
 
 import { cancelInvitation, deleteInvitation, resendInvitation } from '@/actions/invitations.action';
 import { useApiMutation, UseApiMutationRef } from '@/hooks/use-api-mutation';
-import { convertDateString, EInvitationStatus, EUserRole, TInvitation } from '@repo/common';
+import { convertDateString, EInvitationStatus, TInvitation } from '@repo/common';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,7 +19,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { AlertCircle, CheckCircle, Clock, Mail, MoreHorizontal, XCircle } from 'lucide-react';
+import { CheckCircle, Clock, Mail, MoreHorizontal, XCircle } from 'lucide-react';
 import { useRef } from 'react';
 
 interface InvitationsTableProps {

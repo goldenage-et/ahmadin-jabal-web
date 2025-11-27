@@ -1,6 +1,6 @@
 'use client';
 
-import { BuyNowButton } from '@/features/cart/components/buy-now-button';
+import { BuyNowButton } from '@/components/buy-now-button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { TBookBasic } from '@repo/common';
@@ -15,14 +15,12 @@ interface BookCardProps {
   book: TBookBasic;
   viewMode: ViewMode;
   size?: Size;
-  storeName?: string;
 }
 
 export function BookCard({
   book,
   viewMode,
   size,
-  storeName,
 }: BookCardProps) {
   const [imageError, setImageError] = useState(false);
   const getBookImage = () => {
@@ -118,9 +116,6 @@ export function BookCard({
                     </span>
                   )} */}
                 </div>
-                {storeName && (
-                  <span className='text-xs text-gray-500'>{storeName}</span>
-                )}
               </div>
               <div className='text-xs text-gray-500 mt-1'>
                 Stock: {book.inventoryQuantity} units
@@ -142,7 +137,7 @@ export function BookCard({
 
   return (
     <Card className='overflow-hidden hover:shadow-lg transition-all duration-200 group'>
-      <div className={`aspect-square bg-gray-100 relative ${size === 'medium' ? 'aspect-square' : 'aspect-[4/3]'}`}>
+      <div className={`aspect-square bg-gray-100 relative ${size === 'medium' ? 'aspect-square' : 'aspect-4/3'}`}>
         <Link href={`/books/${book.id}`} className="absolute inset-0">
           <Image
             src={getBookImage()}
@@ -204,9 +199,6 @@ export function BookCard({
               </span>
             )} */}
           </div>
-          {storeName && (
-            <span className='text-xs text-gray-500'>{storeName}</span>
-          )}
         </div>
         <div className='text-xs text-gray-500 mb-2'>
           Stock: {book.inventoryQuantity} units

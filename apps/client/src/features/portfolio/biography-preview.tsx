@@ -113,7 +113,7 @@ export function BiographyPreview() {
                         <div className="space-y-6">
                             {timelineEvents.map((event, index) => (
                                 <div key={index} className="flex items-start space-x-4">
-                                    <div className="flex-shrink-0">
+                                    <div className="shrink-0">
                                         <div className="w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center font-bold">
                                             {event.year}
                                         </div>

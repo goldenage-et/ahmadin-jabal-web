@@ -1,6 +1,5 @@
 import { getPayments } from '@/actions/payment.action';
 import { getOrder } from '@/features/orders/actions/order.action';
-import { OrderItems } from '@/features/orders/components/order-items';
 import { OrderManagement } from '@/features/orders/components/order-management';
 import { OrderTimeline } from '@/features/orders/components/order-timeline';
 import { PaymentsList } from './_components/payments-list';
@@ -204,9 +203,6 @@ export default async function OrderDetailPage({
         </Card>
 
         <div className='lg:col-span-2 space-y-6'>
-          {/* Order Items */}
-          <OrderItems order={order} />
-
           {/* Payments List */}
           <PaymentsList payments={payments} orderCurrency={order.currency} />
 

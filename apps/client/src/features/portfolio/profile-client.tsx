@@ -14,7 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { TAddress, TOrderBasic, TUserBasic, TWishlist, EOrderStatus, EPaymentStatus } from '@repo/common';
+import { TAddress, TOrderBasic, TUserBasic } from '@repo/common';
 import {
   Heart,
   ShoppingBag,
@@ -42,7 +42,6 @@ interface ProfileClientProps {
     totalSpent: number;
   };
   initialOrders: TOrderBasic[];
-  initialWishlist: TWishlist[];
   initialAddresses: {
     data: TAddress[];
     total: number;
@@ -57,7 +56,6 @@ export function ProfileClient({
   user,
   initialProfileData,
   initialOrders,
-  initialWishlist,
   initialAddresses,
   initialTab,
 }: ProfileClientProps) {
@@ -157,17 +155,6 @@ export function ProfileClient({
                 <CardHeader className='pb-3'>
                   <CardTitle className='text-sm font-medium'>Total Spent</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className='text-2xl font-bold'>${initialProfileData.totalSpent.toFixed(2)}</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className='pb-3'>
-                  <CardTitle className='text-sm font-medium'>Wishlist Items</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className='text-2xl font-bold'>{initialWishlist.length}</div>
-                </CardContent>
               </Card>
             </div>
           </div>
@@ -457,7 +444,7 @@ export function ProfileClient({
 
         <div className='flex gap-4 md:gap-8'>
           {/* Desktop Sidebar */}
-          <div className='hidden lg:block w-64 flex-shrink-0'>
+          <div className='hidden lg:block w-64 shrink-0'>
             <SidebarContent />
           </div>
 

@@ -1,4 +1,4 @@
-'use server';
+// Note: This module is imported by client components; do not mark as 'use server'.
 
 import { api } from '@/lib/api';
 import {
