@@ -118,7 +118,7 @@ export function PaymentsList({ payments, orderCurrency }: PaymentsListProps) {
                                                         </div>
                                                         <div className="flex-1">
                                                             <div className="flex items-center space-x-2 mb-2">
-                                                                <h3 className="font-semibold text-gray-900 text-lg">
+                                                                <h3 className="font-semibold text-foreground dark:text-foreground text-lg">
                                                                     {methodInfo.label}
                                                                 </h3>
                                                                 <Badge className={`${getPaymentStatusColor(payment.paymentStatus)} border`}>
@@ -133,8 +133,8 @@ export function PaymentsList({ payments, orderCurrency }: PaymentsListProps) {
                                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
                                                                 <div className="flex items-center space-x-2">
                                                                     <Banknote className="h-4 w-4 text-gray-400" />
-                                                                    <span className="text-gray-600">Amount:</span>
-                                                                    <span className="font-semibold text-gray-900">
+                                                                    <span className="text-muted-foreground dark:text-muted-foreground">Amount:</span>
+                                                                    <span className="font-semibold text-foreground dark:text-foreground">
                                                                         {formatCurrency(payment.amount, payment.currency)}
                                                                     </span>
                                                                 </div>
@@ -142,8 +142,8 @@ export function PaymentsList({ payments, orderCurrency }: PaymentsListProps) {
                                                                 {payment.referenceNumber && (
                                                                     <div className="flex items-center space-x-2">
                                                                         <Hash className="h-4 w-4 text-gray-400" />
-                                                                        <span className="text-gray-600">Ref:</span>
-                                                                        <span className="font-mono font-medium text-gray-900">
+                                                                        <span className="text-muted-foreground dark:text-muted-foreground">Ref:</span>
+                                                                        <span className="font-mono font-medium text-foreground dark:text-foreground">
                                                                             {payment.referenceNumber}
                                                                         </span>
                                                                     </div>

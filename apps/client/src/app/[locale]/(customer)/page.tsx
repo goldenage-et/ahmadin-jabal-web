@@ -20,7 +20,7 @@ export default async function HomePage() {
   const featuredBooks = activeBooks.data.filter(book => book.featured)
 
   return (
-    <div className='min-h-screen bg-white dark:bg-gray-900 w-full'>
+    <div className='min-h-screen bg-background dark:bg-background w-full'>
       {/* Portfolio Hero Section */}
       <PortfolioHero />
 

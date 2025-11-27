@@ -24,6 +24,9 @@ model Account {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@unique([provider, providerId, userId])
+  @@index([userId])
+  @@index([provider, providerId])
   @@map("accounts")
 }
 
@@ -36,29 +39,38 @@ model Address {
   zipCode   String  @db.VarChar(20)
   country   String  @db.VarChar(100)
   isDefault Boolean @default(false)
-  user      User    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([userId])
+  @@index([userId, isDefault])
   @@map("addresses")
 }
 
 model Category {
-  id               String     @id @default(uuid())
-  name             String     @default("No Name") @db.VarChar(255)
-  description      String?
-  image            Json?
-  iconName         String?    @db.VarChar(50)
-  backgroundColor  String?    @db.VarChar(7)
-  parentId         String?
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
-  parentCategory   Category?  @relation("categories_to_categories", fields: [parentId], references: [id], onUpdate: NoAction)
-  subcategories    Category[] @relation("categories_to_categories")
-  booksCategory    Book[]     @relation("books_category_id_to_categories")
-  booksSubcategory Book[]     @relation("books_subcategory_id_to_categories")
+  id                   String        @id @default(uuid())
+  name                 String        @default("No Name") @db.VarChar(255)
+  slug                 String?       @unique @db.VarChar(255)
+  description          String?
+  image                Json?
+  iconName             String?       @db.VarChar(50)
+  backgroundColor      String?       @db.VarChar(7)
+  parentId             String?
+  active               Boolean       @default(true)
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+  parentCategory       Category?     @relation("categories_to_categories", fields: [parentId], references: [id], onUpdate: NoAction, onDelete: SetNull)
+  subcategories        Category[]    @relation("categories_to_categories")
+  booksCategory        Book[]        @relation("books_category_id_to_categories")
+  booksSubcategory     Book[]        @relation("books_subcategory_id_to_categories")
+  articlesCategory     Article[]     @relation("articles_category_id_to_categories")
+  publicationsCategory Publication[] @relation("publications_category_id_to_categories")
 
+  @@index([parentId])
+  @@index([active])
+  @@index([slug])
   @@map("categories")
 }
 
@@ -69,7 +81,7 @@ model Invitation {
   targetId   String
   status     InvitationStatus @default(pending)
   roles      String[]
-  token      String?
+  token      String?          @unique
   acceptedAt DateTime?
   declinedAt DateTime?
   expiresAt  DateTime?
@@ -78,6 +90,13 @@ model Invitation {
   createdAt  DateTime         @default(now())
   updatedAt  DateTime         @updatedAt
 
+  @@unique([email, targetId, status])
+  @@index([email])
+  @@index([invitedBy])
+  @@index([targetId])
+  @@index([status])
+  @@index([token])
+  @@index([expiresAt])
   @@map("invitation")
 }
 
@@ -98,19 +117,26 @@ model Order {
   quantity          Int
   currency          String         @db.VarChar(8)
   shippingMethod    ShippingMethod
-  trackingNumber    String?        @db.VarChar(100)
+  trackingNumber    String?        @unique @db.VarChar(100)
   estimatedDelivery DateTime?
   notes             String?
   customerNotes     String?
   statusHistory     Json?
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
-  book              Book           @relation(fields: [bookId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user              User           @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  book              Book           @relation(fields: [bookId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  user              User           @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: NoAction)
   bookReviews       BookReview[]
   payments          Payment[]
   transactions      Transaction[]
 
+  @@index([userId])
+  @@index([bookId])
+  @@index([status])
+  @@index([paymentStatus])
+  @@index([createdAt])
+  @@index([userId, status])
+  @@index([userId, createdAt])
   @@map("orders")
 }
 
@@ -185,12 +211,20 @@ model BookReview {
   status        ReviewStatus    @default(pending)
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
-  order         Order?          @relation(fields: [orderId], references: [id], onUpdate: NoAction)
+  order         Order?          @relation(fields: [orderId], references: [id], onUpdate: NoAction, onDelete: SetNull)
   book          Book            @relation(fields: [bookId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   user          User            @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   reviewHelpful ReviewHelpful[]
   reviewReports ReviewReport[]
 
+  @@unique([bookId, userId])
+  @@index([bookId])
+  @@index([userId])
+  @@index([orderId])
+  @@index([status])
+  @@index([rating])
+  @@index([bookId, status])
+  @@index([createdAt])
   @@map("book_reviews")
 }
 
@@ -199,12 +233,13 @@ model Book {
   categoryId                 String?
   subcategoryId              String?
   title                      String       @db.VarChar(255)
+  slug                       String?      @unique @db.VarChar(255)
   description                String?
   price                      Float
   purchasePrice              Float?
   images                     Json?        @default("[]")
   publisher                  String?      @db.VarChar(255)
-  isbn                       String?      @db.VarChar(100)
+  isbn                       String?      @unique @db.VarChar(100)
   author                     String?      @db.VarChar(255)
   inventoryQuantity          Int?
   inventoryLowStockThreshold Int?
@@ -222,10 +257,19 @@ model Book {
   createdAt                  DateTime     @default(now())
   updatedAt                  DateTime     @updatedAt
   bookReviews                BookReview[]
-  category                   Category?    @relation("books_category_id_to_categories", fields: [categoryId], references: [id], onUpdate: NoAction)
-  subcategory                Category?    @relation("books_subcategory_id_to_categories", fields: [subcategoryId], references: [id], onUpdate: NoAction)
+  category                   Category?    @relation("books_category_id_to_categories", fields: [categoryId], references: [id], onUpdate: NoAction, onDelete: SetNull)
+  subcategory                Category?    @relation("books_subcategory_id_to_categories", fields: [subcategoryId], references: [id], onUpdate: NoAction, onDelete: SetNull)
   orders                     Order[]
 
+  @@index([categoryId])
+  @@index([subcategoryId])
+  @@index([status])
+  @@index([featured])
+  @@index([slug])
+  @@index([isbn])
+  @@index([status, featured])
+  @@index([publishedAt])
+  @@index([createdAt])
   @@map("books")
 }
 
@@ -239,6 +283,9 @@ model ReviewHelpful {
   bookReview BookReview @relation(fields: [reviewId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   user       User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
+  @@unique([reviewId, userId])
+  @@index([reviewId])
+  @@index([userId])
   @@map("review_helpful")
 }
 
@@ -254,6 +301,10 @@ model ReviewReport {
   bookReview  BookReview @relation(fields: [reviewId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   user        User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
+  @@unique([reviewId, userId])
+  @@index([reviewId])
+  @@index([userId])
+  @@index([status])
   @@map("review_reports")
 }
 
@@ -268,8 +319,13 @@ model SearchAnalyticsEvent {
   updatedAt   DateTime              @updatedAt
   searchCount Int                   @default(0)
   location    String?               @db.VarChar(255)
-  user        User?                 @relation(fields: [userId], references: [id], onUpdate: NoAction)
+  user        User?                 @relation(fields: [userId], references: [id], onUpdate: NoAction, onDelete: SetNull)
 
+  @@index([userId])
+  @@index([source])
+  @@index([createdAt])
+  @@index([query])
+  @@index([userId, createdAt])
   @@map("search_analytics_events")
 }
 
@@ -284,6 +340,9 @@ model Session {
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([sessionId])
   @@map("session")
 }
 
@@ -293,7 +352,7 @@ model User {
   middleName            String
   lastName              String?
   email                 String                 @unique()
-  phone                 String?
+  phone                 String?                @unique
   emailVerified         Boolean
   active                Boolean
   image                 String?
@@ -313,15 +372,27 @@ model User {
   searchAnalyticsEvents SearchAnalyticsEvent[]
   sessions              Session[]
   transactions          Transaction[]
+  articles              Article[]
+  publications          Publication[]
+  publicationComments   PublicationComment[]
+  media                 Media[]                @relation("MediaUploader")
+  videos                Video[]                @relation("VideoUploader")
+  audios                Audio[]                @relation("AudioUploader")
+  photos                Photo[]                @relation("PhotoUploader")
 
   roles Role[] @relation("user_roles")
 
+  @@index([email])
+  @@index([phone])
+  @@index([active])
+  @@index([deletedAt])
+  @@index([emailVerified])
   @@map("user")
 }
 
 model Role {
   id         String   @id @default(uuid())
-  name       String
+  name       String   @unique
   active     Boolean
   permission Json?    @default("{}")
   createdAt  DateTime @default(now())
@@ -329,6 +400,8 @@ model Role {
 
   users User[] @relation("user_roles")
 
+  @@index([active])
+  @@index([name])
   @@map("roles")
 }
 
@@ -338,12 +411,351 @@ model BankAccount {
   accountNumber String    @db.VarChar(50)
   bankName      String    @db.VarChar(255)
   bankCode      String    @db.VarChar(50)
+  active        Boolean   @default(true)
   payments      Payment[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
   @@unique([bankName, accountNumber])
+  @@index([active])
+  @@index([bankCode])
   @@map("bank_accounts")
+}
+
+model Article {
+  id            String           @id @default(uuid())
+  authorId      String
+  categoryId    String?
+  title         Json             @default("{}")
+  slug          String           @unique @db.VarChar(255)
+  excerpt       Json?
+  content       Json?            @default("{}")
+  medias        Json?            @default("[]")
+  featuredImage String?
+  tags          String[]
+  status        ArticleStatus    @default(draft)
+  featured      Boolean          @default(false)
+  isFree        Boolean          @default(true)
+  price         Float?
+  viewCount     Int              @default(0)
+  likeCount     Int              @default(0)
+  publishedAt   DateTime?
+  expiresAt     DateTime?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  author        User             @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  category      Category?        @relation("articles_category_id_to_categories", fields: [categoryId], references: [id], onUpdate: NoAction, onDelete: SetNull)
+  relatedFrom   ArticleRelated[] @relation("ArticleFrom")
+  relatedTo     ArticleRelated[] @relation("ArticleTo")
+  articleMedia  ArticleMedia[]
+
+  @@index([authorId])
+  @@index([categoryId])
+  @@index([status])
+  @@index([featured])
+  @@index([publishedAt])
+  @@index([slug])
+  @@index([status, featured])
+  @@index([status, publishedAt])
+  @@index([createdAt])
+  @@map("articles")
+}
+
+model ArticleRelated {
+  id        String   @id @default(uuid())
+  fromId    String
+  toId      String
+  createdAt DateTime @default(now())
+  from      Article  @relation("ArticleFrom", fields: [fromId], references: [id], onDelete: Cascade)
+  to        Article  @relation("ArticleTo", fields: [toId], references: [id], onDelete: Cascade)
+
+  @@unique([fromId, toId])
+  @@index([fromId])
+  @@index([toId])
+  @@map("article_related")
+}
+
+model Publication {
+  id               String               @id @default(uuid())
+  authorId         String
+  categoryId       String?
+  title            String               @db.VarChar(255)
+  titleEn          String?              @db.VarChar(255)
+  slug             String               @unique @db.VarChar(255)
+  excerpt          Json?
+  content          Json?
+  media            Json?                @default("[]")
+  featuredImage    String?
+  tags             String[]
+  isPremium        Boolean              @default(false)
+  status           PublicationStatus    @default(draft)
+  featured         Boolean              @default(false)
+  allowComments    Boolean              @default(true)
+  viewCount        Int                  @default(0)
+  likeCount        Int                  @default(0)
+  commentCount     Int                  @default(0)
+  downloadCount    Int                  @default(0)
+  publishedAt      DateTime?
+  expiresAt        DateTime?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  author           User                 @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  category         Category?            @relation("publications_category_id_to_categories", fields: [categoryId], references: [id], onUpdate: NoAction, onDelete: SetNull)
+  comments         PublicationComment[]
+  relatedFrom      PublicationRelated[] @relation("PublicationFrom")
+  relatedTo        PublicationRelated[] @relation("PublicationTo")
+  publicationMedia PublicationMedia[]
+
+  @@index([authorId])
+  @@index([categoryId])
+  @@index([status])
+  @@index([featured])
+  @@index([publishedAt])
+  @@index([slug])
+  @@index([status, featured])
+  @@index([status, publishedAt])
+  @@index([allowComments])
+  @@index([createdAt])
+  @@map("publications")
+}
+
+model PublicationComment {
+  id            String                   @id @default(uuid())
+  publicationId String
+  userId        String
+  parentId      String?
+  content       String                   @db.Text
+  status        PublicationCommentStatus @default(pending)
+  likes         Int                      @default(0)
+  createdAt     DateTime                 @default(now())
+  updatedAt     DateTime                 @updatedAt
+  publication   Publication              @relation(fields: [publicationId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user          User                     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  parent        PublicationComment?      @relation("PublicationCommentReplies", fields: [parentId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  replies       PublicationComment[]     @relation("PublicationCommentReplies")
+
+  @@index([publicationId])
+  @@index([userId])
+  @@index([parentId])
+  @@index([status])
+  @@map("publication_comments")
+}
+
+model PublicationRelated {
+  id        String      @id @default(uuid())
+  fromId    String
+  toId      String
+  createdAt DateTime    @default(now())
+  from      Publication @relation("PublicationFrom", fields: [fromId], references: [id], onDelete: Cascade)
+  to        Publication @relation("PublicationTo", fields: [toId], references: [id], onDelete: Cascade)
+
+  @@unique([fromId, toId])
+  @@index([fromId])
+  @@index([toId])
+  @@map("publication_related")
+}
+
+model Media {
+  id               String             @id @default(uuid())
+  title            String             @db.VarChar(255)
+  titleEn          String?            @db.VarChar(255)
+  description      String?            @db.Text
+  type             MediaType
+  category         String?            @db.VarChar(100)
+  url              String             @db.VarChar(500)
+  thumbnail        String?            @db.VarChar(500)
+  duration         Int? // Duration in seconds
+  fileSize         Int? // File size in bytes
+  mimeType         String?            @db.VarChar(100)
+  width            Int?
+  height           Int?
+  source           MediaSource        @default(upload)
+  externalId       String?            @db.VarChar(255) // For YouTube videos, etc.
+  viewCount        Int                @default(0)
+  likeCount        Int                @default(0)
+  downloadCount    Int                @default(0)
+  featured         Boolean            @default(false)
+  status           MediaStatus        @default(active)
+  metadata         Json? // Additional metadata (tags, location, etc.)
+  uploadedBy       String
+  publishedAt      DateTime?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  uploader         User               @relation("MediaUploader", fields: [uploadedBy], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  articleMedia     ArticleMedia[]
+  publicationMedia PublicationMedia[]
+  videos           Video[]            @relation("VideoMedia")
+  audios           Audio[]            @relation("AudioMedia")
+  photos           Photo[]            @relation("PhotoMedia")
+
+  @@index([type])
+  @@index([category])
+  @@index([status])
+  @@index([featured])
+  @@index([uploadedBy])
+  @@index([publishedAt])
+  @@index([createdAt])
+  @@index([status, featured])
+  @@index([type, status])
+  @@map("media")
+}
+
+model ArticleMedia {
+  id        String   @id @default(uuid())
+  articleId String
+  mediaId   String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  media     Media    @relation(fields: [mediaId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([articleId, mediaId])
+  @@index([articleId])
+  @@index([mediaId])
+  @@index([order])
+  @@map("article_media")
+}
+
+model PublicationMedia {
+  id            String      @id @default(uuid())
+  publicationId String
+  mediaId       String
+  order         Int         @default(0)
+  createdAt     DateTime    @default(now())
+  publication   Publication @relation(fields: [publicationId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  media         Media       @relation(fields: [mediaId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([publicationId, mediaId])
+  @@index([publicationId])
+  @@index([mediaId])
+  @@index([order])
+  @@map("publication_media")
+}
+
+model Video {
+  id            String      @id @default(uuid())
+  title         String      @db.VarChar(255)
+  titleEn       String?     @db.VarChar(255)
+  description   String?     @db.Text
+  category      String?     @db.VarChar(100)
+  url           String      @db.VarChar(500)
+  thumbnail     String?     @db.VarChar(500)
+  duration      Int? // Duration in seconds
+  fileSize      Int? // File size in bytes
+  mimeType      String?     @db.VarChar(100)
+  width         Int?
+  height        Int?
+  source        MediaSource @default(upload)
+  externalId    String?     @db.VarChar(255) // For YouTube videos, etc.
+  viewCount     Int         @default(0)
+  likeCount     Int         @default(0)
+  downloadCount Int         @default(0)
+  featured      Boolean     @default(false)
+  status        MediaStatus @default(active)
+  metadata      Json? // Additional metadata (tags, location, transcript, etc.)
+  uploadedBy    String
+  publishedAt   DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  uploader      User        @relation("VideoUploader", fields: [uploadedBy], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  mediaId       String?     @unique // Optional link to Media model
+  media         Media?      @relation("VideoMedia", fields: [mediaId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+
+  @@index([category])
+  @@index([status])
+  @@index([featured])
+  @@index([uploadedBy])
+  @@index([source])
+  @@index([externalId])
+  @@index([publishedAt])
+  @@index([createdAt])
+  @@index([status, featured])
+  @@index([source, status])
+  @@map("videos")
+}
+
+model Audio {
+  id            String      @id @default(uuid())
+  title         String      @db.VarChar(255)
+  titleEn       String?     @db.VarChar(255)
+  description   String?     @db.Text
+  category      String?     @db.VarChar(100) // e.g., "Friday Sermon", "Ramadan", "Community", "Youth"
+  url           String      @db.VarChar(500)
+  thumbnail     String?     @db.VarChar(500) // Cover art for audio
+  duration      Int? // Duration in seconds
+  fileSize      Int? // File size in bytes
+  mimeType      String?     @db.VarChar(100)
+  source        MediaSource @default(upload)
+  externalId    String?     @db.VarChar(255) // For external audio sources
+  viewCount     Int         @default(0)
+  likeCount     Int         @default(0)
+  downloadCount Int         @default(0)
+  featured      Boolean     @default(false)
+  status        MediaStatus @default(active)
+  isAvailable   Boolean     @default(true) // For audio availability
+  metadata      Json? // Additional metadata (tags, transcript, etc.)
+  uploadedBy    String
+  publishedAt   DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  uploader      User        @relation("AudioUploader", fields: [uploadedBy], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  mediaId       String?     @unique // Optional link to Media model
+  media         Media?      @relation("AudioMedia", fields: [mediaId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+
+  @@index([category])
+  @@index([status])
+  @@index([featured])
+  @@index([isAvailable])
+  @@index([uploadedBy])
+  @@index([source])
+  @@index([externalId])
+  @@index([publishedAt])
+  @@index([createdAt])
+  @@index([status, featured])
+  @@index([category, status])
+  @@map("audios")
+}
+
+model Photo {
+  id            String      @id @default(uuid())
+  title         String?     @db.VarChar(255)
+  titleEn       String?     @db.VarChar(255)
+  caption       String?     @db.Text
+  alt           String?     @db.VarChar(255) // Alt text for accessibility
+  category      String?     @db.VarChar(100) // e.g., "Event", "Portrait", "Community", "Lecture"
+  url           String      @db.VarChar(500)
+  thumbnail     String?     @db.VarChar(500)
+  fileSize      Int? // File size in bytes
+  mimeType      String?     @db.VarChar(100)
+  width         Int?
+  height        Int?
+  source        MediaSource @default(upload)
+  externalId    String?     @db.VarChar(255) // For external photo sources
+  viewCount     Int         @default(0)
+  likeCount     Int         @default(0)
+  downloadCount Int         @default(0)
+  featured      Boolean     @default(false)
+  status        MediaStatus @default(active)
+  metadata      Json? // Additional metadata (tags, location, camera info, etc.)
+  uploadedBy    String
+  publishedAt   DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  uploader      User        @relation("PhotoUploader", fields: [uploadedBy], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  mediaId       String?     @unique // Optional link to Media model
+  media         Media?      @relation("PhotoMedia", fields: [mediaId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+
+  @@index([category])
+  @@index([status])
+  @@index([featured])
+  @@index([uploadedBy])
+  @@index([source])
+  @@index([externalId])
+  @@index([publishedAt])
+  @@index([createdAt])
+  @@index([status, featured])
+  @@index([category, status])
+  @@map("photos")
 }
 
 enum PaymentMethod {
@@ -419,4 +831,46 @@ enum UserStatus {
   active   @map("active")
   inactive @map("inactive")
   blocked  @map("blocked")
+}
+
+enum ArticleStatus {
+  draft     @map("draft")
+  published @map("published")
+  archived  @map("archived")
+  scheduled @map("scheduled")
+}
+
+enum PublicationStatus {
+  draft     @map("draft")
+  published @map("published")
+  archived  @map("archived")
+  scheduled @map("scheduled")
+}
+
+enum PublicationCommentStatus {
+  pending  @map("pending")
+  approved @map("approved")
+  rejected @map("rejected")
+  spam     @map("spam")
+  deleted  @map("deleted")
+}
+
+enum MediaType {
+  image    @map("image")
+  video    @map("video")
+  audio    @map("audio")
+  document @map("document")
+}
+
+enum MediaSource {
+  upload   @map("upload")
+  youtube  @map("youtube")
+  vimeo    @map("vimeo")
+  external @map("external")
+}
+
+enum MediaStatus {
+  active   @map("active")
+  archived @map("archived")
+  deleted  @map("deleted")
 }

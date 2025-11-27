@@ -31,9 +31,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                                     <Settings className="h-6 w-6 text-primary" />
                                 </div>
                                 <div>
-                                    <h1 className="text-3xl font-bold tracking-tight">Store Settings</h1>
+                                    <h1 className="text-3xl font-bold tracking-tight">Admin Settings</h1>
                                     <p className="text-muted-foreground">
-                                        Manage your store's configuration and preferences
+                                        Manage your admin's configuration and preferences
                                     </p>
                                 </div>
                             </div>

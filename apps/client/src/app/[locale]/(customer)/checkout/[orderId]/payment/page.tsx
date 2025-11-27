@@ -42,7 +42,7 @@ export default async function PaymentMethodSelectionPage({ params }: { params: P
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12">
+        <div className="min-h-screen bg-background dark:bg-background py-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="mb-8">
@@ -52,8 +52,8 @@ export default async function PaymentMethodSelectionPage({ params }: { params: P
                             Back to Order
                         </Button>
                     </Link>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Select Payment Method</h1>
-                    <p className="text-gray-600">Order #{order.orderNumber}</p>
+                    <h1 className="text-3xl font-bold text-foreground dark:text-foreground mb-2">Select Payment Method</h1>
+                    <p className="text-muted-foreground">Order #{order.orderNumber}</p>
                 </div>
 
                 {/* Order Summary Card */}
@@ -64,7 +64,7 @@ export default async function PaymentMethodSelectionPage({ params }: { params: P
                     <CardContent>
                         <div className="flex justify-between items-center">
                             <div>
-                                <p className="text-2xl font-bold text-gray-900">${order.total.toFixed(2)}</p>
+                                <p className="text-2xl font-bold text-foreground dark:text-foreground">${order.total.toFixed(2)}</p>
                             </div>
                             <Badge className="bg-yellow-100 text-yellow-800">
                                 Payment Pending

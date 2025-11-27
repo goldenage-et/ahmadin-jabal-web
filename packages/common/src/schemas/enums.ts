@@ -7,6 +7,7 @@ export enum EInvitationStatus {
     accepted = 'accepted',
     rejected = 'rejected',
     expired = 'expired',
+    cancelled = 'cancelled',
 }
 
 // ========================================
@@ -70,8 +71,8 @@ export enum EBookStatus {
 
 export enum ESearchAnalyticsSource {
     navigation = 'navigation',
-    shopPage = 'shopPage',
-    suggestionClick = 'suggestionClick',
+    shopPage = 'shop-page',
+    suggestionClick = 'suggestion-click',
 }
 
 // ========================================
@@ -123,4 +124,70 @@ export enum ETransactionStatus {
     completed = 'completed',
     failed = 'failed',
     cancelled = 'cancelled',
+}
+
+
+
+export enum ECurrency {
+    ETB = 'ETB',
+    USD = 'USD',
+    EUR = 'EUR',
+    GBP = 'GBP',
+    INR = 'INR',
+    MYR = 'MYR',
+    SGD = 'SGD',
+    HKD = 'HKD',
+    CNY = 'CNY',
+    JPY = 'JPY',
+}
+
+// ========================================
+// Article Related Enums
+// ========================================
+export enum EArticleStatus {
+    draft = 'draft',
+    published = 'published',
+    archived = 'archived',
+    scheduled = 'scheduled',
+}
+
+// ========================================
+// Publication Related Enums
+// ========================================
+export enum EPublicationStatus {
+    draft = 'draft',
+    published = 'published',
+    archived = 'archived',
+    scheduled = 'scheduled',
+}
+
+export enum EPublicationCommentStatus {
+    pending = 'pending',
+    approved = 'approved',
+    rejected = 'rejected',
+    spam = 'spam',
+    deleted = 'deleted',
+}
+
+// ========================================
+// Media Related Enums
+// ========================================
+export enum EMediaType {
+    image = 'image',
+    video = 'video',
+    audio = 'audio',
+    document = 'document',
+}
+
+export enum EMediaSource {
+    upload = 'upload',
+    youtube = 'youtube',
+    vimeo = 'vimeo',
+    external = 'external',
+}
+
+export enum EMediaStatus {
+    active = 'active',
+    archived = 'archived',
+    deleted = 'deleted',
 }

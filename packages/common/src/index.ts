@@ -1,6 +1,7 @@
 export * from './types/error-types';
 export * from './types/response.type';
 export * from './constants/bank-account'
+export * from './constants/currency';
 
 export * from './schemas/file-metadata.schema';
 
@@ -9,6 +10,12 @@ export * from './schemas/enums';
 export * from './schemas/categories/categories.schema';
 
 export * from './schemas/books/books.schema';
+
+export * from './schemas/articles/article.schema';
+
+export * from './schemas/publications/publication.schema';
+
+export * from './schemas/media/media.schema';
 
 export * from './schemas/orders/order.schema';
 export * from './schemas/reviews/reviews.schema';

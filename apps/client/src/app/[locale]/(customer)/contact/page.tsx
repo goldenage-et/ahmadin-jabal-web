@@ -79,9 +79,9 @@ export default function ContactPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-white dark:bg-gray-900">
+        <div className="min-h-screen bg-background dark:bg-background">
             {/* Header */}
-            <div className="bg-gradient-to-r from-green-600 to-blue-600 dark:from-green-700 dark:to-blue-700 py-20">
+            <div className="bg-linear-to-r from-green-600 to-blue-600 dark:from-green-700 dark:to-blue-700 py-20">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
                     <h1 className="text-4xl sm:text-5xl font-bold mb-4">{t('title')}</h1>
                     <p className="text-xl opacity-90 max-w-3xl mx-auto">
@@ -183,7 +183,7 @@ export default function ContactPage() {
                     <div className="space-y-8">
                         {/* Contact Details */}
                         <div>
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                            <h2 className="text-2xl font-bold text-foreground dark:text-foreground mb-6">
                                 Get in Touch
                             </h2>
                             <div className="space-y-6">
@@ -197,17 +197,17 @@ export default function ContactPage() {
                                                         <IconComponent className="h-6 w-6 text-green-600 dark:text-green-400" />
                                                     </div>
                                                     <div className="flex-1">
-                                                        <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                                                        <h3 className="font-semibold text-foreground dark:text-foreground mb-2">
                                                             {info.title}
                                                         </h3>
                                                         <div className="space-y-1">
                                                             {info.details.map((detail, idx) => (
-                                                                <p key={idx} className="text-gray-600 dark:text-gray-300">
+                                                                <p key={idx} className="text-muted-foreground dark:text-muted-foreground">
                                                                     {detail}
                                                                 </p>
                                                             ))}
                                                         </div>
-                                                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                                                        <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-2">
                                                             {info.description}
                                                         </p>
                                                     </div>
@@ -221,7 +221,7 @@ export default function ContactPage() {
 
                         {/* Quick Actions */}
                         <div className="space-y-6">
-                            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                            <h3 className="text-xl font-semibold text-foreground dark:text-foreground">
                                 Quick Actions
                             </h3>
 
@@ -232,7 +232,7 @@ export default function ContactPage() {
                                         <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
                                             Speaking Request
                                         </h4>
-                                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                                        <p className="text-sm text-muted-foreground dark:text-muted-foreground">
                                             Invite Ustaz for lectures or events
                                         </p>
                                     </CardContent>
@@ -244,7 +244,7 @@ export default function ContactPage() {
                                         <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
                                             Support Work
                                         </h4>
-                                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                                        <p className="text-sm text-muted-foreground dark:text-muted-foreground">
                                             Help continue advocacy efforts
                                         </p>
                                     </CardContent>
@@ -253,13 +253,13 @@ export default function ContactPage() {
                         </div>
 
                         {/* Newsletter Signup */}
-                        <Card className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950/20 dark:to-blue-950/20">
+                        <Card className="bg-linear-to-r from-green-50 to-blue-50 dark:from-green-950/20 dark:to-blue-950/20">
                             <CardContent className="p-6">
                                 <div className="text-center">
-                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                                    <h3 className="text-lg font-semibold text-foreground dark:text-foreground mb-2">
                                         {t('newsletter')}
                                     </h3>
-                                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                                    <p className="text-sm text-muted-foreground dark:text-muted-foreground mb-4">
                                         Stay updated with the latest news, publications, and events
                                     </p>
                                     <div className="flex space-x-2">

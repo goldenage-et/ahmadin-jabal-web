@@ -45,7 +45,7 @@ export default function NotFound() {
               </Button>
               <Button asChild variant='secondary' className='flex-1'>
                 <Link
-                  href='/shop'
+                  href='/book'
                   className='flex items-center justify-center gap-2'
                 >
                   <Search className='h-4 w-4' />

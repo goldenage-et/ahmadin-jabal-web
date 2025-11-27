@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import { BookOpen, FileText, Download, ShoppingCart, Calendar, Globe, Star } from 'lucide-react';
+import { formatPrice } from '@/lib/format';
 
 export default function PublicationsPage() {
     const t = useTranslations('publications');
@@ -22,8 +23,8 @@ export default function PublicationsPage() {
             year: '2011',
             pages: '272',
             language: 'Amharic',
-            price: '$25.00',
-            originalPrice: '$30.00',
+            price: 25.00,
+            originalPrice: 30.00,
             isAvailable: true,
             isFeatured: true,
             rating: 4.8,
@@ -40,7 +41,7 @@ export default function PublicationsPage() {
             year: '2019',
             pages: '150',
             language: 'English',
-            price: '$18.00',
+            price: 18.00,
             isAvailable: true,
             isFeatured: false,
             rating: 4.6,
@@ -57,7 +58,7 @@ export default function PublicationsPage() {
             year: '2020',
             pages: '200',
             language: 'Amharic',
-            price: '$22.00',
+            price: 22.00,
             isAvailable: true,
             isFeatured: false,
             rating: 4.7,
@@ -74,7 +75,7 @@ export default function PublicationsPage() {
             year: '2022',
             pages: '180',
             language: 'English',
-            price: '$20.00',
+            price: 20.00,
             isAvailable: false,
             isFeatured: false,
             rating: 4.5,
@@ -119,7 +120,7 @@ export default function PublicationsPage() {
             readTime: '10 min read',
             category: 'Advocacy',
             isFree: false,
-            price: '$5.00',
+            price: 5.00,
             views: 750,
             tags: ['Advocacy', 'Religious Freedom', 'Strategy'],
         },
@@ -150,10 +151,10 @@ export default function PublicationsPage() {
     };
 
     return (
-        <div className="min-h-screen bg-white dark:bg-gray-900">
+        <div className="min-h-screen bg-background dark:bg-background">
             {/* Header */}
-            <div className="bg-gradient-to-r from-green-600 to-blue-600 dark:from-green-700 dark:to-blue-700 py-20">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
+            <div className="bg-green-100 dark:bg-green-950 py-20">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-foreground dark:text-foreground">
                     <h1 className="text-4xl sm:text-5xl font-bold mb-4">{t('title')}</h1>
                     <p className="text-xl opacity-90 max-w-3xl mx-auto">
                         Explore Ustaz Ahmedin Jebel's published works, including books, articles, and educational materials that have shaped the community.
@@ -172,7 +173,7 @@ export default function PublicationsPage() {
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {books.map((book) => (
                                 <Card key={book.id} className="group hover:shadow-xl transition-all duration-300 overflow-hidden">
-                                    <div className="relative aspect-[3/4] overflow-hidden">
+                                    <div className="relative aspect-3/4 overflow-hidden">
                                         <Image
                                             src={book.image}
                                             alt={book.title}
@@ -200,7 +201,7 @@ export default function PublicationsPage() {
                                             <Badge className={getCategoryColor(book.category)}>
                                                 {book.category}
                                             </Badge>
-                                            <div className="flex items-center space-x-1 text-sm text-gray-500 dark:text-gray-400">
+                                            <div className="flex items-center space-x-1 text-sm text-muted-foreground dark:text-muted-foreground">
                                                 <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                                                 <span>{book.rating}</span>
                                                 <span>({book.reviews})</span>
@@ -208,19 +209,19 @@ export default function PublicationsPage() {
                                         </div>
                                         <CardTitle className="text-lg line-clamp-2">{book.title}</CardTitle>
                                         {book.titleEn && (
-                                            <p className="text-sm text-gray-500 dark:text-gray-400 italic line-clamp-2">
+                                            <p className="text-sm text-muted-foreground dark:text-muted-foreground italic line-clamp-2">
                                                 {book.titleEn}
                                             </p>
                                         )}
                                     </CardHeader>
 
                                     <CardContent>
-                                        <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-4 line-clamp-3">
+                                        <p className="text-muted-foreground dark:text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-3">
                                             {book.description}
                                         </p>
 
                                         <div className="space-y-3">
-                                            <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                                            <div className="flex items-center justify-between text-sm text-muted-foreground dark:text-muted-foreground">
                                                 <div className="flex items-center space-x-4">
                                                     <span>{book.year}</span>
                                                     <span>{book.pages} pages</span>
@@ -239,12 +240,15 @@ export default function PublicationsPage() {
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center space-x-2">
                                                     {book.originalPrice && (
-                                                        <span className="text-sm text-gray-400 line-through">
-                                                            {book.originalPrice}
+                                                        <span className="text-sm text-gray-400 dark:text-gray-400 line-through">
+                                                            {formatPrice(Number(book.originalPrice))}
                                                         </span>
                                                     )}
+                                                    {/* <span className="text-lg font-semibold text-green-600 dark:text-green-400">
+                                                        {formatPrice(book.price)}
+                                                    </span> */}
                                                     <span className="text-lg font-semibold text-green-600 dark:text-green-400">
-                                                        {book.price}
+                                                        {formatPrice(book.price)}
                                                     </span>
                                                 </div>
                                                 <div className="flex space-x-2">
@@ -285,21 +289,21 @@ export default function PublicationsPage() {
                                                         </Badge>
                                                     ) : (
                                                         <Badge variant="secondary">
-                                                            {article.price}
+                                                            {formatPrice(article.price ?? 0)}
                                                         </Badge>
                                                     )}
                                                 </div>
-                                                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
+                                                <h3 className="text-xl font-semibold text-foreground dark:text-foreground mb-2 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
                                                     {article.title}
                                                 </h3>
-                                                <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
+                                                <p className="text-muted-foreground dark:text-muted-foreground leading-relaxed mb-4">
                                                     {article.description}
                                                 </p>
                                             </div>
                                         </div>
 
                                         <div className="flex items-center justify-between">
-                                            <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                                            <div className="flex items-center space-x-4 text-sm text-muted-foreground dark:text-muted-foreground">
                                                 <div className="flex items-center space-x-1">
                                                     <Calendar className="h-4 w-4" />
                                                     <span>{new Date(article.date).toLocaleDateString()}</span>

@@ -218,7 +218,7 @@ export class BooksService {
             userId: query.userId,
             filters: query,
             resultCount: total,
-            source: ESearchAnalyticsSource.shopPage,
+            source: "shopPage",
             searchCount: 1,
           },
         });

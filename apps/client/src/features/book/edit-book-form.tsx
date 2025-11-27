@@ -155,14 +155,14 @@ export default function EditBookForm({
                     className={`flex items-center cursor-pointer gap-2 px-3 py-2 rounded-md ${isActive
                       ? ''
                       : isCompleted
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-gray-100 text-gray-600'
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900/10 dark:text-green-400'
+                        : 'bg-gray-100 text-gray-600 dark:bg-gray-900/10 dark:text-gray-400'
                       }`}
                   >
                     <Icon className='h-4 w-4' />
-                    <span className='text-sm font-medium'>{step.title}</span>
+                    <span className='text-sm font-medium dark:text-slate-100 '>{step.title}</span>
                   </Button>
-                  <Separator orientation='horizontal' className='h-4' />
+                  <Separator orientation='horizontal' className='h-4 dark:bg-slate-900/10' />
                 </div>
               );
             })}

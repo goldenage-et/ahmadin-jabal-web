@@ -1,17 +1,11 @@
 import { getAuth } from '@/actions/auth.action';
-import { GeneralSettingsTab } from '@/app/_features/store/settings-tabs/general-settings-tab';
+import { GeneralSettingsTab } from '@/features/admin/settings/general-settings-tab';
 import { redirect } from 'next/navigation';
 
-interface LayoutProps {
-  params: Promise<{}>;
-}
-
-export default async function StoreSettingsPage({ params }: LayoutProps) {
-  const { user, member } = await getAuth();
-  if (!member || !user) {
+export default async function GeneralSettingsPage() {
+  const { user } = await getAuth();
+  if (!user) {
     redirect('/');
   }
-  return (
-    <GeneralSettingsTab member={member!} user={user!} />
-  );
+  return <GeneralSettingsTab user={user} />;
 }

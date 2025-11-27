@@ -22,7 +22,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { TAdminDashboardStats, TCategoryData, TRecentOrder, TRevenueTrendData } from '@repo/common';
+import type { TAdminDashboardStats, TCategoryData, TRecentOrder, TRevenueTrendData } from '@repo/common';
 import {
     DollarSign,
     EyeIcon,
@@ -78,15 +78,15 @@ export default function AdminDashboard({
     };
 
     return (
-        <div className='min-h-screen bg-gray-50/50 p-6'>
+        <div className='min-h-screen bg-background p-6'>
             <div className='px-4 mx-auto space-y-6'>
                 {/* Header */}
                 <div className='flex items-center justify-between'>
                     <div>
-                        <h1 className='text-3xl font-bold text-gray-900'>
+                        <h1 className='text-3xl font-bold text-foreground'>
                             Admin Dashboard
                         </h1>
-                        <p className='text-gray-600 mt-1'>
+                        <p className='text-muted-foreground mt-1'>
                             Store analytics and management overview
                         </p>
                     </div>
@@ -272,17 +272,19 @@ export default function AdminDashboard({
                             <ChartContainer config={chartConfig} className='h-[300px] w-full'>
                                 <PieChart width={undefined} height={undefined}>
                                     <Pie
-                                        data={categoryData as any}
+                                        data={categoryData}
                                         cx='50%'
                                         cy='50%'
                                         outerRadius={80}
                                         dataKey='value'
-                                        label={({ name, percent }: any) =>
-                                            `${name} ${(percent * 100).toFixed(0)}%`
+                                        label={(props: { name?: string; percent?: number }) =>
+                                            props.name && props.percent
+                                                ? `${props.name} ${(props.percent * 100).toFixed(0)}%`
+                                                : ''
                                         }
                                     >
-                                        {categoryData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={entry.color} />
+                                        {categoryData.map((entry) => (
+                                            <Cell key={`cell-${entry.name}`} fill={entry.color} />
                                         ))}
                                     </Pie>
                                     <ChartTooltip

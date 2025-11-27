@@ -1,18 +1,17 @@
 import { getManyBooks } from '@/actions/book.action';
 import { getCategories } from '@/actions/category.action';
-import { ShopClient } from '@/features/book/shop-client';
+import { BookClient } from '@/features/book/book-client';
 import { TBookQueryFilter } from '@repo/common';
 import { Suspense } from 'react';
 
 // Force dynamic rendering since we use server actions
 export const dynamic = 'force-dynamic';
 
-interface ShopPageProps {
+interface BookPageProps {
   searchParams: Promise<{
     search?: string;
     categoryName?: string;
     subcategoryName?: string;
-    storeId?: string;
     minPrice?: string;
     maxPrice?: string;
     minRating?: string;
@@ -27,7 +26,7 @@ interface ShopPageProps {
 
 export default async function ShopPage({
   searchParams: searchParamsPromise,
-}: ShopPageProps) {
+}: BookPageProps) {
   // Build query parameters from search params
   const searchParams = await searchParamsPromise;
   const queryParams: Partial<TBookQueryFilter> = {
@@ -67,7 +66,7 @@ export default async function ShopPage({
   return (
     <div className='min-h-screen bg-gray-50'>
       <Suspense fallback={<div>Loading...</div>}>
-        <ShopClient
+        <BookClient
           books={books}
           totalBooks={totalBooks}
           categories={categories}

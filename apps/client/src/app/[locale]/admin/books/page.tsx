@@ -7,7 +7,7 @@ import { EBookStatus, TBookQueryFilter } from '@repo/common';
 import {
   AlertTriangle,
   Download,
-  Package,
+  BookOpen,
   Plus,
   Star,
   TrendingUp,
@@ -53,15 +53,15 @@ export default async function BooksPage({
   };
 
   return (
-    <div className='min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100'>
+    <div className='min-h-screen bg-linear-to-br from-background via-card to-card dark:from-background dark:via-card dark:to-card'>
       <div className='container mx-auto px-4 py-6 space-y-8'>
         {/* Enhanced Header */}
         <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6'>
           <div>
-            <h1 className='text-3xl font-bold tracking-tight text-slate-900'>
+            <h1 className='text-3xl font-bold tracking-tight text-foreground dark:text-foreground'>
               Books
             </h1>
-            <p className='text-slate-600 mt-1'>
+            <p className='text-muted-foreground mt-1'>
               Manage your book catalog and inventory
             </p>
           </div>
@@ -76,7 +76,7 @@ export default async function BooksPage({
             </Button>
             <Button
               asChild
-              className='bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
+              className='bg-linear-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/90'
             >
               <Link href='/admin/books/create'>
                 <Plus className='h-4 w-4 mr-2' />
@@ -87,82 +87,82 @@ export default async function BooksPage({
         </div>
         {/* Stats Cards */}
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
-          <Card className='border-0 shadow-sm bg-linear-to-br from-blue-50 to-blue-100/50'>
+          <Card className='border-0 shadow-sm bg-linear-to-br from-blue-50 to-blue-100/50 dark:from-blue-900/10 dark:to-blue-900/10'>
             <CardContent className='p-6'>
               <div className='flex items-center justify-between'>
                 <div>
-                  <p className='text-sm font-medium text-blue-600'>
+                  <p className='text-sm font-medium text-blue-600 dark:text-blue-400'>
                     Total Books
                   </p>
-                  <p className='text-3xl font-bold text-blue-900'>
+                  <p className='text-3xl font-bold text-blue-900 dark:text-blue-100'>
                     {stats.totalBooks}
                   </p>
-                  <p className='text-xs text-blue-600 mt-1'>
+                  <p className='text-xs text-blue-600 dark:text-blue-400 mt-1'>
                     All books in catalog
                   </p>
                 </div>
                 <div className='p-3 bg-blue-500/10 rounded-full'>
-                  <Package className='h-6 w-6 text-blue-600' />
+                  <BookOpen className='h-6 w-6 text-blue-600 dark:text-blue-400' />
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className='border-0 shadow-sm bg-linear-to-br from-green-50 to-green-100/50'>
+          <Card className='border-0 shadow-sm bg-linear-to-br from-green-50 to-green-100/50 dark:from-green-900/10 dark:to-green-900/10'>
             <CardContent className='p-6'>
               <div className='flex items-center justify-between'>
                 <div>
-                  <p className='text-sm font-medium text-green-600'>
+                  <p className='text-sm font-medium text-green-600 dark:text-green-400'>
                     Active Books
                   </p>
-                  <p className='text-3xl font-bold text-green-900'>
+                  <p className='text-3xl font-bold text-green-900 dark:text-green-100'>
                     {stats.activeBooks}
                   </p>
-                  <p className='text-xs text-green-600 mt-1'>
+                  <p className='text-xs text-green-600 dark:text-green-400 mt-1'>
                     Currently selling
                   </p>
                 </div>
                 <div className='p-3 bg-green-500/10 rounded-full'>
-                  <TrendingUp className='h-6 w-6 text-green-600' />
+                  <TrendingUp className='h-6 w-6 text-green-600 dark:text-green-400' />
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className='border-0 shadow-sm bg-linear-to-br from-orange-50 to-orange-100/50'>
+          <Card className='border-0 shadow-sm bg-linear-to-br from-orange-50 to-orange-100/50 dark:from-orange-900/10 dark:to-orange-900/10'>
             <CardContent className='p-6'>
               <div className='flex items-center justify-between'>
                 <div>
-                  <p className='text-sm font-medium text-orange-600'>
+                  <p className='text-sm font-medium text-orange-600 dark:text-orange-400'>
                     Low Stock
                   </p>
-                  <p className='text-3xl font-bold text-orange-900'>
+                  <p className='text-3xl font-bold text-orange-900 dark:text-orange-100'>
                     {stats.lowStockBooks}
                   </p>
-                  <p className='text-xs text-orange-600 mt-1'>
+                  <p className='text-xs text-orange-600 dark:text-orange-400 mt-1'>
                     Need restocking
                   </p>
                 </div>
-                <div className='p-3 bg-orange-500/10 rounded-full'>
-                  <AlertTriangle className='h-6 w-6 text-orange-600' />
+                <div className='p-3 bg-orange-500/10 dark:bg-orange-900/10 rounded-full'>
+                  <AlertTriangle className='h-6 w-6 text-orange-600 dark:text-orange-400' />
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className='border-0 shadow-sm bg-linear-to-br from-yellow-50 to-yellow-100/50'>
+          <Card className='border-0 shadow-sm bg-linear-to-br from-yellow-50 to-yellow-100/50 dark:from-yellow-900/10 dark:to-yellow-900/10'>
             <CardContent className='p-6'>
               <div className='flex items-center justify-between'>
                 <div>
-                  <p className='text-sm font-medium text-yellow-600'>
+                  <p className='text-sm font-medium text-yellow-600 dark:text-yellow-400'>
                     Avg Rating
                   </p>
-                  <p className='text-3xl font-bold text-yellow-900'>
+                  <p className='text-3xl font-bold text-yellow-900 dark:text-yellow-100'>
                     {stats.averageRating}
                   </p>
-                  <p className='text-xs text-yellow-600 mt-1'>
+                  <p className='text-xs text-yellow-600 dark:text-yellow-400 mt-1'>
                     Customer satisfaction
                   </p>
                 </div>
                 <div className='p-3 bg-yellow-500/10 rounded-full'>
-                  <Star className='h-6 w-6 text-yellow-600' />
+                  <Star className='h-6 w-6 text-yellow-600 dark:text-yellow-400' />
                 </div>
               </div>
             </CardContent>

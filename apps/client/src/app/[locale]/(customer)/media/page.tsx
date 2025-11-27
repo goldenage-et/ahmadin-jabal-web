@@ -144,10 +144,10 @@ export default function MediaPage() {
     };
 
     return (
-        <div className="min-h-screen bg-white dark:bg-gray-900">
+        <div className="min-h-screen bg-background dark:bg-background">
             {/* Header */}
-            <div className="bg-gradient-to-r from-green-600 to-blue-600 dark:from-green-700 dark:to-blue-700 py-20">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
+            <div className="bg-green-100 dark:bg-green-950 py-20">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-foreground dark:text-foreground">
                     <h1 className="text-4xl sm:text-5xl font-bold mb-4">{t('title')}</h1>
                     <p className="text-xl opacity-90 max-w-3xl mx-auto">
                         Explore Ustaz Ahmedin Jebel's speeches, interviews, lectures, and educational content that have inspired and educated the community.
@@ -200,11 +200,11 @@ export default function MediaPage() {
                                     </CardHeader>
 
                                     <CardContent>
-                                        <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-4 line-clamp-3">
+                                        <p className="text-muted-foreground dark:text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-3">
                                             {video.description}
                                         </p>
 
-                                        <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
+                                        <div className="flex items-center justify-between text-sm text-muted-foreground dark:text-muted-foreground mb-4">
                                             <div className="flex items-center space-x-4">
                                                 <div className="flex items-center space-x-1">
                                                     <Calendar className="h-4 w-4" />
@@ -245,11 +245,11 @@ export default function MediaPage() {
                                     </CardHeader>
 
                                     <CardContent>
-                                        <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-4">
+                                        <p className="text-muted-foreground dark:text-muted-foreground text-sm leading-relaxed mb-4">
                                             {sermon.description}
                                         </p>
 
-                                        <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
+                                        <div className="flex items-center justify-between text-sm text-muted-foreground dark:text-muted-foreground mb-4">
                                             <div className="flex items-center space-x-4">
                                                 <div className="flex items-center space-x-1">
                                                     <Calendar className="h-4 w-4" />
@@ -301,10 +301,10 @@ export default function MediaPage() {
                                     </div>
 
                                     <CardContent className="p-4">
-                                        <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+                                        <h3 className="font-semibold text-foreground dark:text-foreground mb-1">
                                             {photo.caption}
                                         </h3>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                                        <p className="text-sm text-muted-foreground dark:text-muted-foreground">
                                             {photo.date}
                                         </p>
                                     </CardContent>

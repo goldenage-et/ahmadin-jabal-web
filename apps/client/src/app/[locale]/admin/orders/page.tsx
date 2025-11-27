@@ -39,8 +39,8 @@ export default async function OrdersPage({
       {/* Header */}
       <div className='flex items-center justify-between'>
         <div>
-          <h1 className='text-3xl font-bold text-gray-900'>Orders</h1>
-          <p className='text-gray-600'>Manage and track customer orders</p>
+          <h1 className='text-3xl font-bold text-foreground dark:text-foreground'>Orders</h1>
+          <p className='text-muted-foreground dark:text-muted-foreground'>Manage and track customer orders</p>
         </div>
         <div className='flex items-center gap-2'>
           <Button variant='outline' size='sm'>
@@ -59,10 +59,10 @@ export default async function OrdersPage({
                 <Package className='h-6 w-6 text-blue-600' />
               </div>
               <div className='ml-4'>
-                <p className='text-sm font-medium text-gray-600'>
+                <p className='text-sm font-medium text-muted-foreground dark:text-muted-foreground'>
                   Total Orders
                 </p>
-                <p className='text-2xl font-bold text-gray-900'>{total}</p>
+                <p className='text-2xl font-bold text-foreground dark:text-foreground'>{total}</p>
               </div>
             </div>
           </CardContent>
@@ -75,7 +75,7 @@ export default async function OrdersPage({
                 <DollarSign className='h-6 w-6 text-green-600' />
               </div>
               <div className='ml-4'>
-                <p className='text-sm font-medium text-gray-600'>
+                <p className='text-sm font-medium text-muted-foreground dark:text-muted-foreground'>
                   Total Revenue
                 </p>
                 <p className='text-2xl font-bold text-gray-900'>
@@ -98,7 +98,7 @@ export default async function OrdersPage({
                 <Clock className='h-6 w-6 text-yellow-600' />
               </div>
               <div className='ml-4'>
-                <p className='text-sm font-medium text-gray-600'>
+                <p className='text-sm font-medium text-muted-foreground dark:text-muted-foreground'>
                   Pending Orders
                 </p>
                 <p className='text-2xl font-bold text-gray-900'>
@@ -121,7 +121,7 @@ export default async function OrdersPage({
                 <Truck className='h-6 w-6 text-purple-600' />
               </div>
               <div className='ml-4'>
-                <p className='text-sm font-medium text-gray-600'>
+                <p className='text-sm font-medium text-muted-foreground dark:text-muted-foreground'>
                   Shipped Orders
                 </p>
                 <p className='text-2xl font-bold text-gray-900'>

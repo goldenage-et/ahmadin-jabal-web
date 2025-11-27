@@ -47,32 +47,33 @@ export function AdminSidebar({
     <>
       <aside
         className={[
-          'fixed z-40 md:static h-svh border-r shadow-sm flex flex-col',
+          'fixed z-40 md:static h-svh border-r border-border shadow-sm flex flex-col',
           widthCls,
-          'bg-white',
+          'bg-sidebar',
           'transition-transform md:transition-[width] md:duration-300',
           open ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
         ].join(' ')}
       >
         {/* Mobile close button */}
         <button
+          type='button'
           onClick={onClose}
-          className='absolute right-2 top-2 p-2 rounded-md hover:bg-gray-100 md:hidden'
+          className='absolute right-2 top-2 p-2 rounded-md hover:bg-accent text-sidebar-foreground md:hidden'
           aria-label='Close menu'
         >
           <X size={16} />
         </button>
 
-        <div className='h-14 px-5   flex items-center justify-between'>
+        <div className='h-14 px-5 flex items-center justify-between'>
           <div>
             <Link href='/admin/' className='block'>
               <div className='flex items-center gap-2'>
-                <div className='w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center'>
-                  <span className='text-white font-bold text-lg'>A</span>
+                <div className='w-8 h-8 bg-sidebar-primary dark:bg-sidebar-primary rounded-lg flex items-center justify-center'>
+                  <span className='text-sidebar-primary-foreground dark:text-sidebar-primary-foreground-dark font-bold text-lg'>A</span>
                 </div>
                 <span
                   className={[
-                    'text-2xl font-extrabold tracking-tight text-gray-800',
+                    'text-2xl font-extrabold tracking-tight text-sidebar-foreground dark:text-sidebar-foreground',
                     isCollapsed ? 'hidden' : '',
                   ].join(' ')}
                 >
@@ -85,7 +86,7 @@ export function AdminSidebar({
 
         <nav className='p-3'>
           <div className='mb-4'>
-            <h3 className='text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2'>
+            <h3 className='text-xs font-semibold text-sidebar-foreground/60 dark:text-sidebar-foreground/60  uppercase tracking-wider mb-2'>
               {isCollapsed ? '' : 'MAIN'}
             </h3>
           </div>
@@ -102,8 +103,8 @@ export function AdminSidebar({
                     className={[
                       'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
                       active
-                        ? 'bg-gray-200 text-gray-900 shadow-sm'
-                        : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900',
+                        ? 'bg-sidebar-accent text-sidebar-accent-foreground shadow-sm'
+                        : 'text-sidebar-foreground dark:text-sidebar-foreground-dark hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
                     ].join(' ')}
                     title={isCollapsed ? label : undefined}
                   >
@@ -121,14 +122,14 @@ export function AdminSidebar({
           </ul>
         </nav>
 
-        <div className='mt-auto p-3 text-xs text-gray-500'>
+        <div className='mt-auto p-3 text-xs text-sidebar-foreground/60'>
           <p className={isCollapsed ? 'hidden' : ''}>v1.0 • Control Center</p>
         </div>
       </aside>
       {open && (
         <div
           onClick={onClose}
-          className='fixed inset-0 z-30 bg-black/30 md:hidden'
+          className='fixed inset-0 z-30 bg-background/80 backdrop-blur-sm md:hidden'
         />
       )}
     </>

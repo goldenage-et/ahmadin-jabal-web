@@ -110,7 +110,7 @@ export function BooksFilters({
         <CardContent>
           <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
             <div>
-              <label className='text-sm font-medium text-gray-700 mb-2 block'>
+              <label htmlFor='search' className='text-sm font-medium text-gray-700 mb-2 block dark:text-slate-100'>
                 Search
               </label>
               <div className='relative'>
@@ -128,7 +128,7 @@ export function BooksFilters({
             </div>
 
             <div>
-              <label className='text-sm font-medium text-gray-700 mb-2 block'>
+              <label htmlFor='category' className='text-sm font-medium text-gray-700 mb-2 block dark:text-slate-100'>
                 Category
               </label>
               <Select
@@ -156,7 +156,7 @@ export function BooksFilters({
             </div>
 
             <div>
-              <label className='text-sm font-medium text-gray-700 mb-2 block'>
+              <label htmlFor='status' className='text-sm font-medium text-gray-700 mb-2 block dark:text-slate-100'>
                 Status
               </label>
               <Select
@@ -191,7 +191,7 @@ export function BooksFilters({
             </div>
 
             <div>
-              <label className='text-sm font-medium text-gray-700 mb-2 block'>
+              <label htmlFor='sortBy' className='text-sm font-medium text-gray-700 mb-2 block dark:text-slate-100'>
                 Sort By
               </label>
               <Select
@@ -217,7 +217,7 @@ export function BooksFilters({
           <div className='flex items-center justify-between mt-4'>
             <div className='flex items-center gap-4'>
               <div className='flex items-center gap-2'>
-                <label className='text-sm font-medium'>Sort Order:</label>
+                <label htmlFor='sortOrder' className='text-sm font-medium dark:text-slate-100'>Sort Order:</label>
                 <Select
                   value={filters.sortOrder}
                   onValueChange={(value) =>
@@ -225,17 +225,17 @@ export function BooksFilters({
                   }
                   disabled={isPending}
                 >
-                  <SelectTrigger className='w-32'>
+                  <SelectTrigger className='w-17'>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value='asc'>
+                    <SelectItem value='asc' className='dark:text-slate-100'>
                       <div className='flex items-center gap-1'>
                         <TrendingUp className='h-3 w-3' />
                         Ascending
                       </div>
                     </SelectItem>
-                    <SelectItem value='desc'>
+                    <SelectItem value='desc' className='dark:text-slate-100'>
                       <div className='flex items-center gap-1'>
                         <TrendingDown className='h-3 w-3' />
                         Descending
@@ -245,12 +245,12 @@ export function BooksFilters({
                 </Select>
               </div>
               {isPending && (
-                <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900'></div>
+                <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900 dark:border-slate-100'></div>
               )}
             </div>
 
             {/* View Mode Toggle (local only) */}
-            <div className='flex border border-gray-200 rounded-lg overflow-hidden'>
+            <div className='flex border border-gray-200 rounded-lg overflow-hidden dark:border-slate-100'>
               <Button
                 variant={viewMode === 'grid' ? 'default' : 'ghost'}
                 size='sm'

@@ -185,7 +185,7 @@ export default function SigninForm() {
           <span className='w-full border-t' />
         </div>
         <div className='relative flex justify-center text-xs uppercase'>
-          <span className='bg-white px-2 text-gray-500'>Or continue with</span>
+          <span className='bg-background dark:bg-background px-2 text-gray-500 dark:text-gray-400'>Or continue with</span>
         </div>
       </div>
 

@@ -115,19 +115,19 @@ export default function AboutPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
+    <div className="min-h-screen bg-background dark:bg-background">
       {/* Header */}
-      <div className="bg-gradient-to-r from-green-600 to-blue-600 dark:from-green-700 dark:to-blue-700 py-20">
+      <div className="bg-green-100 dark:bg-green-950 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center mb-8">
-            <Button variant="ghost" asChild className="text-white hover:bg-white/10">
+            <Button variant="ghost" asChild className="text-foreground dark:text-foreground">
               <Link href="/">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Home
               </Link>
             </Button>
           </div>
-          <div className="text-center text-white">
+          <div className="text-center text-foreground dark:text-foreground">
             <h1 className="text-4xl sm:text-5xl font-bold mb-4">{t('title')}</h1>
             <p className="text-xl opacity-90 max-w-3xl mx-auto">
               A dedicated Islamic educator, historian, and community advocate who has devoted his life to promoting faith, preserving heritage, and fighting for justice for Ethiopian Muslims.
@@ -160,7 +160,7 @@ export default function AboutPage() {
 
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Personal & Institutional Details</h2>
+                  <h2 className="text-2xl font-bold text-foreground dark:text-foreground mb-4">Personal & Institutional Details</h2>
                   <div className="space-y-4">
                     <div className="flex items-center space-x-3">
                       <Award className="h-5 w-5 text-green-600 dark:text-green-400" />
@@ -190,8 +190,8 @@ export default function AboutPage() {
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">Key Life & Career Events</h3>
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                  <h3 className="text-xl font-semibold text-foreground mb-3">Key Life & Career Events</h3>
+                  <p className="text-muted-foreground leading-relaxed">
                     Ustaz Ahmedin Jebel has been a prominent figure in Ethiopian Muslim community affairs for over two decades.
                     His work spans Islamic education, historical research, community advocacy, and political engagement.
                     Despite facing significant challenges including imprisonment for his advocacy work, he has remained committed
@@ -221,7 +221,7 @@ export default function AboutPage() {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                      <p className="text-muted-foreground leading-relaxed">
                         {event.description}
                       </p>
                     </CardContent>
@@ -239,10 +239,10 @@ export default function AboutPage() {
                     <div className="flex items-start space-x-3">
                       <Quote className="h-6 w-6 text-green-600 dark:text-green-400 flex-shrink-0 mt-1" />
                       <div>
-                        <blockquote className="text-lg italic text-gray-700 dark:text-gray-300 mb-4">
+                        <blockquote className="text-lg italic text-foreground mb-4">
                           "{quote.quote}"
                         </blockquote>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                        <div className="text-sm text-muted-foreground dark:text-muted-foreground">
                           <p className="font-medium">{quote.context}</p>
                           <p>{quote.year}</p>
                         </div>
@@ -261,17 +261,17 @@ export default function AboutPage() {
                   <CardHeader>
                     <CardTitle className="text-lg line-clamp-2">{publication.title}</CardTitle>
                     {publication.titleEn && (
-                      <p className="text-sm text-gray-500 dark:text-gray-400 italic">
+                      <p className="text-sm text-muted-foreground dark:text-muted-foreground italic">
                         {publication.titleEn}
                       </p>
                     )}
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
-                      <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+                      <p className="text-muted-foreground dark:text-muted-foreground text-sm leading-relaxed">
                         {publication.description}
                       </p>
-                      <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                      <div className="flex items-center justify-between text-sm text-muted-foreground dark:text-muted-foreground">
                         <span>{publication.year}</span>
                         <span>{publication.pages} pages</span>
                         <span>{publication.language}</span>

@@ -146,7 +146,7 @@ export default function AdvocacyPage() {
     };
 
     return (
-        <div className="min-h-screen bg-white dark:bg-gray-900">
+        <div className="min-h-screen bg-background dark:bg-background">
             {/* Header */}
             <div className="bg-gradient-to-r from-green-600 to-blue-600 dark:from-green-700 dark:to-blue-700 py-20">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
@@ -161,10 +161,10 @@ export default function AdvocacyPage() {
                 {/* Impact Statistics */}
                 <section className="mb-20">
                     <div className="text-center mb-12">
-                        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                        <h2 className="text-3xl sm:text-4xl font-bold text-foreground dark:text-foreground mb-4">
                             {t('impact')}
                         </h2>
-                        <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                        <p className="text-lg text-muted-foreground dark:text-muted-foreground max-w-3xl mx-auto">
                             Through decades of dedicated advocacy, Ustaz Ahmedin Jebel has made a lasting impact on the Ethiopian Muslim community.
                         </p>
                     </div>
@@ -175,10 +175,10 @@ export default function AdvocacyPage() {
                                 <div className="text-3xl sm:text-4xl font-bold text-green-600 dark:text-green-400 mb-2">
                                     {stat.number}
                                 </div>
-                                <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+                                <div className="text-sm font-semibold text-foreground dark:text-foreground mb-1">
                                     {stat.label}
                                 </div>
-                                <div className="text-xs text-gray-500 dark:text-gray-400">
+                                <div className="text-xs text-muted-foreground dark:text-muted-foreground">
                                     {stat.description}
                                 </div>
                             </div>
@@ -189,10 +189,10 @@ export default function AdvocacyPage() {
                 {/* Advocacy Areas */}
                 <section className="mb-20">
                     <div className="text-center mb-12">
-                        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                        <h2 className="text-3xl sm:text-4xl font-bold text-foreground dark:text-foreground mb-4">
                             Focus Areas
                         </h2>
-                        <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                        <p className="text-lg text-muted-foreground dark:text-muted-foreground max-w-3xl mx-auto">
                             Ustaz Ahmedin Jebel's advocacy work spans multiple critical areas that strengthen the community and protect fundamental rights.
                         </p>
                     </div>
@@ -216,7 +216,7 @@ export default function AdvocacyPage() {
                                         </div>
                                     </CardHeader>
                                     <CardContent>
-                                        <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                                        <p className="text-muted-foreground dark:text-muted-foreground leading-relaxed">
                                             {area.description}
                                         </p>
                                     </CardContent>
@@ -229,10 +229,10 @@ export default function AdvocacyPage() {
                 {/* Key Events Timeline */}
                 <section className="mb-20">
                     <div className="text-center mb-12">
-                        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                        <h2 className="text-3xl sm:text-4xl font-bold text-foreground dark:text-foreground mb-4">
                             {t('events')}
                         </h2>
-                        <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                        <p className="text-lg text-muted-foreground dark:text-muted-foreground max-w-3xl mx-auto">
                             A timeline of significant events in Ustaz Ahmedin Jebel's advocacy journey.
                         </p>
                     </div>
@@ -258,7 +258,7 @@ export default function AdvocacyPage() {
                                                 </Badge>
                                             </div>
                                         </div>
-                                        <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                                        <div className="flex items-center space-x-4 text-sm text-muted-foreground dark:text-muted-foreground">
                                             <div className="flex items-center space-x-1">
                                                 <MapPin className="h-4 w-4" />
                                                 <span>{event.location}</span>
@@ -270,7 +270,7 @@ export default function AdvocacyPage() {
                                         </div>
                                     </CardHeader>
                                     <CardContent>
-                                        <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                                        <p className="text-muted-foreground leading-relaxed dark:text-muted-foreground">
                                             {event.description}
                                         </p>
                                     </CardContent>
@@ -283,10 +283,10 @@ export default function AdvocacyPage() {
                 {/* Notable Quotes */}
                 <section className="mb-20">
                     <div className="text-center mb-12">
-                        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                        <h2 className="text-3xl sm:text-4xl font-bold text-foreground dark:text-foreground mb-4">
                             Powerful Quotes
                         </h2>
-                        <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                        <p className="text-lg text-muted-foreground dark:text-muted-foreground max-w-3xl mx-auto">
                             Inspiring words that have motivated and guided the community through challenging times.
                         </p>
                     </div>
@@ -298,11 +298,11 @@ export default function AdvocacyPage() {
                                     <div className="flex items-start space-x-3">
                                         <Quote className="h-6 w-6 text-green-600 dark:text-green-400 flex-shrink-0 mt-1" />
                                         <div className="flex-1">
-                                            <blockquote className="text-lg italic text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                                            <blockquote className="text-lg italic text-foreground dark:text-foreground mb-4 leading-relaxed">
                                                 "{quote.quote}"
                                             </blockquote>
                                             <div className="flex items-center justify-between">
-                                                <div className="text-sm text-gray-500 dark:text-gray-400">
+                                                <div className="text-sm text-muted-foreground dark:text-muted-foreground">
                                                     <p className="font-medium">{quote.context}</p>
                                                     <p>{quote.year}</p>
                                                 </div>
@@ -320,10 +320,10 @@ export default function AdvocacyPage() {
 
                 {/* Call to Action */}
                 <section className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950/20 dark:to-blue-950/20 rounded-2xl p-8 md:p-12 text-center">
-                    <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                    <h2 className="text-2xl sm:text-3xl font-bold text-foreground dark:text-foreground mb-4">
                         Join the Movement
                     </h2>
-                    <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
+                    <p className="text-lg text-muted-foreground dark:text-muted-foreground mb-8 max-w-2xl mx-auto">
                         Support Ustaz Ahmedin Jebel's advocacy work and help continue the fight for equality, justice, and community rights.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">

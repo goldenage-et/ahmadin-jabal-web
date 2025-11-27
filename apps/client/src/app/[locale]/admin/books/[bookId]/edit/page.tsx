@@ -1,6 +1,6 @@
 import { getCategories } from '@/actions/categories.action';
-import { getBook } from '@/features/book/actions/book.action';
-import EditBookForm from '@/features/book/components/edit-book-form';
+import { getBook } from '@/actions/book.action';
+import EditBookForm from '@/features/book/edit-book-form';
 import { Button } from '@/components/ui/button';
 import { TCategoryBasic } from '@repo/common';
 import { ArrowLeft } from 'lucide-react';
@@ -31,7 +31,7 @@ export default async function EditBookPage({ params }: PageProps) {
   }
 
   return (
-    <div className='min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100'>
+    <div className='min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900/10 dark:via-slate-900/10 dark:to-slate-900/10'>
       <div className='container mx-auto px-4 py-6 space-y-8'>
         {/* Enhanced Header */}
         <div className='flex items-center gap-4'>
@@ -42,10 +42,10 @@ export default async function EditBookPage({ params }: PageProps) {
             </Link>
           </Button>
           <div>
-            <h1 className='text-3xl font-bold tracking-tight text-slate-900'>
+            <h1 className='text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100'>
               Edit Book
             </h1>
-            <p className='text-slate-600 mt-1'>
+            <p className='text-slate-600 mt-1 dark:text-slate-400'>
               Update book information and settings
             </p>
           </div>

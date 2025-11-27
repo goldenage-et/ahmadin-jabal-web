@@ -12,11 +12,13 @@ export type TCategoryImage = z.infer<typeof ZCategoryImage>;
 export const ZCategory = z.object({
   id: z.string(),
   name: z.string(),
+  slug: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
   image: ZCategoryImage.nullable().optional(),
   iconName: z.string().nullable().optional(),
   backgroundColor: z.string().nullable().optional(),
   parentId: z.string().nullable().optional(),
+  active: z.boolean().default(true),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 });
@@ -26,11 +28,13 @@ export type TCategory = z.infer<typeof ZCategory>;
 export const ZCategoryBasic = z.object({
   id: z.string(),
   name: z.string(),
+  slug: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
   image: ZCategoryImage.nullable().optional(),
   iconName: z.string().nullable().optional(),
   backgroundColor: z.string().nullable().optional(),
   parentId: z.string().nullable().optional(),
+  active: z.boolean().default(true),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 });
@@ -39,22 +43,26 @@ export type TCategoryBasic = z.infer<typeof ZCategoryBasic>;
 // Create category schema
 export const ZCreateCategory = z.object({
   name: z.string().min(1, 'Category name is required'),
+  slug: z.string().max(255, 'Slug must be 255 characters or less').optional(),
   description: z.string().optional(),
   image: ZCategoryImage.optional(),
   iconName: z.string().optional(),
   backgroundColor: z.string().optional(),
   parentId: z.string().optional(),
+  active: z.boolean().default(true),
 });
 export type TCreateCategory = z.infer<typeof ZCreateCategory>;
 
 // Update category schema
 export const ZUpdateCategory = z.object({
   name: z.string().min(1, 'Category name is required').optional(),
+  slug: z.string().max(255, 'Slug must be 255 characters or less').optional(),
   description: z.string().optional(),
   image: ZCategoryImage.optional(),
   iconName: z.string().optional(),
   backgroundColor: z.string().optional(),
   parentId: z.string().optional(),
+  active: z.boolean().optional(),
 });
 export type TUpdateCategory = z.infer<typeof ZUpdateCategory>;
 
@@ -67,6 +75,8 @@ export type TCategoryQueryUnique = z.infer<typeof ZCategoryQueryUnique>;
 export const ZCategoryQueryFilter = z.object({
   search: z.string().optional(),
   parentId: z.string().optional(),
+  active: z.boolean().optional(),
+  slug: z.string().optional(),
   limit: z.number().int().positive().optional(),
   offset: z.number().int().nonnegative().optional(),
 });

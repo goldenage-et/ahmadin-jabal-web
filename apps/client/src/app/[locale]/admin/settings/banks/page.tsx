@@ -1,5 +1,5 @@
 import { getBankAccounts } from '@/actions/bank-account.action';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Building2 } from 'lucide-react';
 import { BankAccountsList } from './bank-accounts-list';
 import { AddBankAccountDialog } from './add-bank-account-dialog';
@@ -7,9 +7,9 @@ import { getAuth } from '@/actions/auth.action';
 import { redirect } from 'next/navigation';
 
 export default async function BankAccountsPage() {
-    const { member } = await getAuth();
+    const { user } = await getAuth();
 
-    if (!member) {
+    if (!user) {
         redirect('/');
     }
 
@@ -19,7 +19,7 @@ export default async function BankAccountsPage() {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <Card className="border-0 shadow-sm bg-gradient-to-r from-blue-500/5 via-orange-500/3 to-transparent">
+            <Card className="border-0 shadow-sm bg-linear-to-r from-blue-500/5 via-orange-500/3 to-transparent">
                 <CardHeader className="pb-4">
                     <div className="flex items-center justify-between">
                         <div>

@@ -1,38 +1,60 @@
-# ahmadin - Multi-Vendor E-Commerce Platform
+# ahmadin - Ustaz Ahmedin Jebel Portfolio & Digital Platform
 
-ahmadin is a comprehensive multi-vendor e-commerce platform built with Next.js, NestJS, and TypeScript. It provides a complete solution for online marketplaces where multiple vendors can sell their products to customers through a **modern**, scalable architecture.
+**Ustaz Ahmedin Jebel** (አሕመዲን ጀበል) - Preacher · Historian · Community Advocate
+
+ahmadin is a comprehensive digital platform built with Next.js, NestJS, and TypeScript, serving as both a portfolio website for Ustaz Ahmedin Jebel and an e-commerce platform for books, articles, and blogs. The platform promotes faith, heritage, and justice for Ethiopian Muslims while providing modern, scalable architecture for content management and digital commerce.
+
+## 👤 About Ustaz Ahmedin Jebel
+
+Ustaz Ahmedin Jebel is a prominent Ethiopian Islamic educator, historian, author, and community advocate. He has served as **Social Affairs Advisor** to the Ethiopian Islamic Affairs Supreme Council (EIASC) and is known for his work in:
+
+- **Religious Education & Dawah**: Providing Islamic education and community guidance
+- **Historical Research**: Authoring books on Ethiopian Muslim history and their relationship with political powers
+- **Community Rights & Advocacy**: Speaking for equality, equal citizenship, and community rights
+- **Youth Engagement**: Mobilizing and engaging younger generations in community development
+
+### Key Milestones
+
+- **2011**: Published "*ኢትዮጵያውያን ሙስሊሞች ከ 615-1700 የጭቆናና የትግል ታሪክ*" (Ethiopian Muslims: History of Persecution and Struggle from 615-1700)
+- **2012**: Selected as one of 17 leaders for the Muslim Arbitration Committee (MAC)
+- **2012-2018**: Arrested and imprisoned (2012), sentenced to 22 years (2015), released (2018)
+- **2021**: Political candidacy for House of People's Representatives (Jimma city), later withdrew
+- **2023**: Continued advocacy work, including speeches addressing mosque demolitions and community grievances
+
+> *"Muslims refuse anything less than equality and will not accept being second class citizens."* - Ustaz Ahmedin Jebel
 
 ## 🚀 Features
 
-### 🛍️ Customer Features
-- **Product Browsing**: Browse products by category, search, and advanced filters with real-time search
-- **Product Details**: Detailed product pages with image galleries, descriptions, reviews, and vendor information
-- **Shopping Cart**: Add/remove items, update quantities, and manage cart with real-time updates and persistence
-- **Wishlist**: Save products for later purchase with persistent storage and quick add/remove functionality
-- **Order Management**: Track order history, status updates, and delivery tracking with detailed order information
-- **User Profile**: Manage account information, addresses, and payment methods with profile customization
-- **Reviews & Ratings**: Read and write product reviews with rating system and helpfulness voting
-- **Responsive Design**: Mobile-first, responsive interface with modern UI components and smooth animations
+### 📚 Portfolio & Content Features
+- **Biography Section**: Comprehensive biography with timeline of key life events, roles, and achievements
+- **Publications**: Showcase of books and written works with detailed information and purchase options
+  - "*ኢትዮጵያውያን ሙስሊሞች ከ 615-1700 የጭቆናና የትግል ታሪክ*" (2011, 272 pages)
+  - Additional books on Ethiopian Muslim history and contemporary issues
+- **Media Gallery**: Integrated YouTube videos, lectures, interviews, and audio content
+- **Advocacy & Impact**: Showcase of community work, speeches, and advocacy efforts
+- **Articles & Blogs**: Content management system for publishing articles and blog posts
+- **Multilingual Support**: Full support for English, Amharic (አማርኛ), and Oromo languages
+- **Social Media Integration**: Links to YouTube channel, Facebook, Instagram, and other platforms
 
-### 🏪 Vendor/Store Features
-- **Store Management**: Create and manage multiple stores with unique branding and settings
-- **Store Dashboard**: Comprehensive dashboard with sales analytics, performance metrics, and revenue tracking
-- **Product Management**: Add, edit, and manage product listings with bulk operations and inventory tracking
-- **Order Management**: View and process customer orders with status updates and fulfillment tracking
-- **Inventory Management**: Track stock levels, variants, and low stock alerts with automated notifications
-- **Store Analytics**: Sales reports, performance metrics, customer insights, and revenue analytics
-- **Store Settings**: Manage store information, commission rates, payout schedules, and store policies
-- **Member Management**: Invite and manage store members with role-based permissions (Owner, Admin, Member)
+### 🛍️ E-Commerce Features
+- **Book Store**: Browse and purchase books by category, search, and advanced filters
+- **Article Marketplace**: Access premium articles with flexible pricing options
+- **Blog Content**: Subscribe to blog content with comment systems
+- **Product Details**: Detailed pages with descriptions, reviews, and related content
+- **Order Management**: Complete order tracking, status updates, and delivery management
+- **Payment Processing**: Multiple payment methods including bank transfer and online payments
+- **Shopping Experience**: Buy now functionality, order history, and user accounts
+- **Reviews & Ratings**: Community-driven reviews and ratings for books and content
 
-### 🛒 E-Commerce Features
-- **Multi-Vendor Support**: Multiple vendors selling on one unified platform with individual storefronts
-- **Product Variants**: Support for different colors, sizes, materials, and custom attributes with SKU management
-- **Inventory Tracking**: Real-time stock management with automatic updates and low stock alerts
-- **Commission System**: Configurable commission rates and payout processing with detailed financial tracking
-- **Payment Integration**: Multiple payment methods with secure processing and transaction history
-- **Shipping Options**: Various shipping methods, rates, and tracking integration with carrier support
-- **Tax Calculation**: Automatic tax calculation based on location and product type with tax reporting
-- **Discount System**: Promo codes, automatic discounts, and seasonal sales with coupon management
+### 🏪 Admin & Management Features
+- **Content Management**: Admin panel for managing books, articles, blogs, and categories
+- **Publication Management**: Add, edit, and manage book listings with inventory tracking
+- **Article & Blog Editor**: Rich content editor for creating and publishing articles/blogs
+- **Category Management**: Organize content with hierarchical categories and tags
+- **Order Processing**: View and process customer orders with status updates
+- **User Management**: Manage user accounts, roles, and permissions
+- **Analytics Dashboard**: Comprehensive analytics for sales, content views, and user engagement
+- **Media Library**: File management system for images, videos, and documents
 
 ### 🔧 Technical Features
 - **Type Safety**: Full TypeScript implementation across frontend and backend with strict type checking
@@ -58,10 +80,10 @@ ahmadin is a comprehensive multi-vendor e-commerce platform built with Next.js, 
 
 ### Backend (NestJS)
 - **Framework**: NestJS 11 with TypeScript
-- **Database**: PostgreSQL with Drizzle ORM
+- **Database**: PostgreSQL with Prisma ORM (Note: README mentions Drizzle, but schema uses Prisma)
 - **Authentication**: Session-based authentication with JWT tokens and HTTP-only cookies
 - **Validation**: Zod schema validation with comprehensive input sanitization
-- **File Storage**: Local file system with metadata tracking and image optimization
+- **File Storage**: MinIO integration for object storage with metadata tracking and image optimization
 - **CORS**: Configured for secure cross-origin requests with credential support
 - **Error Handling**: Global exception filters and custom error responses with detailed logging
 - **Security**: Argon2 password hashing, rate limiting, and secure session management
@@ -72,7 +94,8 @@ ahmadin is a comprehensive multi-vendor e-commerce platform built with Next.js, 
 - **Linting**: Biome with TypeScript support
 - **Formatting**: Prettier for consistent code style
 - **Testing**: Jest for unit and integration tests
-- **Database Migrations**: Drizzle Kit for schema management
+- **Database Migrations**: Prisma Migrate for schema management
+- **Internationalization**: next-intl for multi-language support (English, Amharic, Oromo)
 
 ## 📋 Requirements
 
@@ -334,14 +357,22 @@ pnpm db:pull          # Pull schema from database
 
 ## 🗄️ Database Schema
 
-The application uses PostgreSQL with Drizzle ORM. Key entities include:
+The application uses PostgreSQL with Prisma ORM. Key entities include:
 
-- **Users**: Customer accounts with authentication
-- **Stores**: Vendor store information and settings
-- **Products**: Product catalog with variants and inventory
-- **Orders**: Customer orders with line items
-- **Files**: File metadata and storage information
+- **Users**: User accounts with authentication and profile information
+- **Books**: Book catalog with inventory, pricing, and metadata
+- **Articles**: Article content with status, pricing, and related articles
+- **Blogs**: Blog posts with comments, tags, and featured content
+- **BlogComments**: Comment system for blogs with parent-child relationships
+- **Categories**: Hierarchical category system for books, articles, and blogs
+- **Orders**: Customer orders with line items, payments, and tracking
+- **Payments**: Payment transactions with multiple payment methods
+- **Reviews**: Book reviews with ratings and helpfulness voting
+- **Addresses**: User shipping addresses
+- **Files**: File metadata and storage information (MinIO integration)
 - **Sessions**: User authentication sessions
+- **Roles**: Role-based access control system
+- **Invitations**: Store member invitation system
 
 ## 🔐 Authentication & Security
 
@@ -353,14 +384,11 @@ The application uses PostgreSQL with Drizzle ORM. Key entities include:
 
 ### Role-Based Access Control (RBAC)
 - **User Roles**: 
-  - `user` - Regular customer with shopping capabilities
-  - `admin` - Platform administrator with management access
+  - `user` - Regular user with content access and shopping capabilities
+  - `admin` - Platform administrator with full content and user management access
   - `superAdmin` - System owner with full platform control
-- **Store Member Roles**:
-  - `owner` - Store owner with full store management permissions
-  - `admin` - Store administrator with product and order management
-  - `member` - Store member with limited access to assigned tasks
-- **Invitation System**: Secure store member invitations with pending/accepted/rejected status tracking
+- **Content Roles**: Role-based permissions for managing books, articles, blogs, and media
+- **Invitation System**: Secure member invitations with pending/accepted/rejected status tracking
 
 ### Security Features
 - **Password Security**: Argon2 password hashing with secure salt generation
@@ -423,10 +451,59 @@ Ensure all environment variables are properly configured for your production env
 - Update documentation as needed
 - Follow the existing code style
 
+## 📖 Website Content Structure
+
+### Proposed Website Sections
+
+1. **Hero / Landing Section**
+   - Name, Title: *Ustaz Ahmedin Jebel – Preacher · Historian · Community Advocate*
+   - Tagline: *"Promoting faith, heritage and justice for Ethiopian Muslims"*
+   - Hero image/video of public speaking
+
+2. **Biography**
+   - Short and detailed biography versions
+   - Interactive timeline of key dates and events
+   - Roles and institutional affiliations
+
+3. **Focus Areas**
+   - Education & Dawah
+   - Historical Research & Publications
+   - Community Rights & Advocacy
+   - Youth Engagement & Mobilisation
+
+4. **Publications & Media**
+   - Book listings with purchase options
+   - Media gallery with embedded YouTube videos
+   - Links to social media channels
+
+5. **Advocacy & Impact**
+   - Community work showcase
+   - Notable quotes and speech excerpts
+   - Regional work mapping
+
+6. **Contact & Engagement**
+   - Speaking requests
+   - Contact form
+   - Social media links
+   - Newsletter subscription
+
+### Content Tone & Style
+
+- **Respectful**: Dignified language appropriate for a religious educator and public figure
+- **Service-Oriented**: Emphasize service, community upliftment, heritage, and education
+- **Factual**: Present controversies and challenges factually without partisan language
+- **Accessible**: Use clear language for general audience while maintaining accuracy
+- **Action-Oriented**: Include calls-to-action like "Watch latest talk", "Download book", "Follow on social media"
+
+> **Note**: The information on this website is based on publicly available sources. For the most current information or to verify specific details, users are advised to consult primary sources or official channels.
+
 ## 🔄 Version History
 
-- **v1.0.0**: Initial release with core e-commerce features
-- Multi-vendor marketplace functionality
-- Complete customer and vendor dashboards
-- Modern UI with responsive design
-- Secure authentication and authorization
+- **v1.0.0**: Initial release
+  - Portfolio website for Ustaz Ahmedin Jebel
+  - E-commerce functionality for books, articles, and blogs
+  - Complete admin panel for content management
+  - Multi-language support (English, Amharic, Oromo)
+  - Modern UI with dark/light theme support
+  - Secure authentication and authorization
+  - Order management and payment processing

@@ -135,7 +135,7 @@ export default function CreateBookForm({
   // console.log({ images });
 
   return (
-    <div className="space-y-6 p-6 mx-auto">
+    <div className="space-y-6 p-6 mx-auto bg-linear-to-br from-background via-card to-card dark:from-background dark:via-card dark:to-card">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="sm" onClick={() => router.back()}>
@@ -143,8 +143,8 @@ export default function CreateBookForm({
           Back
         </Button>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Create Book</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground dark:text-foreground">Create Book</h1>
+          <p className="text-muted-foreground dark:text-muted-foreground">
             Add a new book to your catalog
           </p>
         </div>
@@ -165,8 +165,8 @@ export default function CreateBookForm({
                     className={`flex items-center gap-2 px-3 py-2 rounded-md ${isActive
                       ? 'bg-primary text-primary-foreground'
                       : isCompleted
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-gray-100 text-gray-600'
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900/10 dark:text-green-100'
+                        : 'bg-gray-100 text-gray-600 dark:bg-gray-900/10 dark:text-gray-400'
                       }`}
                   >
                     <Icon className="h-4 w-4" />
@@ -174,7 +174,7 @@ export default function CreateBookForm({
                   </div>
                   {index < steps.length - 1 && (
                     <div
-                      className={`w-full h-0.5 mx-2 ${isCompleted ? 'bg-green-300' : 'bg-gray-200'
+                      className={`w-full h-0.5 mx-2 ${isCompleted ? 'bg-green-300 dark:bg-green-900/10' : 'bg-gray-200 dark:bg-gray-900/10'
                         }`}
                     />
                   )}

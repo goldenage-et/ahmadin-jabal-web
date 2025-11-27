@@ -1,9 +1,9 @@
-import { getRootRoles, getStoreRoles } from '@/actions/role.action';
+import { getRoles } from '@/actions/role.action';
 import { RolesClient } from './roles-client';
 
 export default async function RolesPage() {
-    const response = await getRootRoles();
-    const roles = response.error ? [] : response;
+    const roles = await getRoles();
+    const rolesArray = Array.isArray(roles) ? roles : [];
 
-    return <RolesClient initialRoles={roles} />;
+    return <RolesClient initialRoles={rolesArray} />;
 }

@@ -4,7 +4,7 @@ import {
   getBook,
   getBookAnalytics,
   getBookDetailAnalytics,
-} from '@/features/book/actions/book.action';
+} from '@/actions/book.action';
 import AdminBookDetail from '@/features/book/admin-book-details';
 import {
   getBookReviewAnalytics,
@@ -35,6 +35,8 @@ export default async function Page({ params }: PageProps) {
   if (bookAnalytics.error) {
     throw new Error('Book analytics not found');
   }
+
+  console.log('bookResponse: ', bookResponse)
 
   if (!bookResponse || bookResponse.error) {
     throw new Error('Book not found');

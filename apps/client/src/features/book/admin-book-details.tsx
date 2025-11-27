@@ -17,6 +17,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
+import { formatPrice } from '@/lib/format';
 import {
   EBookStatus,
   TBookDetail,
@@ -80,9 +81,9 @@ export default function AdminBookDetail({
     return (
       <div className='flex items-center justify-center h-64'>
         <div className='text-center'>
-          <Package className='h-12 w-12 text-muted-foreground mx-auto mb-4' />
+          <Package className='h-12 w-12 text-muted-foreground dark:text-muted-foreground mx-auto mb-4' />
           <h3 className='text-lg font-semibold'>Book not found</h3>
-          <p className='text-muted-foreground'>
+          <p className='text-muted-foreground dark:text-muted-foreground'>
             The book you're looking for doesn't exist.
           </p>
           <Button
@@ -135,11 +136,11 @@ export default function AdminBookDetail({
   const inventoryStatus = getInventoryStatus();
 
   return (
-    <div className='min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100'>
+    <div className='min-h-screen bg-linear-to-br from-background via-card to-card dark:from-background dark:via-card dark:to-card'>
       <div className='container mx-auto px-4 py-6 space-y-8'>
         {/* Modern Header with Breadcrumb */}
         <div className='space-y-4'>
-          <div className='flex items-center gap-2 text-sm text-muted-foreground'>
+          <div className='flex items-center gap-2 text-sm text-muted-foreground dark:text-muted-foreground'>
             <Link
               href='/admin/books'
               className='hover:text-foreground transition-colors'
@@ -147,13 +148,13 @@ export default function AdminBookDetail({
               Books
             </Link>
             <span>/</span>
-            <span className='text-foreground font-medium'>{book.title}</span>
+            <span className='text-foreground font-medium dark:text-foreground'>{book.title}</span>
           </div>
 
           <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4'>
             <div className='space-y-2'>
               <div className='flex items-center gap-3'>
-                <h1 className='text-2xl lg:text-4xl font-bold tracking-tight bg-linear-to-br from-slate-900 to-slate-700 bg-clip-text text-transparent'>
+                <h1 className='text-2xl lg:text-4xl font-bold tracking-tight bg-linear-to-br from-foreground to-foreground dark:from-foreground dark:to-foreground bg-clip-text text-transparent'>
                   {book.title}
                 </h1>
                 <Badge
@@ -164,7 +165,7 @@ export default function AdminBookDetail({
                 {book.featured && (
                   <Badge
                     variant='secondary'
-                    className='text-xs bg-yellow-100 text-yellow-800 border-yellow-200'
+                    className='text-xs bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/10 dark:text-yellow-100 dark:border-yellow-200'
                   >
                     <Star className='h-3 w-3 mr-1' />
                     Featured
@@ -204,34 +205,34 @@ export default function AdminBookDetail({
         {/* Modern Overview Cards */}
         {!isEditing && (
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6'>
-            <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-linear-to-br from-green-50 to-emerald-50'>
+            <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-linear-to-br from-green-50 to-emerald-50 dark:from-green-900/10 dark:to-emerald-900/10'>
               <CardContent className='p-6'>
                 <div className='flex items-center justify-between'>
                   <div className='space-y-2'>
-                    <p className='text-sm font-medium text-green-700'>Price</p>
+                    <p className='text-sm font-medium text-green-700 dark:text-green-400'>Price</p>
                     <div className='space-y-1'>
-                      <p className='text-2xl font-bold text-green-900'>
-                        ${book.price}
+                      <p className='text-2xl font-bold text-green-900 dark:text-green-100'>
+                        {formatPrice(book.price)}
                       </p>
                       {book.purchasePrice && (
-                        <p className='text-sm text-green-600'>
-                          Purchase Price: ${book.purchasePrice}
+                        <p className='text-sm text-green-600 dark:text-green-400'>
+                          Purchase Price: {formatPrice(book.purchasePrice)}
                         </p>
                       )}
                     </div>
                   </div>
                   <div className='p-3 rounded-full bg-green-100 group-hover:bg-green-200 transition-colors'>
-                    <DollarSign className='h-6 w-6 text-green-600' />
+                    <DollarSign className='h-6 w-6 text-green-600 dark:text-green-400' />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-linear-to-br from-blue-50 to-indigo-50'>
+            <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-linear-to-br from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10'>
               <CardContent className='p-6'>
                 <div className='flex items-center justify-between'>
                   <div className='space-y-2'>
-                    <p className='text-sm font-medium text-blue-700'>
+                    <p className='text-sm font-medium text-blue-700 dark:text-blue-400'>
                       Inventory
                     </p>
                     <div className='space-y-1'>
@@ -242,7 +243,7 @@ export default function AdminBookDetail({
                           ? '∞'
                           : book.inventoryQuantity}
                       </p>
-                      <p className='text-sm text-blue-600'>
+                      <p className='text-sm text-blue-600 dark:text-blue-400'>
                         {inventoryStatus.status === 'unlimited'
                           ? 'Unlimited'
                           : inventoryStatus.status === 'out-of-stock'
@@ -254,13 +255,13 @@ export default function AdminBookDetail({
                     </div>
                   </div>
                   <div className='p-3 rounded-full bg-blue-100 group-hover:bg-blue-200 transition-colors'>
-                    <Truck className='h-6 w-6 text-blue-600' />
+                    <Truck className='h-6 w-6 text-blue-600 dark:text-blue-400' />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-linear-to-br from-yellow-50 to-amber-50'>
+            <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-linear-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/10 dark:to-amber-900/10'>
               <CardContent className='p-6'>
                 <div className='flex items-center justify-between'>
                   <div className='space-y-2'>
@@ -286,11 +287,11 @@ export default function AdminBookDetail({
               </CardContent>
             </Card>
 
-            <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-linear-to-br from-purple-50 to-violet-50'>
+            <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-linear-to-br from-purple-50 to-violet-50 dark:from-purple-900/10 dark:to-violet-900/10'>
               <CardContent className='p-6'>
                 <div className='flex items-center justify-between'>
                   <div className='space-y-2'>
-                    <p className='text-sm font-medium text-purple-700'>
+                    <p className='text-sm font-medium text-purple-700 dark:text-purple-400'>
                       Status
                     </p>
                     <div className='space-y-2'>
@@ -305,7 +306,7 @@ export default function AdminBookDetail({
                       {book.featured && (
                         <Badge
                           variant='secondary'
-                          className='text-xs bg-yellow-100 text-yellow-800 border-yellow-200'
+                          className='text-xs bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/10 dark:text-yellow-100 dark:border-yellow-200'
                         >
                           <Star className='h-3 w-3 mr-1' />
                           Featured
@@ -314,7 +315,7 @@ export default function AdminBookDetail({
                     </div>
                   </div>
                   <div className='p-3 rounded-full bg-purple-100 group-hover:bg-purple-200 transition-colors'>
-                    <CheckCircle className='h-6 w-6 text-purple-600' />
+                    <CheckCircle className='h-6 w-6 text-purple-600 dark:text-purple-400' />
                   </div>
                 </div>
               </CardContent>
@@ -376,16 +377,16 @@ export default function AdminBookDetail({
                   </CardHeader>
                   <CardContent className='space-y-6'>
                     <div className='space-y-4'>
-                      <div className='flex items-center justify-between p-3 bg-slate-50 rounded-lg'>
+                      <div className='flex items-center justify-between p-3 bg-slate-50 rounded-lg dark:bg-slate-900/10'>
                         <div>
-                          <Label className='text-sm font-medium text-slate-600'>
+                          <Label className='text-sm font-medium text-slate-600 dark:text-slate-400'>
                             Category
                           </Label>
-                          <p className='text-sm font-semibold text-slate-900'>
+                          <p className='text-sm font-semibold text-slate-900 dark:text-slate-100'>
                             {category?.name || 'No Category'}
                           </p>
                         </div>
-                        <Package className='h-5 w-5 text-slate-400' />
+                        <Package className='h-5 w-5 text-slate-400 dark:text-slate-400' />
                       </div>
                     </div>
 
@@ -393,18 +394,18 @@ export default function AdminBookDetail({
 
                     <div className='space-y-3'>
                       <div className='flex items-center justify-between'>
-                        <Label className='text-sm font-medium text-slate-600'>
+                        <Label className='text-sm font-medium text-slate-600 dark:text-slate-400'>
                           Created
                         </Label>
-                        <p className='text-sm text-slate-900'>
+                        <p className='text-sm text-slate-900 dark:text-slate-100'>
                           {format(new Date(createdAt), 'MMM dd, yyyy')}
                         </p>
                       </div>
                       <div className='flex items-center justify-between'>
-                        <Label className='text-sm font-medium text-slate-600'>
+                        <Label className='text-sm font-medium text-slate-600 dark:text-slate-400'>
                           Updated
                         </Label>
-                        <p className='text-sm text-slate-900'>
+                        <p className='text-sm text-slate-900 dark:text-slate-100'>
                           {format(new Date(updatedAt), 'MMM dd, yyyy')}
                         </p>
                       </div>
@@ -416,7 +417,7 @@ export default function AdminBookDetail({
 
             <TabsContent value='overview' className='space-y-8 mt-8'>
               {/* Enhanced Book Information */}
-              <Card className='border-0 shadow-lg'>
+              <Card className='border-0 shadow-lg dark:bg-slate-900/10'>
                 <CardHeader className='pb-4'>
                   <CardTitle className='text-xl font-semibold'>
                     Book Information
@@ -425,16 +426,16 @@ export default function AdminBookDetail({
                 <CardContent>
                   <div className='space-y-6'>
                     <div className='space-y-3'>
-                      <h3 className='text-xl font-semibold text-slate-900'>
+                      <h3 className='text-xl font-semibold text-slate-900 dark:text-slate-100'>
                         {book.title}
                       </h3>
-                      <p className='text-slate-600 leading-relaxed'>
+                      <p className='text-slate-600 leading-relaxed dark:text-slate-400'>
                         {book.description}
                       </p>
                     </div>
                     {book.tags && book.tags.length > 0 && (
                       <div className='space-y-3'>
-                        <Label className='text-sm font-medium text-slate-600'>
+                        <Label className='text-sm font-medium text-slate-600 dark:text-slate-400'>
                           Tags
                         </Label>
                         <div className='flex flex-wrap gap-2'>
@@ -442,7 +443,7 @@ export default function AdminBookDetail({
                             <Badge
                               key={tag}
                               variant='secondary'
-                              className='text-xs px-3 py-1'
+                              className='text-xs px-3 py-1 dark:bg-slate-900/10 dark:text-slate-100'
                             >
                               {tag}
                             </Badge>
@@ -468,22 +469,22 @@ export default function AdminBookDetail({
             <TabsContent value='reviews' className='space-y-8 mt-8'>
               {/* Review Analytics Overview */}
               <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
-                <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-linear-to-br from-yellow-50 to-amber-50'>
+                <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-linear-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/10 dark:to-amber-900/10'>
                   <CardContent className='p-6'>
                     <div className='flex items-center justify-between'>
                       <div className='space-y-2'>
-                        <p className='text-sm font-medium text-yellow-700'>
+                        <p className='text-sm font-medium text-yellow-700 dark:text-yellow-400'>
                           Average Rating
                         </p>
                         <div className='space-y-1'>
                           <div className='flex items-center gap-1'>
-                            <p className='text-2xl font-bold text-yellow-900'>
+                            <p className='text-2xl font-bold text-yellow-900 dark:text-yellow-100'>
                               {reviewAnalytics?.averageRating?.toFixed(1) ||
                                 book.rating}
                             </p>
                             <Star className='h-5 w-5 text-yellow-500 fill-current' />
                           </div>
-                          <p className='text-sm text-yellow-600'>
+                          <p className='text-sm text-yellow-600 dark:text-yellow-400'>
                             {reviewAnalytics?.totalReviews ||
                               book.reviewCount}{' '}
                             reviews
@@ -491,68 +492,68 @@ export default function AdminBookDetail({
                         </div>
                       </div>
                       <div className='p-3 rounded-full bg-yellow-100 group-hover:bg-yellow-200 transition-colors'>
-                        <Star className='h-6 w-6 text-yellow-600' />
+                        <Star className='h-6 w-6 text-yellow-600 dark:text-yellow-400' />
                       </div>
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-linear-to-br from-green-50 to-emerald-50'>
+                <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-linear-to-br from-green-50 to-emerald-50 dark:from-green-900/10 dark:to-emerald-900/10'>
                   <CardContent className='p-6'>
                     <div className='flex items-center justify-between'>
                       <div className='space-y-2'>
-                        <p className='text-sm font-medium text-green-700'>
+                        <p className='text-sm font-medium text-green-700 dark:text-green-400'>
                           5-Star Reviews
                         </p>
-                        <p className='text-2xl font-bold text-green-900'>
+                        <p className='text-2xl font-bold text-green-900 dark:text-green-100'>
                           {reviewAnalytics?.ratingDistribution?.fiveStar || 0}
                         </p>
-                        <p className='text-sm text-green-600'>5-star reviews</p>
+                        <p className='text-sm text-green-600 dark:text-green-400'>5-star reviews</p>
                       </div>
                       <div className='p-3 rounded-full bg-green-100 group-hover:bg-green-200 transition-colors'>
-                        <CheckCircle2 className='h-6 w-6 text-green-600' />
+                        <CheckCircle2 className='h-6 w-6 text-green-600 dark:text-green-400' />
                       </div>
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-linear-to-br from-blue-50 to-indigo-50'>
+                <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-linear-to-br from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10'>
                   <CardContent className='p-6'>
                     <div className='flex items-center justify-between'>
                       <div className='space-y-2'>
-                        <p className='text-sm font-medium text-blue-700'>
+                        <p className='text-sm font-medium text-blue-700 dark:text-blue-400'>
                           Verified Reviews
                         </p>
-                        <p className='text-2xl font-bold text-blue-900'>
+                        <p className='text-2xl font-bold text-blue-900 dark:text-blue-100'>
                           {reviewAnalytics?.verifiedReviews || 0}
                         </p>
-                        <p className='text-sm text-blue-600'>
+                        <p className='text-sm text-blue-600 dark:text-blue-400'>
                           From verified purchases
                         </p>
                       </div>
                       <div className='p-3 rounded-full bg-blue-100 group-hover:bg-blue-200 transition-colors'>
-                        <CheckCircle className='h-6 w-6 text-blue-600' />
+                        <CheckCircle className='h-6 w-6 text-blue-600 dark:text-blue-400' />
                       </div>
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-linear-to-br from-purple-50 to-violet-50'>
+                <Card className='group hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-linear-to-br from-purple-50 to-violet-50 dark:from-purple-900/10 dark:to-violet-900/10'>
                   <CardContent className='p-6'>
                     <div className='flex items-center justify-between'>
                       <div className='space-y-2'>
-                        <p className='text-sm font-medium text-purple-700'>
+                        <p className='text-sm font-medium text-purple-700 dark:text-purple-400'>
                           Pending Reviews
                         </p>
-                        <p className='text-2xl font-bold text-purple-900'>
+                        <p className='text-2xl font-bold text-purple-900 dark:text-purple-100'>
                           {reviewAnalytics?.pendingReviews || 0}
                         </p>
-                        <p className='text-sm text-purple-600'>
+                        <p className='text-sm text-purple-600 dark:text-purple-400'>
                           Awaiting moderation
                         </p>
                       </div>
                       <div className='p-3 rounded-full bg-purple-100 group-hover:bg-purple-200 transition-colors'>
-                        <MessageSquare className='h-6 w-6 text-purple-600' />
+                        <MessageSquare className='h-6 w-6 text-purple-600 dark:text-purple-400' />
                       </div>
                     </div>
                   </CardContent>
@@ -575,16 +576,16 @@ export default function AdminBookDetail({
           <AlertDialogContent className='max-w-md'>
             <AlertDialogHeader>
               <div className='flex items-center gap-3 mb-2'>
-                <div className='w-10 h-10 bg-red-100 rounded-full flex items-center justify-center'>
-                  <Trash2 className='h-5 w-5 text-red-600' />
+                <div className='w-10 h-10 bg-red-100 rounded-full flex items-center justify-center dark:bg-red-900/10'>
+                  <Trash2 className='h-5 w-5 text-red-600 dark:text-red-400' />
                 </div>
                 <AlertDialogTitle className='text-lg'>
                   Delete Book
                 </AlertDialogTitle>
               </div>
-              <AlertDialogDescription className='text-slate-600'>
+              <AlertDialogDescription className='text-slate-600 dark:text-slate-400'>
                 Are you sure you want to delete{' '}
-                <span className='font-semibold text-slate-900'>
+                <span className='font-semibold text-slate-900 dark:text-slate-100'>
                   "{book.title}"
                 </span>
                 ? This action cannot be undone and will permanently remove the
@@ -592,10 +593,10 @@ export default function AdminBookDetail({
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter className='gap-3'>
-              <AlertDialogCancel className='flex-1'>Cancel</AlertDialogCancel>
+              <AlertDialogCancel className='flex-1 dark:bg-slate-900/10 dark:text-slate-100'>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleDelete}
-                className='flex-1 bg-red-600 hover:bg-red-700 focus:ring-red-600'
+                className='flex-1 bg-red-600 hover:bg-red-700 focus:ring-red-600 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-600'
               >
                 <Trash2 className='h-4 w-4 mr-2' />
                 Delete Book

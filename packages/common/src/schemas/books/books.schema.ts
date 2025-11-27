@@ -51,6 +51,7 @@ export const ZBook = z.object({
   categoryId: z.uuid().optional().nullable(),
   subcategoryId: z.uuid().optional().nullable(),
   title: z.string().min(1, 'Title is required').max(255, 'Title must be 255 characters or less'),
+  slug: z.string().max(255, 'Slug must be 255 characters or less').nullable().optional(),
   description: z.string().optional().nullable(),
   price: z.coerce.number(),
   purchasePrice: z.coerce.number().optional().nullable(),
@@ -81,6 +82,7 @@ export const ZBookBasic = ZBook.pick({
   categoryId: true,
   subcategoryId: true,
   title: true,
+  slug: true,
   description: true,
   price: true,
   purchasePrice: true,
@@ -114,6 +116,7 @@ export const ZCreateBook = z.object({
       BOOK_NAME_MAX_LENGTH,
       `Book name must be less than ${BOOK_NAME_MAX_LENGTH} characters`,
     ),
+  slug: z.string().max(255, 'Slug must be 255 characters or less').optional(),
   description: z
     .string()
     .max(
@@ -185,6 +188,7 @@ export const ZUpdateBook = z.object({
       `Book name must be less than ${BOOK_NAME_MAX_LENGTH} characters`,
     )
     .optional(),
+  slug: z.string().max(255, 'Slug must be 255 characters or less').optional(),
   description: z
     .string()
     .max(
@@ -252,7 +256,13 @@ export const ZUpdateBook = z.object({
 });
 export type TUpdateBook = z.infer<typeof ZUpdateBook>;
 
-export const ZBookQueryUnique = z.object({ id: z.uuid('Invalid book ID format') });
+export const ZBookQueryUnique = z.object({
+  id: z.uuid('Invalid book ID format').optional(),
+  slug: z.string().optional(),
+  isbn: z.string().optional(),
+}).refine((data) => data.id || data.slug || data.isbn, {
+  message: 'Either id, slug, or isbn must be provided',
+});
 export type TBookQueryUnique = z.infer<typeof ZBookQueryUnique>;
 
 export const ZBookQueryFilter = z.object({

@@ -114,9 +114,9 @@ export function Navigation({
   };
 
   return (
-    <nav className='bg-white border-b sticky top-0 z-50'>
+    <nav className='bg-white/80 dark:bg-background/80 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-800/50 sticky top-0 z-50 shadow-sm dark:shadow-gray-900/20'>
       {/* Top Row - Header */}
-      <div className='bg-white border-b'>
+      <div className='bg-transparent border-b border-gray-200/50 dark:border-gray-800/50'>
         <div className='mx-auto px-4 sm:px-6 lg:px-8'>
           <div className='flex items-center justify-between h-12'>
             {/* Logo */}
@@ -125,7 +125,7 @@ export function Navigation({
                 <div className='w-8 h-8 bg-green-600 rounded flex items-center justify-center'>
                   <span className='text-white font-bold text-lg'>U</span>
                 </div>
-                <span className='text-xl font-bold text-gray-900 hidden sm:block'>
+                <span className='text-xl font-bold text-gray-900 dark:text-white hidden sm:block'>
                   Ustaz Ahmedin Jebel
                 </span>
               </Link>
@@ -176,14 +176,14 @@ export function Navigation({
       </div>
 
       {/* Bottom Row - Categories */}
-      <div className='bg-white'>
+      <div className='bg-transparent'>
         <div className='px-4 sm:px-6 lg:px-8'>
           <div className='flex items-center h-12'>
             {/* All Categories Button */}
             <div className='relative'>
               <Button
                 variant='ghost'
-                className='flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 rounded-md px-4 py-2 mr-6'
+                className='flex items-center space-x-2 bg-gray-100/80 dark:bg-gray-800/80 backdrop-blur-sm hover:bg-gray-200/80 dark:hover:bg-gray-700/80 rounded-md px-4 py-2 mr-6 border border-gray-200/50 dark:border-gray-700/50'
                 onMouseEnter={() => setIsCategoryDropdownOpen(true)}
                 onMouseLeave={() => setIsCategoryDropdownOpen(false)}
               >
@@ -195,15 +195,15 @@ export function Navigation({
               {/* Multi-column Dropdown */}
               {isCategoryDropdownOpen && (
                 <div
-                  className='absolute top-full left-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 w-[800px]'
+                  className='absolute top-full left-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border border-gray-200/50 dark:border-gray-700/50 rounded-lg shadow-xl dark:shadow-gray-900/50 z-50 w-[800px]'
                   onMouseEnter={() => setIsCategoryDropdownOpen(true)}
                   onMouseLeave={() => setIsCategoryDropdownOpen(false)}
                 >
                   <div className='flex'>
                     {/* Left Column - Main Categories */}
-                    <div className='w-48 lg:w-64 border-r border-gray-200'>
+                    <div className='w-48 lg:w-64 border-r border-gray-200/50 dark:border-gray-700/50'>
                       <div className='p-4'>
-                        <div className='flex items-center space-x-2 text-sm font-medium text-gray-500 mb-3'>
+                        <div className='flex items-center space-x-2 text-sm font-medium text-gray-500 dark:text-gray-400 mb-3'>
                           <Menu className='h-4 w-4' />
                           <span>All Categories</span>
                           <ChevronUp className='h-3 w-3' />
@@ -214,8 +214,8 @@ export function Navigation({
                               key={category.name}
                               href={category.href}
                               className={`flex items-center space-x-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${activeCategory === index
-                                ? 'bg-gray-100 text-black font-medium'
-                                : 'text-gray-700 hover:bg-gray-50'
+                                ? 'bg-gray-100 dark:bg-gray-700 text-black dark:text-white font-medium'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                                 }`}
                               onMouseEnter={() => setActiveCategory(index)}
                             >
@@ -241,7 +241,7 @@ export function Navigation({
                           mainCategories[activeCategory]?.subcategories || {},
                         ).map(([sectionName, items], sectionIndex) => (
                           <div key={sectionName} className='space-y-3'>
-                            <h4 className='font-semibold text-sm text-gray-900'>
+                            <h4 className='font-semibold text-sm text-gray-900 dark:text-white'>
                               {sectionName}
                             </h4>
                             <div className='space-y-2'>
@@ -249,7 +249,7 @@ export function Navigation({
                                 <Link
                                   key={itemIndex}
                                   href={`/books?categoryName=${encodeURIComponent(item)}`}
-                                  className='block text-sm text-gray-600 hover:text-orange-500 transition-colors'
+                                  className='block text-sm text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors'
                                 >
                                   {item}
                                 </Link>
@@ -268,45 +268,45 @@ export function Navigation({
             <div className='flex items-center space-x-6'>
               <Link
                 href='/'
-                className='text-sm font-medium text-gray-700 hover:text-primary transition-colors'
+                className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors'
               >
                 {t('home')}
               </Link>
               <Link
                 href='/about'
-                className='text-sm font-medium text-gray-700 hover:text-primary transition-colors'
+                className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors'
               >
                 {t('about')}
               </Link>
               <Link
                 href='/publications'
-                className='text-sm font-medium text-gray-700 hover:text-primary transition-colors'
+                className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors'
               >
                 {t('publications')}
               </Link>
               <Link
                 href='/media'
-                className='text-sm font-medium text-gray-700 hover:text-primary transition-colors'
+                className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors'
               >
                 {t('media')}
               </Link>
               <Link
                 href='/advocacy'
-                className='text-sm font-medium text-gray-700 hover:text-primary transition-colors'
+                className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors'
               >
                 {t('advocacy')}
               </Link>
               <Link
                 href='/contact'
-                className='text-sm font-medium text-gray-700 hover:text-primary transition-colors'
+                className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors'
               >
                 {t('contact')}
               </Link>
               <Link
                 href='/books'
-                className='text-sm font-medium text-gray-700 hover:text-primary transition-colors'
+                className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors'
               >
-                {t('shop')}
+                {t('book')}
               </Link>
             </div>
           </div>
@@ -315,13 +315,13 @@ export function Navigation({
 
       {/* Mobile menu */}
       <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-        <SheetContent side='right' className='w-80'>
+        <SheetContent side='right' className='w-80 bg-white dark:bg-gray-900 border-l dark:border-gray-800'>
           <SheetHeader>
             <SheetTitle className='flex items-center space-x-2'>
               <div className='w-6 h-6 bg-green-600 rounded flex items-center justify-center'>
                 <span className='text-white font-bold text-sm'>U</span>
               </div>
-              <span>Ustaz Ahmedin Jebel</span>
+              <span className='dark:text-white'>Ustaz Ahmedin Jebel</span>
             </SheetTitle>
           </SheetHeader>
           <div className='mt-6 space-y-6'>
@@ -334,55 +334,55 @@ export function Navigation({
 
             {/* Mobile Navigation Links */}
             <div>
-              <h3 className='text-sm font-medium text-gray-900 mb-3'>
+              <h3 className='text-sm font-medium text-gray-900 dark:text-white mb-3'>
                 Navigation
               </h3>
               <div className='space-y-2'>
                 <Link
                   href='/'
-                  className='block text-sm text-gray-600 hover:text-gray-900 py-2'
+                  className='block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white py-2'
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {t('home')}
                 </Link>
                 <Link
                   href='/about'
-                  className='block text-sm text-gray-600 hover:text-gray-900 py-2'
+                  className='block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white py-2'
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {t('about')}
                 </Link>
                 <Link
                   href='/publications'
-                  className='block text-sm text-gray-600 hover:text-gray-900 py-2'
+                  className='block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white py-2'
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {t('publications')}
                 </Link>
                 <Link
                   href='/media'
-                  className='block text-sm text-gray-600 hover:text-gray-900 py-2'
+                  className='block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white py-2'
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {t('media')}
                 </Link>
                 <Link
                   href='/advocacy'
-                  className='block text-sm text-gray-600 hover:text-gray-900 py-2'
+                  className='block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white py-2'
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {t('advocacy')}
                 </Link>
                 <Link
                   href='/contact'
-                  className='block text-sm text-gray-600 hover:text-gray-900 py-2'
+                  className='block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white py-2'
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {t('contact')}
                 </Link>
                 <Link
                   href='/books'
-                  className='block text-sm text-gray-600 hover:text-gray-900 py-2'
+                  className='block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white py-2'
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {t('shop')}
@@ -395,7 +395,7 @@ export function Navigation({
               <div className='flex items-center justify-between'>
                 <Link
                   href='/books/wishlist'
-                  className='flex items-center text-sm text-gray-600 hover:text-gray-900'
+                  className='flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <Heart className='h-5 w-5 mr-3' />
@@ -409,7 +409,7 @@ export function Navigation({
               <div className='flex items-center justify-between'>
                 <Link
                   href='/books/cart'
-                  className='flex items-center text-sm text-gray-600 hover:text-gray-900'
+                  className='flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <ShoppingCart className='h-5 w-5 mr-3' />
@@ -420,7 +420,7 @@ export function Navigation({
 
               <Link
                 href='/profile'
-                className='flex items-center text-sm text-gray-600 hover:text-gray-900'
+                className='flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 <UserIcon className='h-5 w-5 mr-3' />
@@ -429,14 +429,14 @@ export function Navigation({
 
               <Link
                 href='/vendor/dashboard'
-                className='flex items-center text-sm text-gray-600 hover:text-gray-900'
+                className='flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 <Store className='h-5 w-5 mr-3' />
                 Vendor Dashboard
               </Link>
 
-              <div className='pt-4 border-t'>
+              <div className='pt-4 border-t dark:border-gray-800'>
                 <Button
                   variant='ghost'
                   size='sm'

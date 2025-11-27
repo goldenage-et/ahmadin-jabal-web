@@ -273,31 +273,38 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
             <CardContent>
               <div className="space-y-4">
                 {order.quantity > 0 ? (
-                  Array.from({ length: order.quantity }).map((_, index) => (
-                    <div key={index}>
-                      <div className="flex items-start space-x-4">
-                        <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
-                          <Package className="h-8 w-8 text-gray-400" />
-                        </div>
+                  Array.from({ length: order.quantity }).map((_, index) => {
+                    // Calculate individual item price (total / quantity)
+                    const itemPrice = order.total / order.quantity;
+                    // Each placeholder represents 1 unit
+                    const itemQuantity = 1;
 
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-gray-900 mb-1">
-                            Book {index + 1}
-                          </h4>
-                          <div className="flex items-center space-x-4 text-sm text-gray-600">
-                            <span>Quantity: <span className="font-medium text-gray-900">{order.quantity}</span></span>
-                            <span>•</span>
-                            <span>Price: <span className="font-medium text-gray-900">{formatCurrency(order.total, order.currency)}</span></span>
+                    return (
+                      <div key={`${order.id}-item-${index}`}>
+                        <div className="flex items-start space-x-4">
+                          <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
+                            <Package className="h-8 w-8 text-gray-400" />
+                          </div>
+
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-gray-900 mb-1">
+                              Book {index + 1}
+                            </h4>
+                            <div className="flex items-center space-x-4 text-sm text-gray-600">
+                              <span>Quantity: <span className="font-medium text-gray-900">{itemQuantity}</span></span>
+                              <span>•</span>
+                              <span>Price: <span className="font-medium text-gray-900">{formatCurrency(itemPrice, order.currency)}</span></span>
+                            </div>
+                          </div>
+
+                          <div className="text-right shrink-0">
+                            <p className="font-bold text-lg text-gray-900">{formatCurrency(itemPrice, order.currency)}</p>
                           </div>
                         </div>
-
-                        <div className="text-right shrink-0">
-                          <p className="font-bold text-lg text-gray-900">{formatCurrency(order.total, order.currency)}</p>
-                        </div>
+                        {index < order.quantity - 1 && <Separator className="mt-4" />}
                       </div>
-                      {index < order.quantity - 1 && <Separator className="mt-4" />}
-                    </div>
-                  ))
+                    );
+                  })
                 ) : (
                   <div className="flex items-center justify-center p-8 border-2 border-dashed border-gray-200 rounded-lg">
                     <div className="text-center">

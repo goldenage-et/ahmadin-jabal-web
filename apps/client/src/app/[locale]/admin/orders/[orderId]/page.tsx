@@ -67,7 +67,7 @@ export default async function OrderDetailPage({
     return (
       <div className='flex items-center justify-center min-h-screen'>
         <div className='text-center'>
-          <h2 className='text-2xl font-bold text-gray-900 mb-4'>
+          <h2 className='text-2xl font-bold text-foreground dark:text-foreground mb-4'>
             Order not found
           </h2>
           <Button asChild>
@@ -109,10 +109,10 @@ export default async function OrderDetailPage({
       <div className='flex flex-col md:flex-row items-start md:items-center justify-between gap-4'>
         <div className='flex flex-col md:flex-row items-start md:items-center gap-4'>
           <div>
-            <h1 className='text-3xl font-bold text-gray-900'>
+            <h1 className='text-3xl font-bold text-foreground dark:text-foreground'>
               {order.orderNumber}
             </h1>
-            <p className='text-gray-600'>Order Details</p>
+            <p className='text-muted-foreground dark:text-muted-foreground'>Order Details</p>
           </div>
         </div>
         <div className='flex items-center gap-2'>

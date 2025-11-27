@@ -1,13 +1,12 @@
-import { getAuth } from '@/actions/auth.action';
 import { getCategories } from '@/actions/categories.action';
-import CreateBookForm from '@/features/book/components/create-book-form';
+import CreateBookForm from '@/features/book/create-book-form';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Link } from 'lucide-react';
 
 export default async function CreateBookPage() {
   const categoryResponse = await getCategories();
   return (
-    <div className='space-y-6 p-6  mx-auto'>
+    <div className='space-y-6 p-6  mx-auto bg-linear-to-br from-background via-card to-card dark:from-background dark:via-card dark:to-card'>
       {/* Header */}
       <div className='flex items-center gap-4'>
         <Button variant='ghost' size='sm' asChild>
@@ -17,8 +16,8 @@ export default async function CreateBookPage() {
           </Link>
         </Button>
         <div>
-          <h1 className='text-3xl font-bold tracking-tight'>Create Book</h1>
-          <p className='text-muted-foreground'>
+          <h1 className='text-3xl font-bold tracking-tight text-foreground dark:text-foreground'>Create Book</h1>
+          <p className='text-muted-foreground dark:text-muted-foreground'>
             Add a new book to your catalog
           </p>
         </div>

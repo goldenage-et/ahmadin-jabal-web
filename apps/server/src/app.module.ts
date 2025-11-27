@@ -23,6 +23,8 @@ import { StorageModule } from './providers/storage/storage.module';
 import { SeedModule } from './seed/seed.module';
 import { AdminModule } from './features/admin/admin.module';
 import { BooksModule } from './features/books/books.module';
+import { ArticlesModule } from './features/articles/articles.module';
+import { PublicationsModule } from './features/publications/publications.module';
 
 @Module({
   imports: [
@@ -54,6 +56,8 @@ import { BooksModule } from './features/books/books.module';
     PaymentsModule,
     TransactionsModule,
     InvitationsModule,
+    ArticlesModule,
+    PublicationsModule,
   ],
   controllers: [],
   providers: [ConfigService],

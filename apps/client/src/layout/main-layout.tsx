@@ -55,14 +55,14 @@ export function MainLayout({
         className='z-50'
       >
         <div className='relative' ref={ref}>
-          <Sidebar collapsible={collapsible} className='z-50 bg-background1'>
+          <Sidebar collapsible={collapsible} className='z-50 bg-sidebar'>
             <SidebarHeader className='overflow-hidden'>
               <Link href='/admin/' className='block px-2 py-2'>
                 <div className='flex items-center gap-2'>
                   <div className='w-8 h-8 aspect-square shrink-0 bg-purple-500 rounded-lg flex items-center justify-center'>
                     <span className='text-white font-bold text-lg'>A</span>
                   </div>
-                  <span className='text-xl font-extrabold tracking-tight text-gray-800 text-nowrap'>
+                  <span className='text-xl font-extrabold tracking-tight text-sidebar-foreground text-nowrap'>
                     ahmadin
                   </span>
                 </div>
