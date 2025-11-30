@@ -347,38 +347,43 @@ model Session {
 }
 
 model User {
-  id                    String                 @id @default(uuid())
-  firstName             String
-  middleName            String
-  lastName              String?
-  email                 String                 @unique()
-  phone                 String?                @unique
-  emailVerified         Boolean
-  active                Boolean
-  image                 String?
-  ltpHash               String?
-  otpHash               String?
-  deletedAt             DateTime?
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @updatedAt
-  accounts              Account[]
-  addresses             Address[]
-  invitations           Invitation[]
-  orders                Order[]
-  payments              Payment[]
-  bookReviews           BookReview[]
-  reviewHelpful         ReviewHelpful[]
-  reviewReports         ReviewReport[]
-  searchAnalyticsEvents SearchAnalyticsEvent[]
-  sessions              Session[]
-  transactions          Transaction[]
-  articles              Article[]
-  publications          Publication[]
-  publicationComments   PublicationComment[]
-  media                 Media[]                @relation("MediaUploader")
-  videos                Video[]                @relation("VideoUploader")
-  audios                Audio[]                @relation("AudioUploader")
-  photos                Photo[]                @relation("PhotoUploader")
+  id                      String                   @id @default(uuid())
+  firstName               String
+  middleName              String
+  lastName                String?
+  email                   String                   @unique()
+  phone                   String?                  @unique
+  emailVerified           Boolean
+  active                  Boolean
+  image                   String?
+  ltpHash                 String?
+  otpHash                 String?
+  deletedAt               DateTime?
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  accounts                Account[]
+  addresses               Address[]
+  invitations             Invitation[]
+  orders                  Order[]
+  payments                Payment[]
+  bookReviews             BookReview[]
+  reviewHelpful           ReviewHelpful[]
+  reviewReports           ReviewReport[]
+  searchAnalyticsEvents   SearchAnalyticsEvent[]
+  sessions                Session[]
+  transactions            Transaction[]
+  articles                Article[]
+  publications            Publication[]
+  publicationComments     PublicationComment[]
+  media                   Media[]                  @relation("MediaUploader")
+  videos                  Video[]                  @relation("VideoUploader")
+  audios                  Audio[]                  @relation("AudioUploader")
+  photos                  Photo[]                  @relation("PhotoUploader")
+  galleries               Gallery[]                @relation("GalleryCreator")
+  newsletters             Newsletter[]             @relation("NewsletterCreator")
+  newsletterSubscriptions NewsletterSubscription[] @relation("NewsletterSubscriber")
+  contactSubmissions      ContactSubmission[]      @relation("ContactSubmissions")
+  contactReplies          ContactSubmission[]      @relation("ContactReplies")
 
   roles Role[] @relation("user_roles")
 
@@ -717,33 +722,34 @@ model Audio {
 }
 
 model Photo {
-  id            String      @id @default(uuid())
-  title         String?     @db.VarChar(255)
-  titleEn       String?     @db.VarChar(255)
-  caption       String?     @db.Text
-  alt           String?     @db.VarChar(255) // Alt text for accessibility
-  category      String?     @db.VarChar(100) // e.g., "Event", "Portrait", "Community", "Lecture"
-  url           String      @db.VarChar(500)
-  thumbnail     String?     @db.VarChar(500)
+  id            String         @id @default(uuid())
+  title         String?        @db.VarChar(255)
+  titleEn       String?        @db.VarChar(255)
+  caption       String?        @db.Text
+  alt           String?        @db.VarChar(255) // Alt text for accessibility
+  category      String?        @db.VarChar(100) // e.g., "Event", "Portrait", "Community", "Lecture"
+  url           String         @db.VarChar(500)
+  thumbnail     String?        @db.VarChar(500)
   fileSize      Int? // File size in bytes
-  mimeType      String?     @db.VarChar(100)
+  mimeType      String?        @db.VarChar(100)
   width         Int?
   height        Int?
-  source        MediaSource @default(upload)
-  externalId    String?     @db.VarChar(255) // For external photo sources
-  viewCount     Int         @default(0)
-  likeCount     Int         @default(0)
-  downloadCount Int         @default(0)
-  featured      Boolean     @default(false)
-  status        MediaStatus @default(active)
+  source        MediaSource    @default(upload)
+  externalId    String?        @db.VarChar(255) // For external photo sources
+  viewCount     Int            @default(0)
+  likeCount     Int            @default(0)
+  downloadCount Int            @default(0)
+  featured      Boolean        @default(false)
+  status        MediaStatus    @default(active)
   metadata      Json? // Additional metadata (tags, location, camera info, etc.)
   uploadedBy    String
   publishedAt   DateTime?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  uploader      User        @relation("PhotoUploader", fields: [uploadedBy], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  mediaId       String?     @unique // Optional link to Media model
-  media         Media?      @relation("PhotoMedia", fields: [mediaId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  uploader      User           @relation("PhotoUploader", fields: [uploadedBy], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  mediaId       String?        @unique // Optional link to Media model
+  media         Media?         @relation("PhotoMedia", fields: [mediaId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  galleryPhotos GalleryPhoto[]
 
   @@index([category])
   @@index([status])
@@ -756,6 +762,127 @@ model Photo {
   @@index([status, featured])
   @@index([category, status])
   @@map("photos")
+}
+
+model Gallery {
+  id            String         @id @default(uuid())
+  title         String         @db.VarChar(255)
+  titleEn       String?        @db.VarChar(255)
+  description   String?        @db.Text
+  slug          String         @unique @db.VarChar(255)
+  category      String?        @db.VarChar(100)
+  featured      Boolean        @default(false)
+  status        MediaStatus    @default(active)
+  coverImage    String?        @db.VarChar(500)
+  metadata      Json? // Additional metadata (tags, location, etc.)
+  createdBy     String
+  publishedAt   DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  creator       User           @relation("GalleryCreator", fields: [createdBy], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  galleryPhotos GalleryPhoto[]
+
+  @@index([category])
+  @@index([status])
+  @@index([featured])
+  @@index([slug])
+  @@index([createdBy])
+  @@index([publishedAt])
+  @@index([createdAt])
+  @@index([status, featured])
+  @@map("galleries")
+}
+
+model GalleryPhoto {
+  id        String   @id @default(uuid())
+  galleryId String
+  photoId   String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  gallery   Gallery  @relation(fields: [galleryId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  photo     Photo    @relation(fields: [photoId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([galleryId, photoId])
+  @@index([galleryId])
+  @@index([photoId])
+  @@index([order])
+  @@map("gallery_photos")
+}
+
+model Newsletter {
+  id             String           @id @default(uuid())
+  subject        String           @db.VarChar(255)
+  title          String           @db.VarChar(255)
+  titleEn        String?          @db.VarChar(255)
+  content        Json?            @default("{}")
+  contentEn      Json?            @default("{}")
+  status         NewsletterStatus @default(draft)
+  scheduledAt    DateTime?
+  sentAt         DateTime?
+  recipientCount Int              @default(0)
+  openedCount    Int              @default(0)
+  clickedCount   Int              @default(0)
+  createdBy      String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  creator        User             @relation("NewsletterCreator", fields: [createdBy], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([status])
+  @@index([createdBy])
+  @@index([scheduledAt])
+  @@index([sentAt])
+  @@index([createdAt])
+  @@index([status, scheduledAt])
+  @@map("newsletters")
+}
+
+model NewsletterSubscription {
+  id             String                       @id @default(uuid())
+  email          String                       @unique
+  name           String?                      @db.VarChar(255)
+  userId         String?
+  status         NewsletterSubscriptionStatus @default(subscribed)
+  source         String?                      @db.VarChar(100) // e.g., "website", "contact-page", "signup"
+  subscribedAt   DateTime                     @default(now())
+  unsubscribedAt DateTime?
+  lastEmailSent  DateTime?
+  metadata       Json? // Additional metadata (preferences, tags, etc.)
+  user           User?                        @relation("NewsletterSubscriber", fields: [userId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+
+  @@index([email])
+  @@index([status])
+  @@index([userId])
+  @@index([subscribedAt])
+  @@index([status, subscribedAt])
+  @@map("newsletter_subscriptions")
+}
+
+model ContactSubmission {
+  id           String                  @id @default(uuid())
+  name         String                  @db.VarChar(255)
+  email        String                  @db.VarChar(255)
+  phone        String?                 @db.VarChar(50)
+  subject      String                  @db.VarChar(255)
+  message      String                  @db.Text
+  inquiryType  String?                 @db.VarChar(100) // e.g., "general", "speaking-request", "support"
+  status       ContactSubmissionStatus @default(new)
+  userId       String?
+  repliedAt    DateTime?
+  repliedBy    String?
+  replyMessage String?                 @db.Text
+  metadata     Json? // Additional metadata (IP address, user agent, etc.)
+  user         User?                   @relation("ContactSubmissions", fields: [userId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  replier      User?                   @relation("ContactReplies", fields: [repliedBy], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  createdAt    DateTime                @default(now())
+  updatedAt    DateTime                @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@index([userId])
+  @@index([inquiryType])
+  @@index([createdAt])
+  @@index([status, createdAt])
+  @@map("contact_submissions")
 }
 
 enum PaymentMethod {
@@ -873,4 +1000,26 @@ enum MediaStatus {
   active   @map("active")
   archived @map("archived")
   deleted  @map("deleted")
+}
+
+enum NewsletterStatus {
+  draft     @map("draft")
+  scheduled @map("scheduled")
+  sending   @map("sending")
+  sent      @map("sent")
+  cancelled @map("cancelled")
+}
+
+enum NewsletterSubscriptionStatus {
+  subscribed   @map("subscribed")
+  unsubscribed @map("unsubscribed")
+  bounced      @map("bounced")
+  blocked      @map("blocked")
+}
+
+enum ContactSubmissionStatus {
+  new      @map("new")
+  read     @map("read")
+  replied  @map("replied")
+  archived @map("archived")
 }

@@ -1,8 +1,8 @@
-# ahmadin - Ustaz Ahmedin Jebel Portfolio & Digital Platform
+# Ustaz Ahmedin Jebel Portfolio & Digital Platform
 
 **Ustaz Ahmedin Jebel** (አሕመዲን ጀበል) - Preacher · Historian · Community Advocate
 
-ahmadin is a comprehensive digital platform built with Next.js, NestJS, and TypeScript, serving as both a portfolio website for Ustaz Ahmedin Jebel and an e-commerce platform for books, articles, and blogs. The platform promotes faith, heritage, and justice for Ethiopian Muslims while providing modern, scalable architecture for content management and digital commerce.
+ahmadin is a comprehensive digital platform built with Next.js, NestJS, and TypeScript, serving as both a portfolio website for Ustaz Ahmedin Jebel and a platform for books, articles, and publications. The platform promotes faith, heritage, and justice for Ethiopian Muslims while providing modern, scalable architecture for content management and digital commerce.
 
 ## 👤 About Ustaz Ahmedin Jebel
 
@@ -30,16 +30,21 @@ Ustaz Ahmedin Jebel is a prominent Ethiopian Islamic educator, historian, author
 - **Publications**: Showcase of books and written works with detailed information and purchase options
   - "*ኢትዮጵያውያን ሙስሊሞች ከ 615-1700 የጭቆናና የትግል ታሪክ*" (2011, 272 pages)
   - Additional books on Ethiopian Muslim history and contemporary issues
-- **Media Gallery**: Integrated YouTube videos, lectures, interviews, and audio content
+- **Media Gallery**: Comprehensive media management with videos, audio sermons, and photo galleries
+  - **Videos**: YouTube integration, embedded videos, lectures, and interviews with full metadata
+  - **Audio**: Audio sermons, lectures, and podcasts with availability tracking
+  - **Photos**: Photo galleries with captions, alt text, and categorization
 - **Advocacy & Impact**: Showcase of community work, speeches, and advocacy efforts
-- **Articles & Blogs**: Content management system for publishing articles and blog posts
+- **Articles & Publications**: Content management system for publishing articles and publications
+  - **Articles**: Rich content articles with JSON-based content, media support, and pricing
+  - **Publications**: Publication system with comments, downloads, and premium content support
 - **Multilingual Support**: Full support for English, Amharic (አማርኛ), and Oromo languages
 - **Social Media Integration**: Links to YouTube channel, Facebook, Instagram, and other platforms
 
 ### 🛍️ E-Commerce Features
 - **Book Store**: Browse and purchase books by category, search, and advanced filters
 - **Article Marketplace**: Access premium articles with flexible pricing options
-- **Blog Content**: Subscribe to blog content with comment systems
+- **Publication Content**: Access publications with comment systems, downloads, and premium content
 - **Product Details**: Detailed pages with descriptions, reviews, and related content
 - **Order Management**: Complete order tracking, status updates, and delivery management
 - **Payment Processing**: Multiple payment methods including bank transfer and online payments
@@ -47,9 +52,14 @@ Ustaz Ahmedin Jebel is a prominent Ethiopian Islamic educator, historian, author
 - **Reviews & Ratings**: Community-driven reviews and ratings for books and content
 
 ### 🏪 Admin & Management Features
-- **Content Management**: Admin panel for managing books, articles, blogs, and categories
+- **Content Management**: Admin panel for managing books, articles, publications, and categories
 - **Publication Management**: Add, edit, and manage book listings with inventory tracking
-- **Article & Blog Editor**: Rich content editor for creating and publishing articles/blogs
+- **Article & Publication Editor**: Rich content editor for creating and publishing articles and publications
+- **Media Management**: Comprehensive media library for videos, audio, and photos
+  - Upload and organize media files
+  - YouTube and Vimeo integration
+  - Media metadata and categorization
+  - Featured media support
 - **Category Management**: Organize content with hierarchical categories and tags
 - **Order Processing**: View and process customer orders with status updates
 - **User Management**: Manage user accounts, roles, and permissions
@@ -80,13 +90,14 @@ Ustaz Ahmedin Jebel is a prominent Ethiopian Islamic educator, historian, author
 
 ### Backend (NestJS)
 - **Framework**: NestJS 11 with TypeScript
-- **Database**: PostgreSQL with Prisma ORM (Note: README mentions Drizzle, but schema uses Prisma)
+- **Database**: PostgreSQL with Prisma ORM
 - **Authentication**: Session-based authentication with JWT tokens and HTTP-only cookies
 - **Validation**: Zod schema validation with comprehensive input sanitization
 - **File Storage**: MinIO integration for object storage with metadata tracking and image optimization
 - **CORS**: Configured for secure cross-origin requests with credential support
 - **Error Handling**: Global exception filters and custom error responses with detailed logging
 - **Security**: Argon2 password hashing, rate limiting, and secure session management
+- **API Architecture**: RESTful API with controllers and services for Articles, Publications, Media, Books, and more
 
 ### Development Tools
 - **Package Manager**: pnpm with workspace management
@@ -213,9 +224,14 @@ pnpm install
 # Create PostgreSQL database
 createdb ahmadin
 
-# Run database migrations
-cd apps/server
-pnpm db:migrate
+# Generate Prisma Client and run migrations
+cd packages/prisma
+pnpm prisma:generate
+pnpm prisma:migrate dev
+
+# Or from root directory
+pnpm --filter=@repo/prisma prisma:generate
+pnpm --filter=@repo/prisma prisma:migrate dev
 ```
 
 ### 5. Environment Configuration
@@ -278,23 +294,31 @@ ahmadin/
 │       ├── src/
 │       │   ├── config/           # Configuration files
 │       │   ├── constants/        # Application constants
-│       │   ├── database/         # Database schemas and DTOs
-│       │   │   ├── dtos/         # Data Transfer Objects
-│       │   │   ├── schemas/      # Drizzle ORM schemas
-│       │   │   └── module/       # Database module
+│       │   ├── database/         # Database configuration
+│       │   │   └── module/       # Prisma module and client injection
 │       │   ├── decorators/       # Custom decorators
 │       │   ├── events/           # Event handlers
 │       │   ├── features/         # Feature modules
 │       │   │   ├── auth/         # Authentication module
-│       │   │   ├── stores/       # Store management
-│       │   │   └── users/        # User management
+│       │   │   ├── articles/     # Articles management
+│       │   │   ├── publications/ # Publications management
+│       │   │   ├── books/        # Books management
+│       │   │   ├── categories/   # Categories management
+│       │   │   ├── orders/       # Order management
+│       │   │   ├── users/        # User management
+│       │   │   └── ...           # Other feature modules
 │       │   ├── filters/          # Exception filters
 │       │   ├── guards/           # Authentication guards
 │       │   ├── helpers/          # Utility helpers
 │       │   ├── pipes/            # Validation pipes
 │       │   └── utils/            # Utility functions
-│       ├── drizzle/              # Database migrations
 │       └── package.json
+│
+├── packages/
+│   ├── prisma/                   # Prisma schema and generated client
+│   │   ├── schema.prisma         # Database schema definition
+│   │   └── generated/            # Generated Prisma Client
+│   │   └── package.json
 │
 ├── packages/
 │   ├── common/                   # Shared utilities and types
@@ -348,31 +372,46 @@ pnpm start            # Start production server
 pnpm test             # Run unit tests
 pnpm test:e2e         # Run end-to-end tests
 
-# Database
-pnpm db:generate      # Generate new migration
-pnpm db:migrate       # Run database migrations
-pnpm db:drop          # Drop database schema
-pnpm db:pull          # Pull schema from database
+# Database (Prisma)
+pnpm prisma:generate # Generate Prisma Client
+pnpm prisma:migrate   # Create and run database migrations
+pnpm prisma:studio    # Open Prisma Studio (database GUI)
+pnpm prisma:push      # Push schema changes to database (dev only)
+pnpm prisma:pull      # Pull schema from database
 ```
 
 ## 🗄️ Database Schema
 
 The application uses PostgreSQL with Prisma ORM. Key entities include:
 
+### Content Models
 - **Users**: User accounts with authentication and profile information
-- **Books**: Book catalog with inventory, pricing, and metadata
-- **Articles**: Article content with status, pricing, and related articles
-- **Blogs**: Blog posts with comments, tags, and featured content
-- **BlogComments**: Comment system for blogs with parent-child relationships
-- **Categories**: Hierarchical category system for books, articles, and blogs
+- **Books**: Book catalog with inventory, pricing, ratings, and metadata
+- **Articles**: Article content with JSON-based content, status, pricing, and related articles
+- **Publications**: Publication content with comments, downloads, premium content, and media support
+- **PublicationComments**: Comment system for publications with parent-child relationships and moderation
+- **Categories**: Hierarchical category system for books, articles, and publications
+
+### Media Models
+- **Media**: Generic media model supporting images, videos, audio, and documents
+- **Videos**: Video content with YouTube/Vimeo integration, duration, dimensions, and analytics
+- **Audios**: Audio content (sermons, lectures) with availability tracking and metadata
+- **Photos**: Photo galleries with captions, alt text, and categorization
+- **ArticleMedia**: Junction table linking articles to media
+- **PublicationMedia**: Junction table linking publications to media
+
+### E-Commerce Models
 - **Orders**: Customer orders with line items, payments, and tracking
-- **Payments**: Payment transactions with multiple payment methods
-- **Reviews**: Book reviews with ratings and helpfulness voting
+- **Payments**: Payment transactions with multiple payment methods (bank transfer, on delivery)
+- **Transactions**: Financial transactions with status tracking
+- **BookReviews**: Book reviews with ratings and helpfulness voting
 - **Addresses**: User shipping addresses
-- **Files**: File metadata and storage information (MinIO integration)
-- **Sessions**: User authentication sessions
+
+### System Models
+- **Sessions**: User authentication sessions with device tracking
 - **Roles**: Role-based access control system
 - **Invitations**: Store member invitation system
+- **SearchAnalyticsEvent**: Search analytics and user behavior tracking
 
 ## 🔐 Authentication & Security
 
@@ -387,7 +426,7 @@ The application uses PostgreSQL with Prisma ORM. Key entities include:
   - `user` - Regular user with content access and shopping capabilities
   - `admin` - Platform administrator with full content and user management access
   - `superAdmin` - System owner with full platform control
-- **Content Roles**: Role-based permissions for managing books, articles, blogs, and media
+- **Content Roles**: Role-based permissions for managing books, articles, publications, and media
 - **Invitation System**: Secure member invitations with pending/accepted/rejected status tracking
 
 ### Security Features
@@ -501,9 +540,12 @@ Ensure all environment variables are properly configured for your production env
 
 - **v1.0.0**: Initial release
   - Portfolio website for Ustaz Ahmedin Jebel
-  - E-commerce functionality for books, articles, and blogs
+  - E-commerce functionality for books, articles, and publications
   - Complete admin panel for content management
   - Multi-language support (English, Amharic, Oromo)
   - Modern UI with dark/light theme support
   - Secure authentication and authorization
   - Order management and payment processing
+  - Media management system (Videos, Audio, Photos)
+  - Publication system with comments and downloads
+  - Article system with rich content support

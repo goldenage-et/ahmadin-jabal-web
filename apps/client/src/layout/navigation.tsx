@@ -179,7 +179,7 @@ export function Navigation({
       <div className='bg-transparent'>
         <div className='px-4 sm:px-6 lg:px-8'>
           <div className='flex items-center h-12'>
-            {/* All Categories Button */}
+            {/* All Categories Button 
             <div className='relative'>
               <Button
                 variant='ghost'
@@ -192,7 +192,7 @@ export function Navigation({
                 <ChevronUp className='h-4 w-4' />
               </Button>
 
-              {/* Multi-column Dropdown */}
+              Multi-column Dropdown
               {isCategoryDropdownOpen && (
                 <div
                   className='absolute top-full left-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border border-gray-200/50 dark:border-gray-700/50 rounded-lg shadow-xl dark:shadow-gray-900/50 z-50 w-[800px]'
@@ -200,7 +200,7 @@ export function Navigation({
                   onMouseLeave={() => setIsCategoryDropdownOpen(false)}
                 >
                   <div className='flex'>
-                    {/* Left Column - Main Categories */}
+                    Left Column - Main Categories
                     <div className='w-48 lg:w-64 border-r border-gray-200/50 dark:border-gray-700/50'>
                       <div className='p-4'>
                         <div className='flex items-center space-x-2 text-sm font-medium text-gray-500 dark:text-gray-400 mb-3'>
@@ -234,7 +234,7 @@ export function Navigation({
                       </div>
                     </div>
 
-                    {/* Right Panel - Subcategories */}
+                    Right Panel - Subcategories
                     <div className='flex-1 p-4 lg:p-6'>
                       <div className='grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6'>
                         {Object.entries(
@@ -262,7 +262,7 @@ export function Navigation({
                   </div>
                 </div>
               )}
-            </div>
+            </div> */}
 
             {/* Main Navigation Links */}
             <div className='flex items-center space-x-6'>
@@ -450,6 +450,6 @@ export function Navigation({
           </div>
         </SheetContent>
       </Sheet>
-    </nav>
+    </nav >
   );
 }

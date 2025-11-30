@@ -191,3 +191,31 @@ export enum EMediaStatus {
     archived = 'archived',
     deleted = 'deleted',
 }
+
+// ========================================
+// Newsletter Related Enums
+// ========================================
+export enum ENewsletterStatus {
+    draft = 'draft',
+    scheduled = 'scheduled',
+    sending = 'sending',
+    sent = 'sent',
+    cancelled = 'cancelled',
+}
+
+export enum ENewsletterSubscriptionStatus {
+    subscribed = 'subscribed',
+    unsubscribed = 'unsubscribed',
+    bounced = 'bounced',
+    blocked = 'blocked',
+}
+
+// ========================================
+// Contact Related Enums
+// ========================================
+export enum EContactSubmissionStatus {
+    new = 'new',
+    read = 'read',
+    replied = 'replied',
+    archived = 'archived',
+}

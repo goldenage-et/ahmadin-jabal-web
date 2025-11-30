@@ -11,7 +11,7 @@ export class Fetcher {
   constructor(
     private readonly baseUrl: string,
     private readonly actions: TAuthActions,
-  ) {}
+  ) { }
 
   private async request<T>(
     method: string,
@@ -19,7 +19,13 @@ export class Fetcher {
     options: FetchOptions = {},
   ): Promise<TFetcherResponse<T>> {
     const headers = new Headers(options.headers);
-    headers.set('Content-Type', 'application/json');
+
+    // Check if body is FormData - if so, don't set Content-Type (browser will set it with boundary)
+    const isFormData = options.body instanceof FormData;
+
+    if (!isFormData) {
+      headers.set('Content-Type', 'application/json');
+    }
 
     if (this.actions.getCookieHeader) {
       const cookieHeader = await this.actions.getCookieHeader();
@@ -35,7 +41,12 @@ export class Fetcher {
       ...options,
       method,
       headers,
-      body: options.body ? JSON.stringify(options.body) : undefined,
+      // Only stringify if it's not FormData
+      body: options.body
+        ? isFormData
+          ? options.body
+          : JSON.stringify(options.body)
+        : undefined,
       credentials: 'include', // Ensure cookies are sent
     };
 

@@ -1,3 +1,5 @@
+import { server_host } from '@/config/host.config.mjs';
+
 export interface FileUploadResponse {
   url: string;
   filename: string;
@@ -18,17 +20,18 @@ export async function uploadFile(
   formData.append('file', file);
 
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/files/upload`,
-      {
-        method: 'POST',
-        body: formData,
-        credentials: 'include',
-      },
-    );
+    // For client-side fetch, credentials: 'include' automatically sends cookies
+    // No need to manually set Cookie header (that's only needed for server-side requests)
+    const response = await fetch(`${server_host}/files/upload`, {
+      method: 'POST',
+      body: formData,
+      credentials: 'include',
+    });
 
     if (!response.ok) {
-      const errorData = await response.json();
+      const errorData = await response.json().catch(() => ({
+        message: 'Upload failed',
+      }));
       throw new Error(errorData.message || 'Upload failed');
     }
 
@@ -73,14 +76,14 @@ export function getImageUrl(url: string): string {
 
   // If it's a category image filename, construct the full URL
   if (url.includes('categories/')) {
-    return `${process.env.NEXT_PUBLIC_API_URL}/files/categories/${url.split('/').pop()}`;
+    return `${server_host}/files/categories/${url.split('/').pop()}`;
   }
 
   // If it's a MinIO URL, construct the full URL
   if (url.startsWith('/uploads/')) {
-    return `${process.env.NEXT_PUBLIC_API_URL}${url}`;
+    return `${server_host}${url}`;
   }
 
   // Default case - assume it's a category image filename
-  return `${process.env.NEXT_PUBLIC_API_URL}/files/categories/${url}`;
+  return `${server_host}/files/categories/${url}`;
 }

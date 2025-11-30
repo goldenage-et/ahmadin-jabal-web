@@ -225,6 +225,21 @@ export const ZMediaQueryFilter = z.object({
 
 export type TMediaQueryFilter = z.infer<typeof ZMediaQueryFilter>;
 
+// Media List Response Schema (with pagination)
+export const ZMediaListResponse = z.object({
+    data: z.array(ZMediaBasic),
+    meta: z.object({
+        page: z.number().int().positive(),
+        limit: z.number().int().positive(),
+        total: z.number().int().min(0),
+        totalPages: z.number().int().min(0),
+        hasNext: z.boolean(),
+        hasPrev: z.boolean(),
+    }),
+});
+
+export type TMediaListResponse = z.infer<typeof ZMediaListResponse>;
+
 // Media Query Unique Schema
 export const ZMediaQueryUnique = z
     .object({
@@ -492,6 +507,21 @@ export const ZVideoQueryFilter = z.object({
 
 export type TVideoQueryFilter = z.infer<typeof ZVideoQueryFilter>;
 
+// Video List Response Schema (with pagination)
+export const ZVideoListResponse = z.object({
+    data: z.array(ZVideoBasic),
+    meta: z.object({
+        page: z.number().int().positive(),
+        limit: z.number().int().positive(),
+        total: z.number().int().min(0),
+        totalPages: z.number().int().min(0),
+        hasNext: z.boolean(),
+        hasPrev: z.boolean(),
+    }),
+});
+
+export type TVideoListResponse = z.infer<typeof ZVideoListResponse>;
+
 // Video Query Unique Schema
 export const ZVideoQueryUnique = z
     .object({
@@ -735,6 +765,21 @@ export const ZAudioQueryFilter = z.object({
 });
 
 export type TAudioQueryFilter = z.infer<typeof ZAudioQueryFilter>;
+
+// Audio List Response Schema (with pagination)
+export const ZAudioListResponse = z.object({
+    data: z.array(ZAudioBasic),
+    meta: z.object({
+        page: z.number().int().positive(),
+        limit: z.number().int().positive(),
+        total: z.number().int().min(0),
+        totalPages: z.number().int().min(0),
+        hasNext: z.boolean(),
+        hasPrev: z.boolean(),
+    }),
+});
+
+export type TAudioListResponse = z.infer<typeof ZAudioListResponse>;
 
 // Audio Query Unique Schema
 export const ZAudioQueryUnique = z
@@ -994,6 +1039,21 @@ export const ZPhotoQueryFilter = z.object({
 
 export type TPhotoQueryFilter = z.infer<typeof ZPhotoQueryFilter>;
 
+// Photo List Response Schema (with pagination)
+export const ZPhotoListResponse = z.object({
+    data: z.array(ZPhotoBasic),
+    meta: z.object({
+        page: z.number().int().positive(),
+        limit: z.number().int().positive(),
+        total: z.number().int().min(0),
+        totalPages: z.number().int().min(0),
+        hasNext: z.boolean(),
+        hasPrev: z.boolean(),
+    }),
+});
+
+export type TPhotoListResponse = z.infer<typeof ZPhotoListResponse>;
+
 // Photo Query Unique Schema
 export const ZPhotoQueryUnique = z
     .object({
@@ -1020,4 +1080,216 @@ export const ZPhotoDetail = ZPhoto.extend({
 });
 
 export type TPhotoDetail = z.infer<typeof ZPhotoDetail>;
+
+// ========================================
+// Gallery Schemas
+// ========================================
+
+// Base Gallery Schema
+export const ZGallery = z.object({
+    id: z.uuid(),
+    title: z
+        .string()
+        .min(1, 'Title is required')
+        .max(MEDIA_TITLE_MAX_LENGTH, `Title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`),
+    titleEn: z
+        .string()
+        .max(MEDIA_TITLE_MAX_LENGTH, `English title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
+        .nullable()
+        .optional(),
+    description: z.string().nullable().optional(),
+    slug: z
+        .string()
+        .min(1, 'Slug is required')
+        .max(MEDIA_TITLE_MAX_LENGTH, `Slug must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`),
+    category: z
+        .string()
+        .max(MEDIA_CATEGORY_MAX_LENGTH, `Category must be ${MEDIA_CATEGORY_MAX_LENGTH} characters or less`)
+        .nullable()
+        .optional(),
+    featured: z.boolean().default(false),
+    status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.active),
+    coverImage: z
+        .url('Invalid cover image URL format')
+        .max(MEDIA_URL_MAX_LENGTH, `Cover image URL must be ${MEDIA_URL_MAX_LENGTH} characters or less`)
+        .nullable()
+        .optional(),
+    metadata: z.any().nullable().optional(),
+    createdBy: z.uuid('Invalid creator ID format'),
+    publishedAt: z.coerce.date().nullable().optional(),
+    createdAt: z.coerce.date(),
+    updatedAt: z.coerce.date(),
+});
+
+export type TGallery = z.infer<typeof ZGallery>;
+
+// Basic Gallery Schema (for lists)
+export const ZGalleryBasic = ZGallery.pick({
+    id: true,
+    title: true,
+    titleEn: true,
+    description: true,
+    slug: true,
+    category: true,
+    featured: true,
+    status: true,
+    coverImage: true,
+    createdBy: true,
+    publishedAt: true,
+    createdAt: true,
+    updatedAt: true,
+});
+
+export type TGalleryBasic = z.infer<typeof ZGalleryBasic>;
+
+// Create Gallery Schema
+export const ZCreateGallery = z.object({
+    title: z
+        .string()
+        .min(1, 'Title is required')
+        .max(MEDIA_TITLE_MAX_LENGTH, `Title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`),
+    titleEn: z
+        .string()
+        .max(MEDIA_TITLE_MAX_LENGTH, `English title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
+        .optional()
+        .nullable(),
+    description: z.string().optional().nullable(),
+    slug: z
+        .string()
+        .min(1, 'Slug is required')
+        .max(MEDIA_TITLE_MAX_LENGTH, `Slug must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`),
+    category: z
+        .string()
+        .max(MEDIA_CATEGORY_MAX_LENGTH, `Category must be ${MEDIA_CATEGORY_MAX_LENGTH} characters or less`)
+        .optional()
+        .nullable(),
+    featured: z.boolean().default(false),
+    status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.active),
+    coverImage: z
+        .url('Invalid cover image URL format')
+        .max(MEDIA_URL_MAX_LENGTH, `Cover image URL must be ${MEDIA_URL_MAX_LENGTH} characters or less`)
+        .optional()
+        .nullable(),
+    metadata: z.any().optional().nullable(),
+    publishedAt: z.coerce.date().optional().nullable(),
+});
+
+export type TCreateGallery = z.infer<typeof ZCreateGallery>;
+
+// Update Gallery Schema
+export const ZUpdateGallery = z.object({
+    title: z
+        .string()
+        .min(1, 'Title is required')
+        .max(MEDIA_TITLE_MAX_LENGTH, `Title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
+        .optional(),
+    titleEn: z
+        .string()
+        .max(MEDIA_TITLE_MAX_LENGTH, `English title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
+        .optional()
+        .nullable(),
+    description: z.string().optional().nullable(),
+    slug: z
+        .string()
+        .min(1, 'Slug is required')
+        .max(MEDIA_TITLE_MAX_LENGTH, `Slug must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
+        .optional(),
+    category: z
+        .string()
+        .max(MEDIA_CATEGORY_MAX_LENGTH, `Category must be ${MEDIA_CATEGORY_MAX_LENGTH} characters or less`)
+        .optional()
+        .nullable(),
+    featured: z.boolean().optional(),
+    status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).optional(),
+    coverImage: z
+        .url('Invalid cover image URL format')
+        .max(MEDIA_URL_MAX_LENGTH, `Cover image URL must be ${MEDIA_URL_MAX_LENGTH} characters or less`)
+        .optional()
+        .nullable(),
+    metadata: z.any().optional().nullable(),
+    publishedAt: z.coerce.date().optional().nullable(),
+});
+
+export type TUpdateGallery = z.infer<typeof ZUpdateGallery>;
+
+// Gallery Query Filter Schema
+export const ZGalleryQueryFilter = z.object({
+    search: z.string().optional(),
+    category: z.string().optional(),
+    status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).optional(),
+    featured: z.boolean().optional(),
+    createdBy: z.uuid('Invalid creator ID format').optional(),
+    page: z.coerce.number().int().positive().default(1),
+    limit: z.coerce.number().int().positive().max(100).default(10),
+    sortBy: z
+        .enum(['createdAt', 'publishedAt', 'title', 'updatedAt'])
+        .default('createdAt'),
+    sortOrder: z.enum(['asc', 'desc']).default('desc'),
+});
+
+export type TGalleryQueryFilter = z.infer<typeof ZGalleryQueryFilter>;
+
+// Gallery Query Unique Schema
+export const ZGalleryQueryUnique = z
+    .object({
+        id: z.uuid('Invalid gallery ID format').optional(),
+        slug: z.string().optional(),
+    })
+    .refine((data) => data.id || data.slug, {
+        message: 'Either gallery ID or slug must be provided',
+    });
+
+export type TGalleryQueryUnique = z.infer<typeof ZGalleryQueryUnique>;
+
+// Gallery Detail Schema (with relations)
+export const ZGalleryDetail = ZGallery.extend({
+    creator: z
+        .object({
+            id: z.string(),
+            firstName: z.string(),
+            middleName: z.string(),
+            lastName: z.string().nullable().optional(),
+            email: z.string(),
+            image: z.string().nullable().optional(),
+        })
+        .optional(),
+    photos: z
+        .array(
+            z.object({
+                id: z.uuid(),
+                photoId: z.uuid(),
+                order: z.number().int(),
+                photo: ZPhotoBasic.optional(),
+            }),
+        )
+        .optional(),
+});
+
+export type TGalleryDetail = z.infer<typeof ZGalleryDetail>;
+
+// Gallery Photo Junction Schema
+export const ZGalleryPhoto = z.object({
+    id: z.uuid(),
+    galleryId: z.uuid('Invalid gallery ID format'),
+    photoId: z.uuid('Invalid photo ID format'),
+    order: z.number().int().min(0, 'Order cannot be negative').default(0),
+    createdAt: z.coerce.date(),
+});
+
+export type TGalleryPhoto = z.infer<typeof ZGalleryPhoto>;
+
+// Gallery List Response Schema (with pagination)
+export const ZGalleryListResponse = z.object({
+    data: z.array(ZGalleryBasic),
+    meta: z.object({
+        page: z.number().int().positive(),
+        limit: z.number().int().positive(),
+        total: z.number().int().min(0),
+        totalPages: z.number().int().min(0),
+        hasNext: z.boolean(),
+        hasPrev: z.boolean(),
+    }),
+});
+
+export type TGalleryListResponse = z.infer<typeof ZGalleryListResponse>;
 

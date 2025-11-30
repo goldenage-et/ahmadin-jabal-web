@@ -17,6 +17,10 @@ export * from './schemas/publications/publication.schema';
 
 export * from './schemas/media/media.schema';
 
+export * from './schemas/newsletter/newsletter.schema';
+
+export * from './schemas/contact/contact.schema';
+
 export * from './schemas/orders/order.schema';
 export * from './schemas/reviews/reviews.schema';
 

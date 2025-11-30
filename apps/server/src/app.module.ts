@@ -25,6 +25,9 @@ import { AdminModule } from './features/admin/admin.module';
 import { BooksModule } from './features/books/books.module';
 import { ArticlesModule } from './features/articles/articles.module';
 import { PublicationsModule } from './features/publications/publications.module';
+import { MediaModule } from './features/media/media.module';
+import { NewsletterModule } from './features/newsletter/newsletter.module';
+import { ContactModule } from './features/contact/contact.module';
 
 @Module({
   imports: [
@@ -58,6 +61,9 @@ import { PublicationsModule } from './features/publications/publications.module'
     InvitationsModule,
     ArticlesModule,
     PublicationsModule,
+    MediaModule,
+    NewsletterModule,
+    ContactModule,
   ],
   controllers: [],
   providers: [ConfigService],
