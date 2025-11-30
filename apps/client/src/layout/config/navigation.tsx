@@ -6,7 +6,12 @@ import {
   Package,
   Settings,
   ShoppingCart,
-  Users
+  Users,
+  FileText,
+  Mail,
+  Image,
+  Newspaper,
+  BookOpen,
 } from 'lucide-react';
 import { Route } from '../types';
 
@@ -55,6 +60,36 @@ export const createMainRoutes = (): Route[] => [
     url: `/admin/books`,
     icon: <Package className='h-4 w-4' />,
     isActive: (path: string) => path.startsWith(`/admin/books`),
+  },
+  {
+    title: 'Articles',
+    url: `/admin/articles`,
+    icon: <FileText className='h-4 w-4' />,
+    isActive: (path: string) => path.startsWith(`/admin/articles`),
+  },
+  {
+    title: 'Publications',
+    url: `/admin/publications`,
+    icon: <BookOpen className='h-4 w-4' />,
+    isActive: (path: string) => path.startsWith(`/admin/publications`),
+  },
+  {
+    title: 'Media',
+    url: `/admin/media`,
+    icon: <Image className='h-4 w-4' />,
+    isActive: (path: string) => path.startsWith(`/admin/media`),
+  },
+  {
+    title: 'Newsletter',
+    url: `/admin/newsletter`,
+    icon: <Newspaper className='h-4 w-4' />,
+    isActive: (path: string) => path.startsWith(`/admin/newsletter`),
+  },
+  {
+    title: 'Contact',
+    url: `/admin/contact`,
+    icon: <Mail className='h-4 w-4' />,
+    isActive: (path: string) => path.startsWith(`/admin/contact`),
   },
   {
     title: 'Orders',
