@@ -30,10 +30,11 @@ import {
 } from '@repo/common';
 import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { createGallery } from '@/actions/media.action';
 import { uploadFile } from '@/lib/file-upload';
+import { slugify } from '@/lib/slugify';
 import { toast } from 'sonner';
 
 export default function CreateGalleryForm() {
@@ -51,12 +52,29 @@ export default function CreateGalleryForm() {
       slug: '',
       category: '',
       featured: false,
-      status: EMediaStatus.active,
+      status: EMediaStatus.draft,
       coverImage: undefined,
       metadata: undefined,
       publishedAt: undefined,
     },
   });
+
+  // Auto-generate slug from title
+  const title = form.watch('title');
+  const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
+
+  useEffect(() => {
+    if (title && !isSlugManuallyEdited) {
+      const generatedSlug = slugify(title);
+      form.setValue('slug', generatedSlug);
+    }
+  }, [title, form, isSlugManuallyEdited]);
+
+  // Track if user manually edits the slug
+  const handleSlugChange = (value: string) => {
+    setIsSlugManuallyEdited(true);
+    form.setValue('slug', value);
+  };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -82,7 +100,7 @@ export default function CreateGalleryForm() {
           onSubmit={form.handleSubmit((data) => {
             mutate(async () => await createGallery(data), {
               onSuccess: (created) => {
-                if (!created.error && 'id' in created) {
+                if (created && 'id' in created) {
                   router.push(`/admin/media/galleries/${created.id}`);
                 }
               },
@@ -128,24 +146,6 @@ export default function CreateGalleryForm() {
                   </FormItem>
                 )}
               />
-
-              <FormField
-                control={form.control}
-                name='slug'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Slug *</FormLabel>
-                    <FormControl>
-                      <Input placeholder='gallery-slug' {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      URL-friendly version of the title
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <FormField
                 control={form.control}
                 name='description'
@@ -204,11 +204,9 @@ export default function CreateGalleryForm() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value={EMediaStatus.active}>Active</SelectItem>
-                        <SelectItem value={EMediaStatus.inactive}>
-                          Inactive
-                        </SelectItem>
                         <SelectItem value={EMediaStatus.draft}>Draft</SelectItem>
+                        <SelectItem value={EMediaStatus.published}>Published</SelectItem>
+                        <SelectItem value={EMediaStatus.scheduled}>Scheduled</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

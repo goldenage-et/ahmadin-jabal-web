@@ -56,7 +56,7 @@ export default function CreateNewsletterForm() {
           onSubmit={form.handleSubmit((data) => {
             mutate(async () => await createNewsletter(data), {
               onSuccess: (created) => {
-                if (!created.error && 'id' in created) {
+                if (created && 'id' in created) {
                   router.push(`/admin/newsletter/${created.id}`);
                 }
               },

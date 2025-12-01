@@ -133,11 +133,11 @@ export default async function ArticlesPage({
                     </Card>
                 </div>
 
-        {/* Articles List */}
-        <div>
-          <h2 className='text-xl font-semibold mb-4'>Articles</h2>
-          <ArticleList articles={articles} />
-        </div>
+                {/* Articles List */}
+                <div>
+                    <h2 className='text-xl font-semibold mb-4'>Articles</h2>
+                    <ArticleList articles={articles} />
+                </div>
             </div>
         </div>
     );

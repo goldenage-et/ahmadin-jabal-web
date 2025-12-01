@@ -580,7 +580,7 @@ model Media {
   likeCount        Int                @default(0)
   downloadCount    Int                @default(0)
   featured         Boolean            @default(false)
-  status           MediaStatus        @default(active)
+  status           MediaStatus        @default(draft)
   metadata         Json? // Additional metadata (tags, location, etc.)
   uploadedBy       String
   publishedAt      DateTime?
@@ -656,7 +656,7 @@ model Video {
   likeCount     Int         @default(0)
   downloadCount Int         @default(0)
   featured      Boolean     @default(false)
-  status        MediaStatus @default(active)
+  status        MediaStatus @default(draft)
   metadata      Json? // Additional metadata (tags, location, transcript, etc.)
   uploadedBy    String
   publishedAt   DateTime?
@@ -696,7 +696,7 @@ model Audio {
   likeCount     Int         @default(0)
   downloadCount Int         @default(0)
   featured      Boolean     @default(false)
-  status        MediaStatus @default(active)
+  status        MediaStatus @default(draft)
   isAvailable   Boolean     @default(true) // For audio availability
   metadata      Json? // Additional metadata (tags, transcript, etc.)
   uploadedBy    String
@@ -740,7 +740,7 @@ model Photo {
   likeCount     Int            @default(0)
   downloadCount Int            @default(0)
   featured      Boolean        @default(false)
-  status        MediaStatus    @default(active)
+  status        MediaStatus    @default(draft)
   metadata      Json? // Additional metadata (tags, location, camera info, etc.)
   uploadedBy    String
   publishedAt   DateTime?
@@ -772,7 +772,7 @@ model Gallery {
   slug          String         @unique @db.VarChar(255)
   category      String?        @db.VarChar(100)
   featured      Boolean        @default(false)
-  status        MediaStatus    @default(active)
+  status        MediaStatus    @default(draft)
   coverImage    String?        @db.VarChar(500)
   metadata      Json? // Additional metadata (tags, location, etc.)
   createdBy     String
@@ -992,14 +992,14 @@ enum MediaType {
 enum MediaSource {
   upload   @map("upload")
   youtube  @map("youtube")
-  vimeo    @map("vimeo")
   external @map("external")
 }
 
 enum MediaStatus {
-  active   @map("active")
-  archived @map("archived")
-  deleted  @map("deleted")
+  published @map("published")
+  draft     @map("draft")
+  scheduled @map("scheduled")
+  deleted   @map("deleted")
 }
 
 enum NewsletterStatus {

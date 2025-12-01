@@ -123,7 +123,7 @@ export default function NewsletterDetail({
           <div className='flex items-start justify-between'>
             <div className='flex-1'>
               <div className='flex items-center gap-2 mb-2'>
-                {getStatusBadge(newsletter.status)}
+                {getStatusBadge(newsletter.status as ENewsletterStatus)}
               </div>
               <CardTitle className='text-3xl'>{newsletter.title}</CardTitle>
               <p className='text-muted-foreground mt-2'>{newsletter.subject}</p>

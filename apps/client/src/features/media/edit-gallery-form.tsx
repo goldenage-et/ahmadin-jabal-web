@@ -35,6 +35,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { updateGallery } from '@/actions/media.action';
 import { uploadFile } from '@/lib/file-upload';
+import { slugify } from '@/lib/slugify';
 import { toast } from 'sonner';
 
 interface EditGalleryFormProps {
@@ -84,6 +85,23 @@ export default function EditGalleryForm({ gallery }: EditGalleryFormProps) {
     });
     setCoverImage(gallery.coverImage || '');
   }, [gallery, form]);
+
+  // Auto-generate slug from title
+  const title = form.watch('title');
+  const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
+
+  useEffect(() => {
+    if (title && !isSlugManuallyEdited) {
+      const generatedSlug = slugify(title);
+      form.setValue('slug', generatedSlug);
+    }
+  }, [title, form, isSlugManuallyEdited]);
+
+  // Track if user manually edits the slug
+  const handleSlugChange = (value: string) => {
+    setIsSlugManuallyEdited(true);
+    form.setValue('slug', value);
+  };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -161,10 +179,17 @@ export default function EditGalleryForm({ gallery }: EditGalleryFormProps) {
                   <FormItem>
                     <FormLabel>Slug *</FormLabel>
                     <FormControl>
-                      <Input placeholder='gallery-slug' {...field} />
+                      <Input
+                        placeholder='gallery-slug'
+                        {...field}
+                        onChange={(e) => {
+                          handleSlugChange(e.target.value);
+                          field.onChange(e);
+                        }}
+                      />
                     </FormControl>
                     <FormDescription>
-                      URL-friendly version of the title
+                      URL-friendly version of the title (auto-generated from title)
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -233,11 +258,9 @@ export default function EditGalleryForm({ gallery }: EditGalleryFormProps) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value={EMediaStatus.active}>Active</SelectItem>
-                        <SelectItem value={EMediaStatus.inactive}>
-                          Inactive
-                        </SelectItem>
                         <SelectItem value={EMediaStatus.draft}>Draft</SelectItem>
+                        <SelectItem value={EMediaStatus.published}>Published</SelectItem>
+                        <SelectItem value={EMediaStatus.scheduled}>Scheduled</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { TGalleryBasic, EMediaStatus } from '@repo/common';
-import { Folder, Eye, Edit, Trash2 } from 'lucide-react';
+import { Folder, Edit } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 
@@ -15,16 +15,22 @@ interface GalleryListProps {
 export default function GalleryList({ galleries }: GalleryListProps) {
   const getStatusBadge = (status: EMediaStatus) => {
     switch (status) {
+      case 'draft':
+        return (
+          <Badge variant='default' className='bg-gray-500'>
+            Draft
+          </Badge>
+        );
       case 'published':
         return (
           <Badge variant='default' className='bg-green-500'>
             Published
           </Badge>
         );
-      case 'draft':
+      case 'scheduled':
         return (
-          <Badge variant='secondary' className='bg-gray-500'>
-            Draft
+          <Badge variant='default' className='bg-yellow-500'>
+            Scheduled
           </Badge>
         );
       default:
@@ -52,7 +58,7 @@ export default function GalleryList({ galleries }: GalleryListProps) {
               <div className='flex-1 space-y-2'>
                 <div className='flex items-center gap-2'>
                   <h3 className='text-lg font-semibold'>{gallery.title}</h3>
-                  {getStatusBadge(gallery.status)}
+                  {getStatusBadge(gallery.status as EMediaStatus)}
                   {gallery.featured && (
                     <Badge variant='default' className='bg-yellow-500'>
                       Featured

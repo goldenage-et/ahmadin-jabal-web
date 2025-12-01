@@ -38,6 +38,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { updatePublication } from '@/actions/publication.action';
 import { uploadFile } from '@/lib/file-upload';
+import { slugify } from '@/lib/slugify';
 import { toast } from 'sonner';
 
 interface EditPublicationFormProps {
@@ -67,7 +68,7 @@ export default function EditPublicationForm({
       excerpt: publication.excerpt || undefined,
       content: publication.content || undefined,
       tags: publication.tags || [],
-      status: publication.status,
+      status: publication.status as EPublicationStatus,
       featured: publication.featured,
       isPremium: publication.isPremium,
       allowComments: publication.allowComments,
@@ -89,7 +90,7 @@ export default function EditPublicationForm({
       excerpt: publication.excerpt || undefined,
       content: publication.content || undefined,
       tags: publication.tags || [],
-      status: publication.status,
+      status: publication.status as EPublicationStatus,
       featured: publication.featured,
       isPremium: publication.isPremium,
       allowComments: publication.allowComments,
@@ -104,6 +105,23 @@ export default function EditPublicationForm({
     setTags(publication.tags || []);
     setFeaturedImage(publication.featuredImage || '');
   }, [publication, form]);
+
+  // Auto-generate slug from title
+  const title = form.watch('title');
+  const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
+
+  useEffect(() => {
+    if (title && !isSlugManuallyEdited) {
+      const generatedSlug = slugify(title);
+      form.setValue('slug', generatedSlug);
+    }
+  }, [title, form, isSlugManuallyEdited]);
+
+  // Track if user manually edits the slug
+  const handleSlugChange = (value: string) => {
+    setIsSlugManuallyEdited(true);
+    form.setValue('slug', value);
+  };
 
   const addTag = () => {
     const trimmed = newTag.trim();
@@ -192,23 +210,6 @@ export default function EditPublicationForm({
                         value={field.value || ''}
                       />
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name='slug'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Slug *</FormLabel>
-                    <FormControl>
-                      <Input placeholder='publication-slug' {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      URL-friendly version of the title
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}

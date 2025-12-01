@@ -121,7 +121,7 @@ export default function PublicationDetail({
           <div className='flex items-start justify-between'>
             <div className='flex-1'>
               <div className='flex items-center gap-2 mb-2'>
-                {getStatusBadge(publication.status)}
+                {getStatusBadge(publication.status as EPublicationStatus)}
                 {publication.featured && (
                   <Badge variant='default' className='bg-yellow-500'>
                     Featured

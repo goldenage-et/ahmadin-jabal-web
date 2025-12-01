@@ -182,13 +182,13 @@ export enum EMediaType {
 export enum EMediaSource {
     upload = 'upload',
     youtube = 'youtube',
-    vimeo = 'vimeo',
     external = 'external',
 }
 
 export enum EMediaStatus {
-    active = 'active',
-    archived = 'archived',
+    draft = 'draft',
+    published = 'published',
+    scheduled = 'scheduled',
     deleted = 'deleted',
 }
 

@@ -34,10 +34,11 @@ import {
 } from '@repo/common';
 import { ArrowLeft, Plus, X, Image as ImageIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { createArticle } from '@/actions/article.action';
 import { uploadFile } from '@/lib/file-upload';
+import { slugify } from '@/lib/slugify';
 import { toast } from 'sonner';
 
 interface CreateArticleFormProps {
@@ -77,6 +78,23 @@ export default function CreateArticleForm({
             expiresAt: undefined,
         },
     });
+
+    // Auto-generate slug from title
+    const title = form.watch('title');
+    const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
+
+    useEffect(() => {
+        if (title && !isSlugManuallyEdited) {
+            const generatedSlug = slugify(title);
+            form.setValue('slug', generatedSlug);
+        }
+    }, [title, form, isSlugManuallyEdited]);
+
+    // Track if user manually edits the slug
+    const handleSlugChange = (value: string) => {
+        setIsSlugManuallyEdited(true);
+        form.setValue('slug', value);
+    };
 
     const addTag = () => {
         const trimmed = newTag.trim();
@@ -168,22 +186,7 @@ export default function CreateArticleForm({
                                 )}
                             />
 
-                            <FormField
-                                control={form.control}
-                                name='slug'
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Slug *</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder='article-slug' {...field} />
-                                        </FormControl>
-                                        <FormDescription>
-                                            URL-friendly version of the title
-                                        </FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+
 
                             <FormField
                                 control={form.control}
@@ -203,23 +206,23 @@ export default function CreateArticleForm({
                                 )}
                             />
 
-                             <FormField
-                                 control={form.control}
-                                 name='content'
-                                 render={({ field }) => (
-                                     <FormItem>
-                                         <FormLabel>Content</FormLabel>
-                                         <FormControl>
-                                             <RichTextEditor
-                                                 content={field.value || ''}
-                                                 onChange={field.onChange}
-                                                 placeholder='Start writing your article...'
-                                             />
-                                         </FormControl>
-                                         <FormMessage />
-                                     </FormItem>
-                                 )}
-                             />
+                            <FormField
+                                control={form.control}
+                                name='content'
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Content</FormLabel>
+                                        <FormControl>
+                                            <RichTextEditor
+                                                content={field.value || ''}
+                                                onChange={field.onChange}
+                                                placeholder='Start writing your article...'
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
                             {categories.length > 0 && (
                                 <FormField

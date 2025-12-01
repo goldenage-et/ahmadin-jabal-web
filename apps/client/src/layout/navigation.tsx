@@ -118,21 +118,33 @@ export function Navigation({
       {/* Top Row - Header */}
       <div className='bg-transparent border-b border-gray-200/50 dark:border-gray-800/50'>
         <div className='mx-auto px-4 sm:px-6 lg:px-8'>
-          <div className='flex items-center justify-between h-12'>
-            {/* Logo */}
-            <div className='flex items-center'>
-              <Link href='/' className='flex items-center space-x-2'>
-                <div className='w-8 h-8 bg-green-600 rounded flex items-center justify-center'>
+          <div className='flex items-center justify-between h-14 md:h-12'>
+            {/* Left Section - Mobile Menu Button + Logo */}
+            <div className='flex items-center gap-3 md:gap-4'>
+              {/* Mobile Menu Button */}
+              <Button
+                variant='ghost'
+                size='icon'
+                className='md:hidden h-9 w-9'
+                onClick={() => setIsMobileMenuOpen(true)}
+                aria-label='Open menu'
+              >
+                <Menu className='h-5 w-5' />
+              </Button>
+
+              {/* Logo */}
+              <Link href='/' className='flex items-center space-x-2 flex-shrink-0'>
+                <div className='w-8 h-8 bg-green-600 rounded flex items-center justify-center flex-shrink-0'>
                   <span className='text-white font-bold text-lg'>U</span>
                 </div>
-                <span className='text-xl font-bold text-gray-900 dark:text-white hidden sm:block'>
+                <span className='text-lg md:text-xl font-bold text-gray-900 dark:text-white hidden sm:block'>
                   Ustaz Ahmedin Jebel
                 </span>
               </Link>
             </div>
 
-            {/* Center Search - Hidden on mobile */}
-            <div className='hidden md:flex flex-1 max-w-2xl mx-8'>
+            {/* Center Search - Hidden on mobile, shown in mobile menu */}
+            <div className='hidden md:flex flex-1 max-w-2xl mx-4 lg:mx-8'>
               <SearchSuggestions
                 onSearch={handleSearch}
                 searchSuggestions={searchSuggestions}
@@ -140,33 +152,38 @@ export function Navigation({
             </div>
 
             {/* Right Side Utilities */}
-            <div className='flex items-center space-x-2 sm:space-x-4 lg:space-x-6'>
-              {/* Language Switcher */}
-              <LanguageSwitcher />
+            <div className='flex items-center gap-2 sm:gap-3 lg:gap-4'>
+              {/* Language Switcher - Hidden on very small screens */}
+              <div className='hidden sm:block'>
+                <LanguageSwitcher />
+              </div>
 
               {/* Theme Toggle */}
               <ThemeToggle />
 
               {/* User Account - Simplified on mobile */}
               {user ? (
-                <div className='flex items-center space-x-2 text-sm'>
+                <div className='flex items-center gap-2 text-sm'>
                   {user?.roles?.length && user.roles.length > 0 && (
-                    <Button variant='outline' size='sm' asChild>
+                    <Button variant='outline' size='sm' asChild className='hidden sm:flex'>
                       <Link href='/admin'>
                         <Wrench className='h-4 w-4 mr-1' />
-                        Go to Panel
+                        <span className='hidden lg:inline'>Go to Panel</span>
                       </Link>
                     </Button>
                   )}
                   <NavUser noSidebar user={user} />
                 </div>
               ) : (
-                <div className='flex items-center space-x-2 text-sm'>
-                  <Button variant='outline' size='sm' asChild>
+                <div className='flex items-center gap-1.5 sm:gap-2 text-sm'>
+                  <Button variant='outline' size='sm' asChild className='hidden sm:inline-flex'>
                     <Link href='/auth/signin'>Sign in</Link>
                   </Button>
-                  <Button size='sm' asChild>
-                    <Link href='/auth/signup'>Sign up</Link>
+                  <Button size='sm' asChild className='text-xs sm:text-sm px-2 sm:px-4'>
+                    <Link href='/auth/signup'>
+                      <span className='hidden sm:inline'>Sign up</span>
+                      <span className='sm:hidden'>Sign up</span>
+                    </Link>
                   </Button>
                 </div>
               )}
@@ -175,136 +192,51 @@ export function Navigation({
         </div>
       </div>
 
-      {/* Bottom Row - Categories */}
-      <div className='bg-transparent'>
+      {/* Bottom Row - Categories - Hidden on mobile */}
+      <div className='bg-transparent hidden md:block'>
         <div className='px-4 sm:px-6 lg:px-8'>
-          <div className='flex items-center h-12'>
-            {/* All Categories Button 
-            <div className='relative'>
-              <Button
-                variant='ghost'
-                className='flex items-center space-x-2 bg-gray-100/80 dark:bg-gray-800/80 backdrop-blur-sm hover:bg-gray-200/80 dark:hover:bg-gray-700/80 rounded-md px-4 py-2 mr-6 border border-gray-200/50 dark:border-gray-700/50'
-                onMouseEnter={() => setIsCategoryDropdownOpen(true)}
-                onMouseLeave={() => setIsCategoryDropdownOpen(false)}
-              >
-                <Menu className='h-4 w-4' />
-                <span className='hidden md:flex'>All Categories</span>
-                <ChevronUp className='h-4 w-4' />
-              </Button>
-
-              Multi-column Dropdown
-              {isCategoryDropdownOpen && (
-                <div
-                  className='absolute top-full left-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border border-gray-200/50 dark:border-gray-700/50 rounded-lg shadow-xl dark:shadow-gray-900/50 z-50 w-[800px]'
-                  onMouseEnter={() => setIsCategoryDropdownOpen(true)}
-                  onMouseLeave={() => setIsCategoryDropdownOpen(false)}
-                >
-                  <div className='flex'>
-                    Left Column - Main Categories
-                    <div className='w-48 lg:w-64 border-r border-gray-200/50 dark:border-gray-700/50'>
-                      <div className='p-4'>
-                        <div className='flex items-center space-x-2 text-sm font-medium text-gray-500 dark:text-gray-400 mb-3'>
-                          <Menu className='h-4 w-4' />
-                          <span>All Categories</span>
-                          <ChevronUp className='h-3 w-3' />
-                        </div>
-                        <div className='space-y-1'>
-                          {mainCategories.map((category, index) => (
-                            <Link
-                              key={category.name}
-                              href={category.href}
-                              className={`flex items-center space-x-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${activeCategory === index
-                                ? 'bg-gray-100 dark:bg-gray-700 text-black dark:text-white font-medium'
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                                }`}
-                              onMouseEnter={() => setActiveCategory(index)}
-                            >
-                              <div
-                                className='w-6 h-6 rounded flex items-center justify-center'
-                                style={{
-                                  backgroundColor: category.backgroundColor,
-                                }}
-                              >
-                                <category.icon className='h-3 w-3 text-white' />
-                              </div>
-                              <span className='text-sm'>{category.name}</span>
-                            </Link>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-
-                    Right Panel - Subcategories
-                    <div className='flex-1 p-4 lg:p-6'>
-                      <div className='grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6'>
-                        {Object.entries(
-                          mainCategories[activeCategory]?.subcategories || {},
-                        ).map(([sectionName, items], sectionIndex) => (
-                          <div key={sectionName} className='space-y-3'>
-                            <h4 className='font-semibold text-sm text-gray-900 dark:text-white'>
-                              {sectionName}
-                            </h4>
-                            <div className='space-y-2'>
-                              {items.map((item: string, itemIndex: number) => (
-                                <Link
-                                  key={itemIndex}
-                                  href={`/books?categoryName=${encodeURIComponent(item)}`}
-                                  className='block text-sm text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors'
-                                >
-                                  {item}
-                                </Link>
-                              ))}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div> */}
-
+          <div
+            className='flex items-center h-12 overflow-x-auto [&::-webkit-scrollbar]:hidden'
+            style={{
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+            }}
+          >
             {/* Main Navigation Links */}
-            <div className='flex items-center space-x-6'>
+            <div className='flex items-center space-x-4 lg:space-x-6 min-w-max'>
               <Link
                 href='/'
-                className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors'
+                className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors whitespace-nowrap'
               >
                 {t('home')}
               </Link>
               <Link
                 href='/about'
-                className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors'
+                className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors whitespace-nowrap'
               >
                 {t('about')}
               </Link>
               <Link
                 href='/publications'
-                className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors'
+                className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors whitespace-nowrap'
               >
                 {t('publications')}
               </Link>
               <Link
                 href='/media'
-                className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors'
+                className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors whitespace-nowrap'
               >
                 {t('media')}
               </Link>
               <Link
-                href='/advocacy'
-                className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors'
-              >
-                {t('advocacy')}
-              </Link>
-              <Link
                 href='/contact'
-                className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors'
+                className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors whitespace-nowrap'
               >
                 {t('contact')}
               </Link>
               <Link
                 href='/books'
-                className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors'
+                className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors whitespace-nowrap'
               >
                 {t('book')}
               </Link>
@@ -315,132 +247,165 @@ export function Navigation({
 
       {/* Mobile menu */}
       <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-        <SheetContent side='right' className='w-80 bg-white dark:bg-gray-900 border-l dark:border-gray-800'>
-          <SheetHeader>
-            <SheetTitle className='flex items-center space-x-2'>
-              <div className='w-6 h-6 bg-green-600 rounded flex items-center justify-center'>
-                <span className='text-white font-bold text-sm'>U</span>
+        <SheetContent
+          side='left'
+          className='w-[85vw] sm:w-80 bg-white dark:bg-gray-900 border-r dark:border-gray-800 overflow-y-auto'
+        >
+          <SheetHeader className='pb-4 border-b dark:border-gray-800'>
+            <SheetTitle className='flex items-center space-x-2 text-left'>
+              <div className='w-8 h-8 bg-green-600 rounded flex items-center justify-center flex-shrink-0'>
+                <span className='text-white font-bold text-base'>U</span>
               </div>
-              <span className='dark:text-white'>Ustaz Ahmedin Jebel</span>
+              <span className='text-base font-semibold text-gray-900 dark:text-white'>
+                Ustaz Ahmedin Jebel
+              </span>
             </SheetTitle>
           </SheetHeader>
-          <div className='mt-6 space-y-6'>
+
+          <div className='mt-6 space-y-6 pb-6'>
             {/* Mobile Search */}
-            <SearchSuggestions
-              onSearch={handleSearch}
-              searchSuggestions={searchSuggestions}
-              className='w-full'
-            />
+            <div className='px-1'>
+              <SearchSuggestions
+                onSearch={handleSearch}
+                searchSuggestions={searchSuggestions}
+                className='w-full'
+              />
+            </div>
 
             {/* Mobile Navigation Links */}
-            <div>
-              <h3 className='text-sm font-medium text-gray-900 dark:text-white mb-3'>
+            <div className='space-y-1'>
+              <h3 className='text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-3 mb-2'>
                 Navigation
               </h3>
-              <div className='space-y-2'>
+              <nav className='space-y-1'>
                 <Link
                   href='/'
-                  className='block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white py-2'
+                  className='flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary dark:hover:text-primary transition-colors'
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {t('home')}
                 </Link>
                 <Link
                   href='/about'
-                  className='block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white py-2'
+                  className='flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary dark:hover:text-primary transition-colors'
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {t('about')}
                 </Link>
                 <Link
                   href='/publications'
-                  className='block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white py-2'
+                  className='flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary dark:hover:text-primary transition-colors'
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {t('publications')}
                 </Link>
                 <Link
                   href='/media'
-                  className='block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white py-2'
+                  className='flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary dark:hover:text-primary transition-colors'
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {t('media')}
                 </Link>
                 <Link
-                  href='/advocacy'
-                  className='block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white py-2'
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {t('advocacy')}
-                </Link>
-                <Link
                   href='/contact'
-                  className='block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white py-2'
+                  className='flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary dark:hover:text-primary transition-colors'
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {t('contact')}
                 </Link>
                 <Link
                   href='/books'
-                  className='block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white py-2'
+                  className='flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary dark:hover:text-primary transition-colors'
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  {t('shop')}
+                  {t('book')}
+                </Link>
+              </nav>
+            </div>
+
+            {/* Mobile Actions */}
+            <div className='space-y-1 pt-4 border-t dark:border-gray-800'>
+              <h3 className='text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-3 mb-2'>
+                Quick Actions
+              </h3>
+              <div className='space-y-1'>
+                <Link
+                  href='/books/wishlist'
+                  className='flex items-center justify-between px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors'
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <div className='flex items-center'>
+                    <Heart className='h-4 w-4 mr-3' />
+                    Wishlist
+                  </div>
+                  <Badge variant='secondary' className='text-xs'>
+                    0
+                  </Badge>
+                </Link>
+
+                <Link
+                  href='/books/cart'
+                  className='flex items-center justify-between px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors'
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <div className='flex items-center'>
+                    <ShoppingCart className='h-4 w-4 mr-3' />
+                    Cart
+                  </div>
+                  <Badge className='text-xs bg-orange-500'>0</Badge>
+                </Link>
+
+                <Link
+                  href='/profile'
+                  className='flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors'
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <UserIcon className='h-4 w-4 mr-3' />
+                  Profile
+                </Link>
+
+                {user?.roles?.length && user.roles.length > 0 && (
+                  <Link
+                    href='/admin'
+                    className='flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors'
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Wrench className='h-4 w-4 mr-3' />
+                    Admin Panel
+                  </Link>
+                )}
+
+                <Link
+                  href='/vendor/dashboard'
+                  className='flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors'
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <Store className='h-4 w-4 mr-3' />
+                  Vendor Dashboard
                 </Link>
               </div>
             </div>
 
-            {/* Mobile Actions */}
-            <div className='space-y-4'>
-              <div className='flex items-center justify-between'>
-                <Link
-                  href='/books/wishlist'
-                  className='flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <Heart className='h-5 w-5 mr-3' />
-                  Wishlist
-                </Link>
-                <Badge variant='secondary' className='text-xs'>
-                  0
-                </Badge>
+            {/* Mobile Utilities */}
+            <div className='pt-4 border-t dark:border-gray-800'>
+              <div className='flex items-center justify-between px-3 mb-3'>
+                <span className='text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider'>
+                  Settings
+                </span>
               </div>
-
-              <div className='flex items-center justify-between'>
-                <Link
-                  href='/books/cart'
-                  className='flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <ShoppingCart className='h-5 w-5 mr-3' />
-                  Cart
-                </Link>
-                <Badge className='text-xs bg-orange-500'>0</Badge>
-              </div>
-
-              <Link
-                href='/profile'
-                className='flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <UserIcon className='h-5 w-5 mr-3' />
-                Profile
-              </Link>
-
-              <Link
-                href='/vendor/dashboard'
-                className='flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <Store className='h-5 w-5 mr-3' />
-                Vendor Dashboard
-              </Link>
-
-              <div className='pt-4 border-t dark:border-gray-800'>
+              <div className='space-y-2 px-3'>
+                <div className='flex items-center justify-between'>
+                  <span className='text-sm text-gray-700 dark:text-gray-300'>Language</span>
+                  <LanguageSwitcher />
+                </div>
+                <div className='flex items-center justify-between'>
+                  <span className='text-sm text-gray-700 dark:text-gray-300'>Theme</span>
+                  <ThemeToggle />
+                </div>
                 <Button
                   variant='ghost'
                   size='sm'
-                  className='flex items-center space-x-2 text-sm w-full justify-start'
+                  className='flex items-center space-x-2 text-sm w-full justify-start px-0'
                 >
                   <Download className='h-4 w-4' />
                   <span>Download App</span>

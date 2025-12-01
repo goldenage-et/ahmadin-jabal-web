@@ -41,16 +41,22 @@ export default function GalleryDetail({ gallery }: GalleryDetailProps) {
 
   const getStatusBadge = (status: EMediaStatus) => {
     switch (status) {
+      case 'draft':
+        return (
+          <Badge variant='default' className='bg-gray-500'>
+            Draft
+          </Badge>
+        );
       case 'published':
         return (
           <Badge variant='default' className='bg-green-500'>
             Published
           </Badge>
         );
-      case 'draft':
+      case 'scheduled':
         return (
-          <Badge variant='secondary' className='bg-gray-500'>
-            Draft
+          <Badge variant='default' className='bg-yellow-500'>
+            Scheduled
           </Badge>
         );
       default:
@@ -113,7 +119,7 @@ export default function GalleryDetail({ gallery }: GalleryDetailProps) {
           <div className='flex items-start justify-between'>
             <div className='flex-1'>
               <div className='flex items-center gap-2 mb-2'>
-                {getStatusBadge(gallery.status)}
+                {getStatusBadge(gallery.status as EMediaStatus)}
                 {gallery.featured && (
                   <Badge variant='default' className='bg-yellow-500'>
                     Featured
@@ -191,8 +197,8 @@ export default function GalleryDetail({ gallery }: GalleryDetailProps) {
                       className='relative aspect-square rounded-lg overflow-hidden'
                     >
                       <img
-                        src={photo.url}
-                        alt={photo.alt || 'Gallery photo'}
+                        src={photo.photo?.url || '/placeholder.jpg'}
+                        alt={photo.photo?.caption || 'Gallery photo'}
                         className='w-full h-full object-cover'
                       />
                     </div>

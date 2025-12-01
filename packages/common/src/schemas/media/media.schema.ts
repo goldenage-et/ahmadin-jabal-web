@@ -55,7 +55,7 @@ export const ZMedia = z.object({
     likeCount: z.number().int().min(0, 'Like count cannot be negative').default(0),
     downloadCount: z.number().int().min(0, 'Download count cannot be negative').default(0),
     featured: z.boolean().default(false),
-    status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.active),
+    status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.draft),
     metadata: z.any().nullable().optional(),
     uploadedBy: z.uuid('Invalid uploader ID format'),
     publishedAt: z.coerce.date().nullable().optional(),
@@ -139,7 +139,7 @@ export const ZCreateMedia = z.object({
         .optional()
         .nullable(),
     featured: z.boolean().default(false),
-    status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.active),
+    status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.draft),
     metadata: z.any().optional().nullable(),
     publishedAt: z.coerce.date().optional().nullable(),
 });
@@ -339,7 +339,7 @@ export const ZVideo = z.object({
     likeCount: z.number().int().min(0, 'Like count cannot be negative').default(0),
     downloadCount: z.number().int().min(0, 'Download count cannot be negative').default(0),
     featured: z.boolean().default(false),
-    status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.active),
+    status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.draft),
     metadata: z.any().nullable().optional(),
     uploadedBy: z.uuid('Invalid uploader ID format'),
     mediaId: z.uuid('Invalid media ID format').nullable().optional(),
@@ -421,7 +421,7 @@ export const ZCreateVideo = z.object({
         .optional()
         .nullable(),
     featured: z.boolean().default(false),
-    status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.active),
+    status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.draft),
     metadata: z.any().optional().nullable(),
     mediaId: z.uuid('Invalid media ID format').optional().nullable(),
     publishedAt: z.coerce.date().optional().nullable(),
@@ -598,7 +598,7 @@ export const ZAudio = z.object({
     likeCount: z.number().int().min(0, 'Like count cannot be negative').default(0),
     downloadCount: z.number().int().min(0, 'Download count cannot be negative').default(0),
     featured: z.boolean().default(false),
-    status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.active),
+    status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.draft),
     isAvailable: z.boolean().default(true),
     metadata: z.any().nullable().optional(),
     uploadedBy: z.uuid('Invalid uploader ID format'),
@@ -678,7 +678,7 @@ export const ZCreateAudio = z.object({
         .optional()
         .nullable(),
     featured: z.boolean().default(false),
-    status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.active),
+    status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.draft),
     isAvailable: z.boolean().default(true),
     metadata: z.any().optional().nullable(),
     mediaId: z.uuid('Invalid media ID format').optional().nullable(),
@@ -863,7 +863,7 @@ export const ZPhoto = z.object({
     likeCount: z.number().int().min(0, 'Like count cannot be negative').default(0),
     downloadCount: z.number().int().min(0, 'Download count cannot be negative').default(0),
     featured: z.boolean().default(false),
-    status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.active),
+    status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.draft),
     metadata: z.any().nullable().optional(),
     uploadedBy: z.uuid('Invalid uploader ID format'),
     mediaId: z.uuid('Invalid media ID format').nullable().optional(),
@@ -950,7 +950,7 @@ export const ZCreatePhoto = z.object({
         .optional()
         .nullable(),
     featured: z.boolean().default(false),
-    status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.active),
+    status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.draft),
     metadata: z.any().optional().nullable(),
     mediaId: z.uuid('Invalid media ID format').optional().nullable(),
     publishedAt: z.coerce.date().optional().nullable(),
@@ -1108,7 +1108,7 @@ export const ZGallery = z.object({
         .nullable()
         .optional(),
     featured: z.boolean().default(false),
-    status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.active),
+    status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.draft),
     coverImage: z
         .url('Invalid cover image URL format')
         .max(MEDIA_URL_MAX_LENGTH, `Cover image URL must be ${MEDIA_URL_MAX_LENGTH} characters or less`)
@@ -1164,7 +1164,7 @@ export const ZCreateGallery = z.object({
         .optional()
         .nullable(),
     featured: z.boolean().default(false),
-    status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.active),
+    status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.draft),
     coverImage: z
         .url('Invalid cover image URL format')
         .max(MEDIA_URL_MAX_LENGTH, `Cover image URL must be ${MEDIA_URL_MAX_LENGTH} characters or less`)

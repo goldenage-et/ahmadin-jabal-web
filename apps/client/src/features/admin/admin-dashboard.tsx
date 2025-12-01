@@ -27,10 +27,10 @@ import {
     DollarSign,
     EyeIcon,
     MoreHorizontal,
+    Newspaper,
     Package,
     RefreshCw,
     ShoppingCart,
-    Store,
     TrendingUp,
     Users
 } from 'lucide-react';
@@ -174,9 +174,9 @@ export default function AdminDashboard({
                                 variant='outline'
                                 className='h-20 flex flex-col items-center justify-center space-y-2'
                             >
-                                <Link href={`/store/settings`}>
-                                    <Store className='h-6 w-6' />
-                                    <span>Manage Stores</span>
+                                <Link href={`/admin/publications`}>
+                                    <Newspaper className='h-6 w-6' />
+                                    <span>Manage Publications</span>
                                 </Link>
                             </Button>
                             <Button
@@ -184,9 +184,9 @@ export default function AdminDashboard({
                                 variant='outline'
                                 className='h-20 flex flex-col items-center justify-center space-y-2'
                             >
-                                <Link href={`/store/customers`}>
+                                <Link href={`/admin/users`}>
                                     <Users className='h-6 w-6' />
-                                    <span>View Customers</span>
+                                    <span>Manage Users</span>
                                 </Link>
                             </Button>
                             <Button
@@ -194,9 +194,9 @@ export default function AdminDashboard({
                                 variant='outline'
                                 className='h-20 flex flex-col items-center justify-center space-y-2'
                             >
-                                <Link href={`/store/books`}>
+                                <Link href={`/admin/books`}>
                                     <Package className='h-6 w-6' />
-                                    <span>Books</span>
+                                    <span>Manage Books</span>
                                 </Link>
                             </Button>
                             <Button
@@ -204,7 +204,7 @@ export default function AdminDashboard({
                                 variant='outline'
                                 className='h-20 flex flex-col items-center justify-center space-y-2'
                             >
-                                <Link href={`/store/orders`}>
+                                <Link href={`/admin/orders`}>
                                     <ShoppingCart className='h-6 w-6' />
                                     <span>Order Management</span>
                                 </Link>
