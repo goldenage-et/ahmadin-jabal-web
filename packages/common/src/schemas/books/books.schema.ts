@@ -51,14 +51,22 @@ export const ZBook = z.object({
   categoryId: z.uuid().optional().nullable(),
   subcategoryId: z.uuid().optional().nullable(),
   title: z.string().min(1, 'Title is required').max(255, 'Title must be 255 characters or less'),
+  titleAm: z.string().max(255, 'Title must be 255 characters or less').optional().nullable(),
+  titleOr: z.string().max(255, 'Title must be 255 characters or less').optional().nullable(),
   slug: z.string().max(255, 'Slug must be 255 characters or less').nullable().optional(),
   description: z.string().optional().nullable(),
+  descriptionAm: z.string().optional().nullable(),
+  descriptionOr: z.string().optional().nullable(),
   price: z.coerce.number(),
   purchasePrice: z.coerce.number().optional().nullable(),
   images: z.array(ZBookImage).optional(),
   publisher: z.string().max(255, 'Publisher name too long').optional().nullable(),
+  publisherAm: z.string().max(255, 'Publisher name too long').optional().nullable(),
+  publisherOr: z.string().max(255, 'Publisher name too long').optional().nullable(),
   isbn: z.string().max(100, 'ISBN too long').optional().nullable(),
   author: z.string().max(255, 'Author name too long').optional().nullable(),
+  authorAm: z.string().max(255, 'Author name too long').optional().nullable(),
+  authorOr: z.string().max(255, 'Author name too long').optional().nullable(),
   inventoryQuantity: z.number().int().optional().nullable(),
   inventoryLowStockThreshold: z.number().int().optional().nullable(),
   status: z.enum(EBookStatus).default(EBookStatus.active),
@@ -82,14 +90,22 @@ export const ZBookBasic = ZBook.pick({
   categoryId: true,
   subcategoryId: true,
   title: true,
+  titleAm: true,
+  titleOr: true,
   slug: true,
   description: true,
+  descriptionAm: true,
+  descriptionOr: true,
   price: true,
   purchasePrice: true,
   images: true,
   publisher: true,
+  publisherAm: true,
+  publisherOr: true,
   isbn: true,
   author: true,
+  authorAm: true,
+  authorOr: true,
   inventoryQuantity: true,
   inventoryLowStockThreshold: true,
   specifications: true,
@@ -116,6 +132,8 @@ export const ZCreateBook = z.object({
       BOOK_NAME_MAX_LENGTH,
       `Book name must be less than ${BOOK_NAME_MAX_LENGTH} characters`,
     ),
+  titleAm: z.string().max(255, 'Title must be 255 characters or less').optional().nullable(),
+  titleOr: z.string().max(255, 'Title must be 255 characters or less').optional().nullable(),
   slug: z.string().max(255, 'Slug must be 255 characters or less').optional(),
   description: z
     .string()
@@ -123,6 +141,8 @@ export const ZCreateBook = z.object({
       BOOK_DESCRIPTION_MAX_LENGTH,
       `Description must be less than ${BOOK_DESCRIPTION_MAX_LENGTH} characters`,
     ).optional(),
+  descriptionAm: z.string().optional().nullable(),
+  descriptionOr: z.string().optional().nullable(),
   price: z.coerce
     .number()
     .min(0, 'Book price must be non-negative')
@@ -139,8 +159,12 @@ export const ZCreateBook = z.object({
     .max(10, 'Maximum 10 images allowed')
     .optional(),
   publisher: z.string().max(255, 'Publisher name too long').optional().nullable(),
+  publisherAm: z.string().max(255, 'Publisher name too long').optional().nullable(),
+  publisherOr: z.string().max(255, 'Publisher name too long').optional().nullable(),
   isbn: z.string().max(100, 'ISBN too long').optional().nullable(),
   author: z.string().max(255, 'Author name too long').optional().nullable(),
+  authorAm: z.string().max(255, 'Author name too long').optional().nullable(),
+  authorOr: z.string().max(255, 'Author name too long').optional().nullable(),
   sku: z
     .string()
     .min(1, 'SKU is required')
@@ -213,8 +237,12 @@ export const ZUpdateBook = z.object({
     .max(10, 'Maximum 10 images allowed')
     .optional(),
   publisher: z.string().max(255, 'Publisher name too long').optional().nullable(),
+  publisherAm: z.string().max(255, 'Publisher name too long').optional().nullable(),
+  publisherOr: z.string().max(255, 'Publisher name too long').optional().nullable(),
   isbn: z.string().max(100, 'ISBN too long').optional().nullable(),
   author: z.string().max(255, 'Author name too long').optional().nullable(),
+  authorAm: z.string().max(255, 'Author name too long').optional().nullable(),
+  authorOr: z.string().max(255, 'Author name too long').optional().nullable(),
   status: z
     .enum(EBookStatus, {
       message: 'Invalid book status',
@@ -260,6 +288,8 @@ export const ZBookQueryUnique = z.object({
   id: z.uuid('Invalid book ID format').optional(),
   slug: z.string().optional(),
   isbn: z.string().optional(),
+  titleAm: z.string().optional(),
+  titleOr: z.string().optional(),
 }).refine((data) => data.id || data.slug || data.isbn, {
   message: 'Either id, slug, or isbn must be provided',
 });
@@ -282,6 +312,8 @@ export const ZBookQueryFilter = z.object({
     .default(10),
 
   // Filter parameters
+  titleAm: z.string().optional(),
+  titleOr: z.string().optional(),
   categoryName: z.string().optional(),
   subcategoryName: z.string().optional(),
   status: z
@@ -596,4 +628,5 @@ export const ZSearchSuggestion = z.object({
   recentEvents: z.array(ZSearchAnalyticsEvent),
 });
 export type TSearchSuggestion = z.infer<typeof ZSearchSuggestion>;
+
 

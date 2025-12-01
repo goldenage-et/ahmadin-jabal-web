@@ -16,12 +16,16 @@ export const ZArticle = z.object({
     authorId: z.string(),
     categoryId: z.string().nullable().optional(),
     title: z.string().min(1, 'Title is required').max(255, 'Title must be 255 characters or less'),
-    titleEn: z.string().max(255, 'English title must be 255 characters or less').nullable().optional(),
+    titleAm: z.string().max(255, 'Amharic title must be 255 characters or less').nullable().optional(),
+    titleOr: z.string().max(255, 'Oromo title must be 255 characters or less').nullable().optional(),
     slug: z.string().min(1, 'Slug is required').max(255, 'Slug must be 255 characters or less'),
     excerpt: z.string().max(500, 'Excerpt must be 500 characters or less').nullable().optional(),
-    content: z.string().nullable().optional(),
-    contentEn: z.string().nullable().optional(),
-    images: z.array(ZArticleImage).nullable().optional(),
+    excerptAm: z.string().max(500, 'Amharic excerpt must be 500 characters or less').nullable().optional(),
+    excerptOr: z.string().max(500, 'Oromo excerpt must be 500 characters or less').nullable().optional(),
+    content: z.json().default({}).nullable().optional(),
+    contentAm: z.json().default({}).nullable().optional(),
+    contentOr: z.json().default({}).nullable().optional(),
+    medias: z.array(ZArticleImage).default([]).nullable().optional(),
     featuredImage: z.string().nullable().optional(),
     tags: z.array(z.string()),
     status: z.enum(EArticleStatus).default(EArticleStatus.draft),
@@ -30,9 +34,6 @@ export const ZArticle = z.object({
     price: z.number().positive().nullable().optional(),
     viewCount: z.number().int().default(0),
     likeCount: z.number().int().default(0),
-    metaTitle: z.string().max(255, 'Meta title must be 255 characters or less').nullable().optional(),
-    metaDescription: z.string().max(500, 'Meta description must be 500 characters or less').nullable().optional(),
-    metaKeywords: z.array(z.string()),
     publishedAt: z.coerce.date().nullable().optional(),
     expiresAt: z.coerce.date().nullable().optional(),
     createdAt: z.coerce.date(),
@@ -45,9 +46,13 @@ export type TArticle = z.infer<typeof ZArticle>;
 export const ZArticleBasic = ZArticle.pick({
     id: true,
     title: true,
-    titleEn: true,
+    titleAm: true,
+    titleOr: true,
     slug: true,
     excerpt: true,
+    excerptAm: true,
+    excerptOr: true,
+    medias: true,
     featuredImage: true,
     tags: true,
     status: true,
@@ -69,21 +74,22 @@ export type TArticleBasic = z.infer<typeof ZArticleBasic>;
 export const ZCreateArticle = z.object({
     categoryId: z.string().uuid().optional(),
     title: z.string().min(1, 'Title is required').max(255, 'Title must be 255 characters or less'),
-    titleEn: z.string().max(255, 'English title must be 255 characters or less').optional(),
+    titleAm: z.string().max(255, 'Amharic title must be 255 characters or less').optional(),
+    titleOr: z.string().max(255, 'Oromo title must be 255 characters or less').optional(),
     slug: z.string().min(1, 'Slug is required').max(255, 'Slug must be 255 characters or less'),
     excerpt: z.string().max(500, 'Excerpt must be 500 characters or less').optional(),
-    content: z.string().optional(),
-    contentEn: z.string().optional(),
-    images: z.array(ZArticleImage).optional(),
+    excerptAm: z.string().max(500, 'Amharic excerpt must be 500 characters or less').optional(),
+    excerptOr: z.string().max(500, 'Oromo excerpt must be 500 characters or less').optional(),
+    content: z.json().default({}).optional(),
+    contentAm: z.json().default({}).optional(),
+    contentOr: z.json().default({}).optional(),
+    medias: z.array(ZArticleImage).default([]).optional(),
     featuredImage: z.string().optional(),
     tags: z.array(z.string()).default([]),
-    status: z.nativeEnum(EArticleStatus).default(EArticleStatus.draft),
+    status: z.enum(EArticleStatus).default(EArticleStatus.draft),
     featured: z.boolean().default(false),
     isFree: z.boolean().default(true),
     price: z.number().positive().optional(),
-    metaTitle: z.string().max(255, 'Meta title must be 255 characters or less').optional(),
-    metaDescription: z.string().max(500, 'Meta description must be 500 characters or less').optional(),
-    metaKeywords: z.array(z.string()).default([]),
     publishedAt: z.coerce.date().optional(),
     expiresAt: z.coerce.date().optional(),
 });
@@ -94,21 +100,22 @@ export type TCreateArticle = z.infer<typeof ZCreateArticle>;
 export const ZUpdateArticle = z.object({
     categoryId: z.string().uuid().optional(),
     title: z.string().min(1, 'Title is required').max(255, 'Title must be 255 characters or less').optional(),
-    titleEn: z.string().max(255, 'English title must be 255 characters or less').optional(),
+    titleAm: z.string().max(255, 'Amharic title must be 255 characters or less').optional(),
+    titleOr: z.string().max(255, 'Oromo title must be 255 characters or less').optional(),
     slug: z.string().min(1, 'Slug is required').max(255, 'Slug must be 255 characters or less').optional(),
     excerpt: z.string().max(500, 'Excerpt must be 500 characters or less').optional(),
-    content: z.string().optional(),
-    contentEn: z.string().optional(),
+    excerptAm: z.string().max(500, 'Amharic excerpt must be 500 characters or less').optional(),
+    excerptOr: z.string().max(500, 'Oromo excerpt must be 500 characters or less').optional(),
+    content: z.json().default({}).optional(),
+    contentAm: z.json().default({}).optional(),
+    contentOr: z.json().default({}).optional(),
     images: z.array(ZArticleImage).optional(),
     featuredImage: z.string().optional(),
     tags: z.array(z.string()).optional(),
-    status: z.nativeEnum(EArticleStatus).optional(),
+    status: z.enum(EArticleStatus).optional(),
     featured: z.boolean().optional(),
     isFree: z.boolean().optional(),
     price: z.number().positive().optional(),
-    metaTitle: z.string().max(255, 'Meta title must be 255 characters or less').optional(),
-    metaDescription: z.string().max(500, 'Meta description must be 500 characters or less').optional(),
-    metaKeywords: z.array(z.string()).optional(),
     publishedAt: z.coerce.date().optional(),
     expiresAt: z.coerce.date().optional(),
 });
@@ -134,7 +141,7 @@ export type TArticleQueryFilter = z.infer<typeof ZArticleQueryFilter>;
 
 // Article Query Unique Schema
 export const ZArticleQueryUnique = z.object({
-    id: z.string().uuid().optional(),
+    id: z.uuid().optional(),
     slug: z.string().optional(),
 }).refine((data) => data.id || data.slug, {
     message: 'Either id or slug must be provided',
@@ -171,3 +178,20 @@ export const ZArticleRelated = z.object({
 
 export type TArticleRelated = z.infer<typeof ZArticleRelated>;
 
+export const ZArticleAmharic = z.object({
+    id: z.string(),
+    titleAm: z.string(),
+    excerptAm: z.string(),
+    contentAm: z.json().default({}).nullable().optional(),
+});
+
+export type TArticleAmharic = z.infer<typeof ZArticleAmharic>;
+
+export const ZArticleOromo = z.object({
+    id: z.string(),
+    titleOr: z.string(),
+    excerptOr: z.string(),
+    contentOr: z.json().default({}).nullable().optional(),
+});
+
+export type TArticleOromo = z.infer<typeof ZArticleOromo>;

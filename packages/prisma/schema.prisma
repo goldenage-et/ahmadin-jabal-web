@@ -52,8 +52,12 @@ model Address {
 model Category {
   id                   String        @id @default(uuid())
   name                 String        @default("No Name") @db.VarChar(255)
+  nameAm               String?       @db.VarChar(255)
+  nameOr               String?       @db.VarChar(255)
   slug                 String?       @unique @db.VarChar(255)
   description          String?
+  descriptionAm        String?
+  descriptionOr        String?
   image                Json?
   iconName             String?       @db.VarChar(50)
   backgroundColor      String?       @db.VarChar(7)
@@ -110,12 +114,12 @@ model Order {
   paymentMethod     PaymentMethod
   shippingAddress   Json
   subtotal          Float
-  tax               Float
-  shipping          Float
-  discount          Float
+  tax               Float          @default(0)
+  shipping          Float          @default(0)
+  discount          Float          @default(0)
   total             Float
   quantity          Int
-  currency          String         @db.VarChar(8)
+  currency          String         @default("ETB") @db.VarChar(8)
   shippingMethod    ShippingMethod
   trackingNumber    String?        @unique @db.VarChar(100)
   estimatedDelivery DateTime?
@@ -134,9 +138,12 @@ model Order {
   @@index([bookId])
   @@index([status])
   @@index([paymentStatus])
+  @@index([orderNumber])
   @@index([createdAt])
   @@index([userId, status])
   @@index([userId, createdAt])
+  @@index([status, paymentStatus])
+  @@index([status, createdAt])
   @@map("orders")
 }
 
@@ -145,7 +152,7 @@ model Payment {
   orderId         String
   userId          String
   amount          Float
-  currency        String        @db.VarChar(8)
+  currency        String        @default("ETB") @db.VarChar(8)
   paymentMethod   PaymentMethod
   paymentStatus   PaymentStatus @default(pending)
   transactionId   String?       @unique @db.VarChar(255)
@@ -167,6 +174,10 @@ model Payment {
   @@index([orderId])
   @@index([userId])
   @@index([paymentStatus])
+  @@index([createdAt])
+  @@index([orderId, paymentStatus])
+  @@index([userId, paymentStatus])
+  @@index([paidAt])
   @@map("payments")
 }
 
@@ -177,7 +188,7 @@ model Transaction {
   userId          String
   type            TransactionType
   amount          Float
-  currency        String            @db.VarChar(8)
+  currency        String            @default("ETB") @db.VarChar(8)
   status          TransactionStatus @default(pending)
   description     String?
   referenceNumber String?           @db.VarChar(255)
@@ -194,6 +205,11 @@ model Transaction {
   @@index([userId])
   @@index([status])
   @@index([type])
+  @@index([createdAt])
+  @@index([userId, status])
+  @@index([userId, type])
+  @@index([status, type])
+  @@index([processedAt])
   @@map("transactions")
 }
 
@@ -202,8 +218,10 @@ model BookReview {
   bookId        String
   userId        String
   orderId       String?
-  rating        Int
+  rating        Int // 1-5 rating
   title         String?         @db.VarChar(255)
+  titleAm       String?         @db.VarChar(255)
+  titleOr       String?         @db.VarChar(255)
   comment       String?
   images        String[]
   verified      Boolean         @default(false)
@@ -223,7 +241,10 @@ model BookReview {
   @@index([orderId])
   @@index([status])
   @@index([rating])
+  @@index([verified])
   @@index([bookId, status])
+  @@index([bookId, rating])
+  @@index([status, rating])
   @@index([createdAt])
   @@map("book_reviews")
 }
@@ -233,14 +254,22 @@ model Book {
   categoryId                 String?
   subcategoryId              String?
   title                      String       @db.VarChar(255)
+  titleAm                    String?      @db.VarChar(255)
+  titleOr                    String?      @db.VarChar(255)
   slug                       String?      @unique @db.VarChar(255)
   description                String?
+  descriptionAm              String?
+  descriptionOr              String?
   price                      Float
   purchasePrice              Float?
   images                     Json?        @default("[]")
   publisher                  String?      @db.VarChar(255)
+  publisherAm                String?      @db.VarChar(255)
+  publisherOr                String?      @db.VarChar(255)
   isbn                       String?      @unique @db.VarChar(100)
   author                     String?      @db.VarChar(255)
+  authorAm                   String?      @db.VarChar(255)
+  authorOr                   String?      @db.VarChar(255)
   inventoryQuantity          Int?
   inventoryLowStockThreshold Int?
   status                     BookStatus   @default(active)
@@ -268,8 +297,11 @@ model Book {
   @@index([slug])
   @@index([isbn])
   @@index([status, featured])
+  @@index([status, publishedAt])
   @@index([publishedAt])
   @@index([createdAt])
+  @@index([rating])
+  @@index([saleCount])
   @@map("books")
 }
 
@@ -305,6 +337,8 @@ model ReviewReport {
   @@index([reviewId])
   @@index([userId])
   @@index([status])
+  @@index([createdAt])
+  @@index([status, createdAt])
   @@map("review_reports")
 }
 
@@ -431,11 +465,17 @@ model Article {
   id            String           @id @default(uuid())
   authorId      String
   categoryId    String?
-  title         Json             @default("{}")
+  title         String           @default("No Title")
+  titleAm       String?
+  titleOr       String?
   slug          String           @unique @db.VarChar(255)
-  excerpt       Json?
+  excerpt       String?
+  excerptAm     String?
+  excerptOr     String?
   content       Json?            @default("{}")
-  medias        Json?            @default("[]")
+  contentAm     Json?
+  contentOr     Json?
+  medias        String[]         @default([])
   featuredImage String?
   tags          String[]
   status        ArticleStatus    @default(draft)
@@ -458,11 +498,16 @@ model Article {
   @@index([categoryId])
   @@index([status])
   @@index([featured])
+  @@index([isFree])
   @@index([publishedAt])
   @@index([slug])
   @@index([status, featured])
   @@index([status, publishedAt])
+  @@index([authorId, status])
+  @@index([status, isFree])
   @@index([createdAt])
+  @@index([viewCount])
+  @@index([likeCount])
   @@map("articles")
 }
 
@@ -485,11 +530,16 @@ model Publication {
   authorId         String
   categoryId       String?
   title            String               @db.VarChar(255)
-  titleEn          String?              @db.VarChar(255)
+  titleAm          String?              @db.VarChar(255)
+  titleOr          String?              @db.VarChar(255)
   slug             String               @unique @db.VarChar(255)
-  excerpt          Json?
+  excerpt          String?
+  excerptAm        String?
+  excerptOr        String?
   content          Json?
-  media            Json?                @default("[]")
+  contentAm        Json?
+  contentOr        Json?
+  media            String[]             @default([])
   featuredImage    String?
   tags             String[]
   isPremium        Boolean              @default(false)
@@ -515,12 +565,18 @@ model Publication {
   @@index([categoryId])
   @@index([status])
   @@index([featured])
+  @@index([isPremium])
   @@index([publishedAt])
   @@index([slug])
   @@index([status, featured])
   @@index([status, publishedAt])
+  @@index([authorId, status])
+  @@index([status, isPremium])
   @@index([allowComments])
   @@index([createdAt])
+  @@index([viewCount])
+  @@index([likeCount])
+  @@index([downloadCount])
   @@map("publications")
 }
 
@@ -543,6 +599,9 @@ model PublicationComment {
   @@index([userId])
   @@index([parentId])
   @@index([status])
+  @@index([createdAt])
+  @@index([publicationId, status])
+  @@index([publicationId, parentId])
   @@map("publication_comments")
 }
 
@@ -563,8 +622,11 @@ model PublicationRelated {
 model Media {
   id               String             @id @default(uuid())
   title            String             @db.VarChar(255)
-  titleEn          String?            @db.VarChar(255)
+  titleAm          String?            @db.VarChar(255)
+  titleOr          String?            @db.VarChar(255)
   description      String?            @db.Text
+  descriptionAm    String?            @db.Text
+  descriptionOr    String?            @db.Text
   type             MediaType
   category         String?            @db.VarChar(100)
   url              String             @db.VarChar(500)
@@ -598,10 +660,15 @@ model Media {
   @@index([status])
   @@index([featured])
   @@index([uploadedBy])
+  @@index([source])
+  @@index([externalId])
   @@index([publishedAt])
   @@index([createdAt])
   @@index([status, featured])
   @@index([type, status])
+  @@index([type, category])
+  @@index([viewCount])
+  @@index([likeCount])
   @@map("media")
 }
 
@@ -618,6 +685,7 @@ model ArticleMedia {
   @@index([articleId])
   @@index([mediaId])
   @@index([order])
+  @@index([articleId, order])
   @@map("article_media")
 }
 
@@ -634,14 +702,18 @@ model PublicationMedia {
   @@index([publicationId])
   @@index([mediaId])
   @@index([order])
+  @@index([publicationId, order])
   @@map("publication_media")
 }
 
 model Video {
   id            String      @id @default(uuid())
   title         String      @db.VarChar(255)
-  titleEn       String?     @db.VarChar(255)
+  titleAm       String?     @db.VarChar(255)
+  titleOr       String?     @db.VarChar(255)
   description   String?     @db.Text
+  descriptionAm String?     @db.Text
+  descriptionOr String?     @db.Text
   category      String?     @db.VarChar(100)
   url           String      @db.VarChar(500)
   thumbnail     String?     @db.VarChar(500)
@@ -676,14 +748,19 @@ model Video {
   @@index([createdAt])
   @@index([status, featured])
   @@index([source, status])
+  @@index([viewCount])
+  @@index([likeCount])
   @@map("videos")
 }
 
 model Audio {
   id            String      @id @default(uuid())
   title         String      @db.VarChar(255)
-  titleEn       String?     @db.VarChar(255)
+  titleAm       String?     @db.VarChar(255)
+  titleOr       String?     @db.VarChar(255)
   description   String?     @db.Text
+  descriptionAm String?     @db.Text
+  descriptionOr String?     @db.Text
   category      String?     @db.VarChar(100) // e.g., "Friday Sermon", "Ramadan", "Community", "Youth"
   url           String      @db.VarChar(500)
   thumbnail     String?     @db.VarChar(500) // Cover art for audio
@@ -718,14 +795,20 @@ model Audio {
   @@index([createdAt])
   @@index([status, featured])
   @@index([category, status])
+  @@index([status, isAvailable])
+  @@index([viewCount])
+  @@index([likeCount])
   @@map("audios")
 }
 
 model Photo {
   id            String         @id @default(uuid())
   title         String?        @db.VarChar(255)
-  titleEn       String?        @db.VarChar(255)
+  titleAm       String?        @db.VarChar(255)
+  titleOr       String?        @db.VarChar(255)
   caption       String?        @db.Text
+  captionAm     String?        @db.Text
+  captionOr     String?        @db.Text
   alt           String?        @db.VarChar(255) // Alt text for accessibility
   category      String?        @db.VarChar(100) // e.g., "Event", "Portrait", "Community", "Lecture"
   url           String         @db.VarChar(500)
@@ -761,14 +844,19 @@ model Photo {
   @@index([createdAt])
   @@index([status, featured])
   @@index([category, status])
+  @@index([viewCount])
+  @@index([likeCount])
   @@map("photos")
 }
 
 model Gallery {
   id            String         @id @default(uuid())
   title         String         @db.VarChar(255)
-  titleEn       String?        @db.VarChar(255)
+  titleAm       String?        @db.VarChar(255)
+  titleOr       String?        @db.VarChar(255)
   description   String?        @db.Text
+  descriptionAm String?        @db.Text
+  descriptionOr String?        @db.Text
   slug          String         @unique @db.VarChar(255)
   category      String?        @db.VarChar(100)
   featured      Boolean        @default(false)
@@ -806,16 +894,21 @@ model GalleryPhoto {
   @@index([galleryId])
   @@index([photoId])
   @@index([order])
+  @@index([galleryId, order])
   @@map("gallery_photos")
 }
 
 model Newsletter {
   id             String           @id @default(uuid())
   subject        String           @db.VarChar(255)
+  subjectAm      String?          @db.VarChar(255)
+  subjectOr      String?          @db.VarChar(255)
   title          String           @db.VarChar(255)
-  titleEn        String?          @db.VarChar(255)
+  titleAm        String?          @db.VarChar(255)
+  titleOr        String?          @db.VarChar(255)
   content        Json?            @default("{}")
-  contentEn      Json?            @default("{}")
+  contentAm      Json?            @default("{}")
+  contentOr      Json?            @default("{}")
   status         NewsletterStatus @default(draft)
   scheduledAt    DateTime?
   sentAt         DateTime?
@@ -841,11 +934,12 @@ model NewsletterSubscription {
   email          String                       @unique
   name           String?                      @db.VarChar(255)
   userId         String?
+  language       NewsletterLanguage           @default(en)
   status         NewsletterSubscriptionStatus @default(subscribed)
   source         String?                      @db.VarChar(100) // e.g., "website", "contact-page", "signup"
   subscribedAt   DateTime                     @default(now())
   unsubscribedAt DateTime?
-  lastEmailSent  DateTime?
+  lastEmailSent  DateTime?                    @default(now())
   metadata       Json? // Additional metadata (preferences, tags, etc.)
   user           User?                        @relation("NewsletterSubscriber", fields: [userId], references: [id], onDelete: SetNull, onUpdate: NoAction)
 
@@ -853,7 +947,9 @@ model NewsletterSubscription {
   @@index([status])
   @@index([userId])
   @@index([subscribedAt])
+  @@index([unsubscribedAt])
   @@index([status, subscribedAt])
+  @@index([status, unsubscribedAt])
   @@map("newsletter_subscriptions")
 }
 
@@ -879,9 +975,11 @@ model ContactSubmission {
   @@index([email])
   @@index([status])
   @@index([userId])
+  @@index([repliedBy])
   @@index([inquiryType])
   @@index([createdAt])
   @@index([status, createdAt])
+  @@index([repliedAt])
   @@map("contact_submissions")
 }
 
@@ -1015,6 +1113,12 @@ enum NewsletterSubscriptionStatus {
   unsubscribed @map("unsubscribed")
   bounced      @map("bounced")
   blocked      @map("blocked")
+}
+
+enum NewsletterLanguage {
+  en @map("en")
+  am @map("am")
+  om @map("om")
 }
 
 enum ContactSubmissionStatus {

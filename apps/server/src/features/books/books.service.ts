@@ -9,9 +9,6 @@ import {
 import {
   EBookStatus,
   ESearchAnalyticsSource,
-  TBulkBook,
-  TCreateBook,
-  TCreateBookSpecification,
   TBookAnalytics,
   TBookBasic,
   TBookDetail,
@@ -21,6 +18,9 @@ import {
   TBookQueryUnique,
   TBookSpecification,
   TBookSpecificationQueryFilter,
+  TBulkBook,
+  TCreateBook,
+  TCreateBookSpecification,
   TSearchSuggestion,
   TUpdateBook,
   TUpdateBookSpecification,
@@ -36,26 +36,48 @@ export class BooksService {
   constructor(@Inject(PRISMA_CLIENT) private readonly db: PrismaClient) { }
 
   async create(data: TCreateBook): Promise<TBookBasic> {
+    // Convert images array of objects to JSON for Prisma
+    const imagesJson = data.images ? data.images as unknown as any : [];
+
+    // Convert specifications array of objects to JSON for Prisma
+    const specificationsJson = data.specifications ? data.specifications as unknown as any : [];
+
     const book = await this.db.book.create({
       data: {
-        price: data.price,
-        purchasePrice: data.purchasePrice,
-        images: data.images,
-        publisher: data.publisher,
-        isbn: data.isbn,
-        author: data.author,
-        inventoryQuantity: data.inventoryQuantity,
-        inventoryLowStockThreshold: data.inventoryLowStockThreshold,
-        tags: data.tags,
-        specifications: data.specifications,
         categoryId: data.categoryId,
         subcategoryId: data.subcategoryId,
         title: data.title,
+        titleAm: data.titleAm,
+        titleOr: data.titleOr,
+        slug: data.slug,
         description: data.description,
+        descriptionAm: data.descriptionAm,
+        descriptionOr: data.descriptionOr,
+        price: data.price,
+        purchasePrice: data.purchasePrice,
+        images: imagesJson,
+        publisher: data.publisher,
+        publisherAm: data.publisherAm,
+        publisherOr: data.publisherOr,
+        isbn: data.isbn,
+        author: data.author,
+        authorAm: data.authorAm,
+        authorOr: data.authorOr,
+        inventoryQuantity: data.inventoryQuantity,
+        inventoryLowStockThreshold: data.inventoryLowStockThreshold,
+        tags: data.tags || [],
+        specifications: specificationsJson,
       },
     });
 
-    return ZBookBasic.parse(book);
+    // Convert images JSON back to array of objects for schema validation
+    const bookWithImages = {
+      ...book,
+      images: Array.isArray(book.images) ? book.images : [],
+      specifications: Array.isArray(book.specifications) ? book.specifications : [],
+    };
+
+    return ZBookBasic.parse(bookWithImages);
   }
 
   async getMany(
@@ -156,8 +178,19 @@ export class BooksService {
 
     if (query.search) {
       where.OR = [
-        { name: { contains: query.search, mode: 'insensitive' } },
+        { title: { contains: query.search, mode: 'insensitive' } },
+        { titleAm: { contains: query.search, mode: 'insensitive' } },
+        { titleOr: { contains: query.search, mode: 'insensitive' } },
         { description: { contains: query.search, mode: 'insensitive' } },
+        { descriptionAm: { contains: query.search, mode: 'insensitive' } },
+        { descriptionOr: { contains: query.search, mode: 'insensitive' } },
+        { author: { contains: query.search, mode: 'insensitive' } },
+        { authorAm: { contains: query.search, mode: 'insensitive' } },
+        { authorOr: { contains: query.search, mode: 'insensitive' } },
+        { publisher: { contains: query.search, mode: 'insensitive' } },
+        { publisherAm: { contains: query.search, mode: 'insensitive' } },
+        { publisherOr: { contains: query.search, mode: 'insensitive' } },
+        { isbn: { contains: query.search, mode: 'insensitive' } },
       ];
     }
 
@@ -238,8 +271,15 @@ export class BooksService {
       }
     }
 
+    // Convert images and specifications JSON back to arrays for schema validation
+    const booksWithImages = books.map(book => ({
+      ...book,
+      images: Array.isArray(book.images) ? book.images : [],
+      specifications: Array.isArray(book.specifications) ? book.specifications : [],
+    }));
+
     return ZBookListResponse.parse({
-      data: books,
+      data: booksWithImages,
       meta: {
         page,
         limit,
@@ -252,36 +292,105 @@ export class BooksService {
   }
 
   async getOne(query: TBookQueryUnique): Promise<TBookDetail> {
+    const where: any = {};
+
+    if (query.id) {
+      where.id = query.id;
+    } else if (query.slug) {
+      where.slug = query.slug;
+    } else if (query.isbn) {
+      where.isbn = query.isbn;
+    }
+
     const book = await this.db.book.findUnique({
-      where: { id: query.id },
+      where,
     });
 
     if (!book) {
       throw new NotFoundException('Book not found');
     }
 
-    return ZBookDetail.parse(book);
+    // Convert images and specifications JSON back to arrays for schema validation
+    const bookWithImages = {
+      ...book,
+      images: Array.isArray(book.images) ? book.images : [],
+      specifications: Array.isArray(book.specifications) ? book.specifications : [],
+    };
+
+    return ZBookDetail.parse(bookWithImages);
   }
 
   async update(
     query: TBookQueryUnique,
     data: TUpdateBook,
   ): Promise<TBookBasic> {
+    const where: any = {};
+
+    if (query.id) {
+      where.id = query.id;
+    } else if (query.slug) {
+      where.slug = query.slug;
+    } else if (query.isbn) {
+      where.isbn = query.isbn;
+    }
+
     // Check if book exists
     const existingBook = await this.db.book.findUnique({
-      where: { id: query.id },
+      where,
     });
 
     if (!existingBook) {
       throw new NotFoundException('Book not found');
     }
 
+    // Prepare update data
+    const updateData: any = {};
+
+    if (data.categoryId !== undefined) updateData.categoryId = data.categoryId;
+    if (data.subcategoryId !== undefined) updateData.subcategoryId = data.subcategoryId;
+    if (data.title !== undefined) updateData.title = data.title;
+    if (data.slug !== undefined) updateData.slug = data.slug;
+    if (data.description !== undefined) updateData.description = data.description;
+    if (data.price !== undefined) updateData.price = data.price;
+    if (data.purchasePrice !== undefined) updateData.purchasePrice = data.purchasePrice;
+    if (data.publisher !== undefined) updateData.publisher = data.publisher;
+    if (data.publisherAm !== undefined) updateData.publisherAm = data.publisherAm;
+    if (data.publisherOr !== undefined) updateData.publisherOr = data.publisherOr;
+    if (data.isbn !== undefined) updateData.isbn = data.isbn;
+    if (data.author !== undefined) updateData.author = data.author;
+    if (data.authorAm !== undefined) updateData.authorAm = data.authorAm;
+    if (data.authorOr !== undefined) updateData.authorOr = data.authorOr;
+    if (data.inventoryQuantity !== undefined) updateData.inventoryQuantity = data.inventoryQuantity;
+    if (data.inventoryLowStockThreshold !== undefined) updateData.inventoryLowStockThreshold = data.inventoryLowStockThreshold;
+    if (data.status !== undefined) updateData.status = data.status;
+    if (data.featured !== undefined) updateData.featured = data.featured;
+    if (data.tags !== undefined) updateData.tags = data.tags;
+    if (data.sku !== undefined) updateData.sku = data.sku;
+    if (data.barcode !== undefined) updateData.barcode = data.barcode;
+
+    // Convert images array of objects to JSON for Prisma
+    if (data.images !== undefined) {
+      updateData.images = data.images as unknown as any;
+    }
+
+    // Convert specifications array of objects to JSON for Prisma
+    if (data.specifications !== undefined) {
+      updateData.specifications = data.specifications as unknown as any;
+    }
+
     const updatedBook = await this.db.book.update({
-      where: { id: query.id },
-      data: data,
+      where,
+      data: updateData,
     });
 
-    return ZBookBasic.parse(updatedBook);
+    // Convert images and specifications JSON back to arrays for schema validation
+    const bookWithImages = {
+      ...updatedBook,
+      images: Array.isArray(updatedBook.images) ? updatedBook.images : [],
+      specifications: Array.isArray(updatedBook.specifications) ? updatedBook.specifications : [],
+    };
+
+    return ZBookBasic.parse(bookWithImages);
   }
 
   async bulkOperation(data: TBulkBook): Promise<{ message: string }> {

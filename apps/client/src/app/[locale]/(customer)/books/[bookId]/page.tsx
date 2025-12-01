@@ -1,6 +1,6 @@
 import { getAuth } from '@/actions/auth.action';
-import { getBook } from '@/features/book/actions/book.action';
-import BookDetails from '../../components/book-details';
+import { getBook } from '@/actions/book.action';
+import BookDetails from '@/features/portfolio/book-details';
 import {
   getBookReviewAnalytics,
   getBookReviews,

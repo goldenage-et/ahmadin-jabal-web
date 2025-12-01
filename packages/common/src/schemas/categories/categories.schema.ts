@@ -12,8 +12,12 @@ export type TCategoryImage = z.infer<typeof ZCategoryImage>;
 export const ZCategory = z.object({
   id: z.string(),
   name: z.string(),
+  nameAm: z.string().nullable().optional(),
+  nameOr: z.string().nullable().optional(),
   slug: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
+  descriptionAm: z.string().nullable().optional(),
+  descriptionOr: z.string().nullable().optional(),
   image: ZCategoryImage.nullable().optional(),
   iconName: z.string().nullable().optional(),
   backgroundColor: z.string().nullable().optional(),
@@ -28,8 +32,12 @@ export type TCategory = z.infer<typeof ZCategory>;
 export const ZCategoryBasic = z.object({
   id: z.string(),
   name: z.string(),
+  nameAm: z.string().nullable().optional(),
+  nameOr: z.string().nullable().optional(),
   slug: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
+  descriptionAm: z.string().nullable().optional(),
+  descriptionOr: z.string().nullable().optional(),
   image: ZCategoryImage.nullable().optional(),
   iconName: z.string().nullable().optional(),
   backgroundColor: z.string().nullable().optional(),
@@ -43,8 +51,12 @@ export type TCategoryBasic = z.infer<typeof ZCategoryBasic>;
 // Create category schema
 export const ZCreateCategory = z.object({
   name: z.string().min(1, 'Category name is required'),
+  nameAm: z.string().nullable().optional(),
+  nameOr: z.string().nullable().optional(),
   slug: z.string().max(255, 'Slug must be 255 characters or less').optional(),
   description: z.string().optional(),
+  descriptionAm: z.string().nullable().optional(),
+  descriptionOr: z.string().nullable().optional(),
   image: ZCategoryImage.optional(),
   iconName: z.string().optional(),
   backgroundColor: z.string().optional(),
@@ -56,8 +68,12 @@ export type TCreateCategory = z.infer<typeof ZCreateCategory>;
 // Update category schema
 export const ZUpdateCategory = z.object({
   name: z.string().min(1, 'Category name is required').optional(),
+  nameAm: z.string().nullable().optional(),
+  nameOr: z.string().nullable().optional(),
   slug: z.string().max(255, 'Slug must be 255 characters or less').optional(),
   description: z.string().optional(),
+  descriptionAm: z.string().nullable().optional(),
+  descriptionOr: z.string().nullable().optional(),
   image: ZCategoryImage.optional(),
   iconName: z.string().optional(),
   backgroundColor: z.string().optional(),

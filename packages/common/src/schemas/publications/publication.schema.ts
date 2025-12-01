@@ -25,9 +25,14 @@ export const ZPublication = z.object({
         .string()
         .min(1, 'Title is required')
         .max(PUBLICATION_TITLE_MAX_LENGTH, `Title must be ${PUBLICATION_TITLE_MAX_LENGTH} characters or less`),
-    titleEn: z
+    titleAm: z
         .string()
         .max(PUBLICATION_TITLE_MAX_LENGTH, `English title must be ${PUBLICATION_TITLE_MAX_LENGTH} characters or less`)
+        .nullable()
+        .optional(),
+    titleOr: z
+        .string()
+        .max(PUBLICATION_TITLE_MAX_LENGTH, `Oromo title must be ${PUBLICATION_TITLE_MAX_LENGTH} characters or less`)
         .nullable()
         .optional(),
     slug: z
@@ -35,11 +40,33 @@ export const ZPublication = z.object({
         .min(1, 'Slug is required')
         .max(PUBLICATION_TITLE_MAX_LENGTH, `Slug must be ${PUBLICATION_TITLE_MAX_LENGTH} characters or less`),
     excerpt: z
-        .any()
+        .string()
+        .max(500, 'Excerpt must be 500 characters or less')
+        .nullable()
+        .optional(),
+    excerptAm: z
+        .string()
+        .max(500, 'Amharic excerpt must be 500 characters or less')
+        .nullable()
+        .optional(),
+    excerptOr: z
+        .string()
+        .max(500, 'Oromo excerpt must be 500 characters or less')
         .nullable()
         .optional(),
     content: z
-        .any()
+        .json()
+        .default({})
+        .nullable()
+        .optional(),
+    contentAm: z
+        .json()
+        .default({})
+        .nullable()
+        .optional(),
+    contentOr: z
+        .json()
+        .default({})
         .nullable()
         .optional(),
     media: z
@@ -74,9 +101,15 @@ export const ZPublicationBasic = ZPublication.pick({
     authorId: true,
     categoryId: true,
     title: true,
-    titleEn: true,
+    titleAm: true,
+    titleOr: true,
     slug: true,
     excerpt: true,
+    excerptAm: true,
+    excerptOr: true,
+    content: true,
+    contentAm: true,
+    contentOr: true,
     featuredImage: true,
     tags: true,
     status: true,
@@ -101,17 +134,26 @@ export const ZCreatePublication = z.object({
         .string()
         .min(1, 'Title is required')
         .max(PUBLICATION_TITLE_MAX_LENGTH, `Title must be ${PUBLICATION_TITLE_MAX_LENGTH} characters or less`),
-    titleEn: z
+    titleAm: z
         .string()
         .max(PUBLICATION_TITLE_MAX_LENGTH, `English title must be ${PUBLICATION_TITLE_MAX_LENGTH} characters or less`)
+        .optional()
+        .nullable(),
+    titleOr: z
+        .string()
+        .max(PUBLICATION_TITLE_MAX_LENGTH, `Oromo title must be ${PUBLICATION_TITLE_MAX_LENGTH} characters or less`)
         .optional()
         .nullable(),
     slug: z
         .string()
         .min(1, 'Slug is required')
         .max(PUBLICATION_TITLE_MAX_LENGTH, `Slug must be ${PUBLICATION_TITLE_MAX_LENGTH} characters or less`),
-    excerpt: z.any().optional().nullable(),
-    content: z.any().optional().nullable(),
+    excerpt: z.string().max(500, 'Excerpt must be 500 characters or less').optional().nullable(),
+    excerptAm: z.string().max(500, 'Amharic excerpt must be 500 characters or less').optional().nullable(),
+    excerptOr: z.string().max(500, 'Oromo excerpt must be 500 characters or less').optional().nullable(),
+    content: z.json().default({}).optional().nullable(),
+    contentAm: z.json().default({}).optional().nullable(),
+    contentOr: z.json().default({}).optional().nullable(),
     media: z.array(ZPublicationMedia).default([]),
     featuredImage: z.string().url('Invalid featured image URL format').optional().nullable(),
     tags: z
@@ -135,9 +177,14 @@ export const ZUpdatePublication = z.object({
         .min(1, 'Title is required')
         .max(PUBLICATION_TITLE_MAX_LENGTH, `Title must be ${PUBLICATION_TITLE_MAX_LENGTH} characters or less`)
         .optional(),
-    titleEn: z
+    titleAm: z
         .string()
         .max(PUBLICATION_TITLE_MAX_LENGTH, `English title must be ${PUBLICATION_TITLE_MAX_LENGTH} characters or less`)
+        .optional()
+        .nullable(),
+    titleOr: z
+        .string()
+        .max(PUBLICATION_TITLE_MAX_LENGTH, `Oromo title must be ${PUBLICATION_TITLE_MAX_LENGTH} characters or less`)
         .optional()
         .nullable(),
     slug: z
@@ -145,10 +192,14 @@ export const ZUpdatePublication = z.object({
         .min(1, 'Slug is required')
         .max(PUBLICATION_TITLE_MAX_LENGTH, `Slug must be ${PUBLICATION_TITLE_MAX_LENGTH} characters or less`)
         .optional(),
-    excerpt: z.any().optional().nullable(),
-    content: z.any().optional().nullable(),
+    excerpt: z.string().max(500, 'Excerpt must be 500 characters or less').optional().nullable(),
+    excerptAm: z.string().max(500, 'Amharic excerpt must be 500 characters or less').optional().nullable(),
+    excerptOr: z.string().max(500, 'Oromo excerpt must be 500 characters or less').optional().nullable(),
+    content: z.json().default({}).optional().nullable(),
+    contentAm: z.json().default({}).optional().nullable(),
+    contentOr: z.json().default({}).optional().nullable(),
     media: z.array(ZPublicationMedia).optional(),
-    featuredImage: z.string().url('Invalid featured image URL format').optional().nullable(),
+    featuredImage: z.url('Invalid featured image URL format').optional().nullable(),
     tags: z
         .array(z.string().max(PUBLICATION_TAG_MAX_LENGTH, `Tag must be ${PUBLICATION_TAG_MAX_LENGTH} characters or less`))
         .optional(),
@@ -224,10 +275,7 @@ export const ZPublicationComment = z.object({
     publicationId: z.uuid('Invalid publication ID format'),
     userId: z.uuid('Invalid user ID format'),
     parentId: z.uuid('Invalid parent comment ID format').nullable().optional(),
-    content: z
-        .string()
-        .min(1, 'Comment content is required')
-        .max(PUBLICATION_COMMENT_MAX_LENGTH, `Comment must be ${PUBLICATION_COMMENT_MAX_LENGTH} characters or less`),
+    content: z.json().default({}),
     status: z
         .enum(Object.values(EPublicationCommentStatus) as [string, ...string[]])
         .default(EPublicationCommentStatus.pending),
@@ -256,7 +304,7 @@ export const ZUpdatePublicationComment = z.object({
         .min(1, 'Comment content is required')
         .max(PUBLICATION_COMMENT_MAX_LENGTH, `Comment must be ${PUBLICATION_COMMENT_MAX_LENGTH} characters or less`)
         .optional(),
-    status: z.nativeEnum(EPublicationCommentStatus).optional(),
+    status: z.enum(EPublicationCommentStatus).optional(),
 });
 
 export type TUpdatePublicationComment = z.infer<typeof ZUpdatePublicationComment>;
@@ -271,3 +319,20 @@ export const ZPublicationRelated = z.object({
 
 export type TPublicationRelated = z.infer<typeof ZPublicationRelated>;
 
+export const ZPublicationAmharic = z.object({
+    id: z.string(),
+    titleAm: z.string(),
+    excerptAm: z.string(),
+    contentAm: z.json().default({}).nullable().optional(),
+});
+
+export type TPublicationAmharic = z.infer<typeof ZPublicationAmharic>;
+
+export const ZPublicationOromo = z.object({
+    id: z.string(),
+    titleOr: z.string(),
+    excerptOr: z.string(),
+    contentOr: z.json().default({}).nullable().optional(),
+});
+
+export type TPublicationOromo = z.infer<typeof ZPublicationOromo>;

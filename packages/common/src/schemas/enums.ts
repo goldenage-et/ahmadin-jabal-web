@@ -210,6 +210,12 @@ export enum ENewsletterSubscriptionStatus {
     blocked = 'blocked',
 }
 
+export enum ENewsletterLanguage {
+    en = 'en',
+    am = 'am',
+    om = 'om',
+}
+
 // ========================================
 // Contact Related Enums
 // ========================================

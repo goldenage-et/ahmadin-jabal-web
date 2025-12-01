@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ENewsletterStatus, ENewsletterSubscriptionStatus } from '../enums';
+import { ENewsletterLanguage, ENewsletterStatus, ENewsletterSubscriptionStatus } from '../enums';
 
 // Constants for validation
 const NEWSLETTER_TITLE_MAX_LENGTH = 255;
@@ -17,17 +17,33 @@ export const ZNewsletter = z.object({
         .string()
         .min(1, 'Subject is required')
         .max(NEWSLETTER_SUBJECT_MAX_LENGTH, `Subject must be ${NEWSLETTER_SUBJECT_MAX_LENGTH} characters or less`),
+    subjectAm: z
+        .string()
+        .max(NEWSLETTER_SUBJECT_MAX_LENGTH, `Amharic subject must be ${NEWSLETTER_SUBJECT_MAX_LENGTH} characters or less`)
+        .nullable()
+        .optional(),
+    subjectOr: z
+        .string()
+        .max(NEWSLETTER_SUBJECT_MAX_LENGTH, `Oromo subject must be ${NEWSLETTER_SUBJECT_MAX_LENGTH} characters or less`)
+        .nullable()
+        .optional(),
     title: z
         .string()
         .min(1, 'Title is required')
         .max(NEWSLETTER_TITLE_MAX_LENGTH, `Title must be ${NEWSLETTER_TITLE_MAX_LENGTH} characters or less`),
-    titleEn: z
+    titleAm: z
         .string()
         .max(NEWSLETTER_TITLE_MAX_LENGTH, `English title must be ${NEWSLETTER_TITLE_MAX_LENGTH} characters or less`)
         .nullable()
         .optional(),
-    content: z.any().nullable().optional(),
-    contentEn: z.any().nullable().optional(),
+    titleOr: z
+        .string()
+        .max(NEWSLETTER_TITLE_MAX_LENGTH, `Oromo title must be ${NEWSLETTER_TITLE_MAX_LENGTH} characters or less`)
+        .nullable()
+        .optional(),
+    content: z.json().default({}).nullable().optional(),
+    contentAm: z.json().default({}).nullable().optional(),
+    contentOr: z.json().default({}).nullable().optional(),
     status: z.enum(Object.values(ENewsletterStatus) as [string, ...string[]]).default(ENewsletterStatus.draft),
     scheduledAt: z.coerce.date().nullable().optional(),
     sentAt: z.coerce.date().nullable().optional(),
@@ -45,8 +61,11 @@ export type TNewsletter = z.infer<typeof ZNewsletter>;
 export const ZNewsletterBasic = ZNewsletter.pick({
     id: true,
     subject: true,
+    subjectAm: true,
+    subjectOr: true,
     title: true,
-    titleEn: true,
+    titleAm: true,
+    titleOr: true,
     status: true,
     scheduledAt: true,
     sentAt: true,
@@ -66,17 +85,33 @@ export const ZCreateNewsletter = z.object({
         .string()
         .min(1, 'Subject is required')
         .max(NEWSLETTER_SUBJECT_MAX_LENGTH, `Subject must be ${NEWSLETTER_SUBJECT_MAX_LENGTH} characters or less`),
+    subjectAm: z
+        .string()
+        .max(NEWSLETTER_SUBJECT_MAX_LENGTH, `Amharic subject must be ${NEWSLETTER_SUBJECT_MAX_LENGTH} characters or less`)
+        .optional()
+        .nullable(),
+    subjectOr: z
+        .string()
+        .max(NEWSLETTER_SUBJECT_MAX_LENGTH, `Oromo subject must be ${NEWSLETTER_SUBJECT_MAX_LENGTH} characters or less`)
+        .optional()
+        .nullable(),
     title: z
         .string()
         .min(1, 'Title is required')
         .max(NEWSLETTER_TITLE_MAX_LENGTH, `Title must be ${NEWSLETTER_TITLE_MAX_LENGTH} characters or less`),
-    titleEn: z
+    titleAm: z
         .string()
         .max(NEWSLETTER_TITLE_MAX_LENGTH, `English title must be ${NEWSLETTER_TITLE_MAX_LENGTH} characters or less`)
         .optional()
         .nullable(),
-    content: z.any().optional().nullable(),
-    contentEn: z.any().optional().nullable(),
+    titleOr: z
+        .string()
+        .max(NEWSLETTER_TITLE_MAX_LENGTH, `Oromo title must be ${NEWSLETTER_TITLE_MAX_LENGTH} characters or less`)
+        .optional()
+        .nullable(),
+    content: z.json().default({}).optional().nullable(),
+    contentAm: z.json().default({}).optional().nullable(),
+    contentOr: z.json().default({}).optional().nullable(),
     status: z.enum(Object.values(ENewsletterStatus) as [string, ...string[]]).default(ENewsletterStatus.draft),
     scheduledAt: z.coerce.date().optional().nullable(),
 });
@@ -90,18 +125,34 @@ export const ZUpdateNewsletter = z.object({
         .min(1, 'Subject is required')
         .max(NEWSLETTER_SUBJECT_MAX_LENGTH, `Subject must be ${NEWSLETTER_SUBJECT_MAX_LENGTH} characters or less`)
         .optional(),
+    subjectAm: z
+        .string()
+        .max(NEWSLETTER_SUBJECT_MAX_LENGTH, `Amharic subject must be ${NEWSLETTER_SUBJECT_MAX_LENGTH} characters or less`)
+        .optional()
+        .nullable(),
+    subjectOr: z
+        .string()
+        .max(NEWSLETTER_SUBJECT_MAX_LENGTH, `Oromo subject must be ${NEWSLETTER_SUBJECT_MAX_LENGTH} characters or less`)
+        .optional()
+        .nullable(),
     title: z
         .string()
         .min(1, 'Title is required')
         .max(NEWSLETTER_TITLE_MAX_LENGTH, `Title must be ${NEWSLETTER_TITLE_MAX_LENGTH} characters or less`)
         .optional(),
-    titleEn: z
+    titleAm: z
         .string()
         .max(NEWSLETTER_TITLE_MAX_LENGTH, `English title must be ${NEWSLETTER_TITLE_MAX_LENGTH} characters or less`)
         .optional()
         .nullable(),
-    content: z.any().optional().nullable(),
-    contentEn: z.any().optional().nullable(),
+    titleOr: z
+        .string()
+        .max(NEWSLETTER_TITLE_MAX_LENGTH, `Oromo title must be ${NEWSLETTER_TITLE_MAX_LENGTH} characters or less`)
+        .optional()
+        .nullable(),
+    content: z.json().default({}).optional().nullable(),
+    contentAm: z.json().default({}).optional().nullable(),
+    contentOr: z.json().default({}).optional().nullable(),
     status: z.enum(Object.values(ENewsletterStatus) as [string, ...string[]]).optional(),
     scheduledAt: z.coerce.date().optional().nullable(),
 });
@@ -165,6 +216,26 @@ export const ZNewsletterListResponse = z.object({
 
 export type TNewsletterListResponse = z.infer<typeof ZNewsletterListResponse>;
 
+// Newsletter Amharic Schema
+export const ZNewsletterAmharic = z.object({
+    id: z.string(),
+    subjectAm: z.string(),
+    titleAm: z.string(),
+    contentAm: z.json().default({}).nullable().optional(),
+});
+
+export type TNewsletterAmharic = z.infer<typeof ZNewsletterAmharic>;
+
+// Newsletter Oromo Schema
+export const ZNewsletterOromo = z.object({
+    id: z.string(),
+    subjectOr: z.string(),
+    titleOr: z.string(),
+    contentOr: z.json().default({}).nullable().optional(),
+});
+
+export type TNewsletterOromo = z.infer<typeof ZNewsletterOromo>;
+
 // ========================================
 // Newsletter Subscription Schemas
 // ========================================
@@ -172,13 +243,14 @@ export type TNewsletterListResponse = z.infer<typeof ZNewsletterListResponse>;
 // Base Newsletter Subscription Schema
 export const ZNewsletterSubscription = z.object({
     id: z.uuid(),
-    email: z.string().email('Invalid email format'),
+    email: z.email('Invalid email format'),
     name: z
         .string()
         .max(NEWSLETTER_TITLE_MAX_LENGTH, `Name must be ${NEWSLETTER_TITLE_MAX_LENGTH} characters or less`)
         .nullable()
         .optional(),
     userId: z.uuid('Invalid user ID format').nullable().optional(),
+    language: z.enum(Object.values(ENewsletterLanguage) as [string, ...string[]]).default(ENewsletterLanguage.en),
     status: z
         .enum(Object.values(ENewsletterSubscriptionStatus) as [string, ...string[]])
         .default(ENewsletterSubscriptionStatus.subscribed),
@@ -190,25 +262,26 @@ export const ZNewsletterSubscription = z.object({
     subscribedAt: z.coerce.date(),
     unsubscribedAt: z.coerce.date().nullable().optional(),
     lastEmailSent: z.coerce.date().nullable().optional(),
-    metadata: z.any().nullable().optional(),
+    metadata: z.json().default({}).nullable().optional(),
 });
 
 export type TNewsletterSubscription = z.infer<typeof ZNewsletterSubscription>;
 
 // Create Newsletter Subscription Schema
 export const ZCreateNewsletterSubscription = z.object({
-    email: z.string().email('Invalid email format'),
+    email: z.email('Invalid email format'),
     name: z
         .string()
         .max(NEWSLETTER_TITLE_MAX_LENGTH, `Name must be ${NEWSLETTER_TITLE_MAX_LENGTH} characters or less`)
         .optional()
         .nullable(),
+    language: z.enum(Object.values(ENewsletterLanguage) as [string, ...string[]]).default(ENewsletterLanguage.en),
     source: z
         .string()
         .max(NEWSLETTER_SOURCE_MAX_LENGTH, `Source must be ${NEWSLETTER_SOURCE_MAX_LENGTH} characters or less`)
         .optional()
         .nullable(),
-    metadata: z.any().optional().nullable(),
+    metadata: z.json().default({}).optional().nullable(),
 });
 
 export type TCreateNewsletterSubscription = z.infer<typeof ZCreateNewsletterSubscription>;
@@ -220,8 +293,9 @@ export const ZUpdateNewsletterSubscription = z.object({
         .max(NEWSLETTER_TITLE_MAX_LENGTH, `Name must be ${NEWSLETTER_TITLE_MAX_LENGTH} characters or less`)
         .optional()
         .nullable(),
+    language: z.enum(Object.values(ENewsletterLanguage) as [string, ...string[]]).optional(),
     status: z.enum(Object.values(ENewsletterSubscriptionStatus) as [string, ...string[]]).optional(),
-    metadata: z.any().optional().nullable(),
+    metadata: z.json().default({}).optional().nullable(),
 });
 
 export type TUpdateNewsletterSubscription = z.infer<typeof ZUpdateNewsletterSubscription>;
@@ -230,11 +304,12 @@ export type TUpdateNewsletterSubscription = z.infer<typeof ZUpdateNewsletterSubs
 export const ZNewsletterSubscriptionQueryFilter = z.object({
     search: z.string().optional(),
     status: z.enum(Object.values(ENewsletterSubscriptionStatus) as [string, ...string[]]).optional(),
+    language: z.enum(Object.values(ENewsletterLanguage) as [string, ...string[]]).optional(),
     source: z.string().optional(),
     userId: z.uuid('Invalid user ID format').optional(),
     page: z.coerce.number().int().positive().default(1),
     limit: z.coerce.number().int().positive().max(100).default(10),
-    sortBy: z.enum(['createdAt', 'subscribedAt', 'email', 'name']).default('subscribedAt'),
+    sortBy: z.enum(['createdAt', 'subscribedAt', 'email', 'name', 'language', 'status']).default('subscribedAt'),
     sortOrder: z.enum(['asc', 'desc']).default('desc'),
 });
 
@@ -244,7 +319,7 @@ export type TNewsletterSubscriptionQueryFilter = z.infer<typeof ZNewsletterSubsc
 export const ZNewsletterSubscriptionQueryUnique = z
     .object({
         id: z.uuid('Invalid subscription ID format').optional(),
-        email: z.string().email('Invalid email format').optional(),
+        email: z.email('Invalid email format').optional(),
     })
     .refine((data) => data.id || data.email, {
         message: 'Either subscription ID or email must be provided',

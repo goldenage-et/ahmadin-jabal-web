@@ -9,6 +9,7 @@ import {
 import type {
     TArticleBasic,
     TArticleDetail,
+    TArticleImage,
     TArticleQueryFilter,
     TArticleQueryUnique,
     TCreateArticle,
@@ -35,17 +36,46 @@ export class ArticlesService {
             throw new ConflictException('Article with this slug already exists');
         }
 
+        // Convert medias array of objects to array of URLs for Prisma
+        const mediasUrls: string[] = data.medias?.map((media: TArticleImage) => media.url) || [];
+
         const article = await this.db.article.create({
             data: {
-                ...data,
                 authorId,
-                title: data.title || {},
+                categoryId: data.categoryId,
+                title: data.title,
+                titleAm: data.titleAm,
+                titleOr: data.titleOr,
+                slug: data.slug,
+                excerpt: data.excerpt,
+                excerptAm: data.excerptAm,
+                excerptOr: data.excerptOr,
                 content: data.content || {},
-                medias: data.images || [],
+                contentAm: data.contentAm,
+                contentOr: data.contentOr,
+                medias: mediasUrls,
+                featuredImage: data.featuredImage,
+                tags: data.tags || [],
+                status: data.status || EArticleStatus.draft,
+                featured: data.featured || false,
+                isFree: data.isFree || true,
+                price: data.price,
+                publishedAt: data.publishedAt,
+                expiresAt: data.expiresAt,
             },
         });
 
-        return ZArticleBasic.parse(article);
+        // Convert medias array of URLs back to array of objects for schema validation
+        const articleWithMedias = {
+            ...article,
+            medias: article.medias.map((url, index) => ({
+                id: data.medias?.[index]?.id || '',
+                url,
+                alt: data.medias?.[index]?.alt,
+            })),
+        };
+
+        return ZArticleBasic.parse(articleWithMedias);
     }
 
     async getMany(
@@ -140,12 +170,22 @@ export class ArticlesService {
             },
         });
 
+        // Convert medias array of URLs to array of objects for schema validation
+        const articlesWithMedias = articles.map(article => ({
+            ...article,
+            medias: article.medias.map(url => ({
+                id: '',
+                url,
+                alt: undefined,
+            })),
+        }));
+
         const totalPages = Math.ceil(total / limit);
         const hasNext = page < totalPages;
         const hasPrev = page > 1;
 
         return {
-            data: ZArticleBasic.array().parse(articles),
+            data: ZArticleBasic.array().parse(articlesWithMedias),
             meta: {
                 page,
                 limit,
@@ -210,10 +250,18 @@ export class ArticlesService {
             data: { viewCount: article.viewCount + 1 },
         });
 
-        return ZArticleDetail.parse({
+        // Convert medias array of URLs to array of objects for schema validation
+        const articleWithMedias = {
             ...article,
             viewCount: article.viewCount + 1,
-        });
+            medias: article.medias.map(url => ({
+                id: '',
+                url,
+                alt: undefined,
+            })),
+        };
+
+        return ZArticleDetail.parse(articleWithMedias);
     }
 
     async update(
@@ -253,9 +301,32 @@ export class ArticlesService {
             }
         }
 
-        const updateData: any = { ...data };
-        if (data.images) {
-            updateData.medias = data.images;
+        // Prepare update data
+        const updateData: any = {};
+
+        if (data.categoryId !== undefined) updateData.categoryId = data.categoryId;
+        if (data.title !== undefined) updateData.title = data.title;
+        if (data.titleAm !== undefined) updateData.titleAm = data.titleAm;
+        if (data.titleOr !== undefined) updateData.titleOr = data.titleOr;
+        if (data.slug !== undefined) updateData.slug = data.slug;
+        if (data.excerpt !== undefined) updateData.excerpt = data.excerpt;
+        if (data.excerptAm !== undefined) updateData.excerptAm = data.excerptAm;
+        if (data.excerptOr !== undefined) updateData.excerptOr = data.excerptOr;
+        if (data.content !== undefined) updateData.content = data.content;
+        if (data.contentAm !== undefined) updateData.contentAm = data.contentAm;
+        if (data.contentOr !== undefined) updateData.contentOr = data.contentOr;
+        if (data.featuredImage !== undefined) updateData.featuredImage = data.featuredImage;
+        if (data.tags !== undefined) updateData.tags = data.tags;
+        if (data.status !== undefined) updateData.status = data.status;
+        if (data.featured !== undefined) updateData.featured = data.featured;
+        if (data.isFree !== undefined) updateData.isFree = data.isFree;
+        if (data.price !== undefined) updateData.price = data.price;
+        if (data.publishedAt !== undefined) updateData.publishedAt = data.publishedAt;
+        if (data.expiresAt !== undefined) updateData.expiresAt = data.expiresAt;
+
+        // Handle medias conversion (from array of objects to array of URLs)
+        if (data.images !== undefined) {
+            updateData.medias = data.images.map((media: TArticleImage) => media.url);
         }
 
         const updatedArticle = await this.db.article.update({
@@ -263,7 +334,17 @@ export class ArticlesService {
             data: updateData,
         });
 
-        return ZArticleBasic.parse(updatedArticle);
+        // Convert medias array of URLs back to array of objects for schema validation
+        const articleWithMedias = {
+            ...updatedArticle,
+            medias: updatedArticle.medias.map((url, index) => ({
+                id: data.images?.[index]?.id || '',
+                url,
+                alt: data.images?.[index]?.alt,
+            })),
+        };
+
+        return ZArticleBasic.parse(articleWithMedias);
     }
 
     async delete(

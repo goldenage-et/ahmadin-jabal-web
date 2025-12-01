@@ -15,12 +15,19 @@ export const ZMedia = z.object({
         .string()
         .min(1, 'Title is required')
         .max(MEDIA_TITLE_MAX_LENGTH, `Title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`),
-    titleEn: z
+    titleAm: z
         .string()
         .max(MEDIA_TITLE_MAX_LENGTH, `English title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
         .nullable()
         .optional(),
+    titleOr: z
+        .string()
+        .max(MEDIA_TITLE_MAX_LENGTH, `Oromo title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
+        .nullable()
+        .optional(),
     description: z.string().nullable().optional(),
+    descriptionAm: z.string().nullable().optional(),
+    descriptionOr: z.string().nullable().optional(),
     type: z.enum(Object.values(EMediaType) as [string, ...string[]]),
     category: z
         .string()
@@ -69,8 +76,11 @@ export type TMedia = z.infer<typeof ZMedia>;
 export const ZMediaBasic = ZMedia.pick({
     id: true,
     title: true,
-    titleEn: true,
+    titleAm: true,
+    titleOr: true,
     description: true,
+    descriptionAm: true,
+    descriptionOr: true,
     type: true,
     category: true,
     url: true,
@@ -101,12 +111,19 @@ export const ZCreateMedia = z.object({
         .string()
         .min(1, 'Title is required')
         .max(MEDIA_TITLE_MAX_LENGTH, `Title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`),
-    titleEn: z
+    titleAm: z
         .string()
         .max(MEDIA_TITLE_MAX_LENGTH, `English title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
         .optional()
         .nullable(),
+    titleOr: z
+        .string()
+        .max(MEDIA_TITLE_MAX_LENGTH, `Oromo title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
+        .optional()
+        .nullable(),
     description: z.string().optional().nullable(),
+    descriptionAm: z.string().optional().nullable(),
+    descriptionOr: z.string().optional().nullable(),
     type: z.enum(Object.values(EMediaType) as [string, ...string[]]),
     category: z
         .string()
@@ -153,12 +170,19 @@ export const ZUpdateMedia = z.object({
         .min(1, 'Title is required')
         .max(MEDIA_TITLE_MAX_LENGTH, `Title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
         .optional(),
-    titleEn: z
+    titleAm: z
         .string()
         .max(MEDIA_TITLE_MAX_LENGTH, `English title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
         .optional()
         .nullable(),
+    titleOr: z
+        .string()
+        .max(MEDIA_TITLE_MAX_LENGTH, `Oromo title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
+        .optional()
+        .nullable(),
     description: z.string().optional().nullable(),
+    descriptionAm: z.string().optional().nullable(),
+    descriptionOr: z.string().optional().nullable(),
     type: z.enum(Object.values(EMediaType) as [string, ...string[]]).optional(),
     category: z
         .string()
@@ -289,6 +313,22 @@ export const ZPublicationMediaJunction = z.object({
 
 export type TPublicationMediaJunction = z.infer<typeof ZPublicationMediaJunction>;
 
+export const ZMediaAmharic = z.object({
+    id: z.string(),
+    titleAm: z.string(),
+    descriptionAm: z.string(),
+});
+
+export type TMediaAmharic = z.infer<typeof ZMediaAmharic>;
+
+export const ZMediaOromo = z.object({
+    id: z.string(),
+    titleOr: z.string(),
+    descriptionOr: z.string(),
+});
+
+export type TMediaOromo = z.infer<typeof ZMediaOromo>;
+
 // ========================================
 // Video Schemas
 // ========================================
@@ -300,12 +340,19 @@ export const ZVideo = z.object({
         .string()
         .min(1, 'Title is required')
         .max(MEDIA_TITLE_MAX_LENGTH, `Title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`),
-    titleEn: z
+    titleAm: z
         .string()
         .max(MEDIA_TITLE_MAX_LENGTH, `English title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
         .nullable()
         .optional(),
+    titleOr: z
+        .string()
+        .max(MEDIA_TITLE_MAX_LENGTH, `Oromo title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
+        .nullable()
+        .optional(),
     description: z.string().nullable().optional(),
+    descriptionAm: z.string().nullable().optional(),
+    descriptionOr: z.string().nullable().optional(),
     category: z
         .string()
         .max(MEDIA_CATEGORY_MAX_LENGTH, `Category must be ${MEDIA_CATEGORY_MAX_LENGTH} characters or less`)
@@ -354,8 +401,11 @@ export type TVideo = z.infer<typeof ZVideo>;
 export const ZVideoBasic = ZVideo.pick({
     id: true,
     title: true,
-    titleEn: true,
+    titleAm: true,
+    titleOr: true,
     description: true,
+    descriptionAm: true,
+    descriptionOr: true,
     category: true,
     url: true,
     thumbnail: true,
@@ -385,11 +435,18 @@ export const ZCreateVideo = z.object({
         .string()
         .min(1, 'Title is required')
         .max(MEDIA_TITLE_MAX_LENGTH, `Title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`),
-    titleEn: z
+    titleAm: z
         .string()
         .max(MEDIA_TITLE_MAX_LENGTH, `English title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
         .optional()
         .nullable(),
+    titleOr: z
+        .string()
+        .max(MEDIA_TITLE_MAX_LENGTH, `Oromo title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
+        .optional()
+        .nullable(),
+    descriptionAm: z.string().optional().nullable(),
+    descriptionOr: z.string().optional().nullable(),
     description: z.string().optional().nullable(),
     category: z
         .string()
@@ -436,11 +493,18 @@ export const ZUpdateVideo = z.object({
         .min(1, 'Title is required')
         .max(MEDIA_TITLE_MAX_LENGTH, `Title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
         .optional(),
-    titleEn: z
+    titleAm: z
         .string()
         .max(MEDIA_TITLE_MAX_LENGTH, `English title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
         .optional()
         .nullable(),
+    titleOr: z
+        .string()
+        .max(MEDIA_TITLE_MAX_LENGTH, `Oromo title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
+        .optional()
+        .nullable(),
+    descriptionAm: z.string().optional().nullable(),
+    descriptionOr: z.string().optional().nullable(),
     description: z.string().optional().nullable(),
     category: z
         .string()
@@ -549,6 +613,22 @@ export const ZVideoDetail = ZVideo.extend({
 
 export type TVideoDetail = z.infer<typeof ZVideoDetail>;
 
+export const ZVideoAmharic = z.object({
+    id: z.string(),
+    titleAm: z.string(),
+    descriptionAm: z.string(),
+});
+
+export type TVideoAmharic = z.infer<typeof ZVideoAmharic>;
+
+export const ZVideoOromo = z.object({
+    id: z.string(),
+    titleOr: z.string(),
+    descriptionOr: z.string(),
+});
+
+export type TVideoOromo = z.infer<typeof ZVideoOromo>;
+
 // ========================================
 // Audio Schemas
 // ========================================
@@ -560,11 +640,18 @@ export const ZAudio = z.object({
         .string()
         .min(1, 'Title is required')
         .max(MEDIA_TITLE_MAX_LENGTH, `Title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`),
-    titleEn: z
+    titleAm: z
         .string()
         .max(MEDIA_TITLE_MAX_LENGTH, `English title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
         .nullable()
         .optional(),
+    titleOr: z
+        .string()
+        .max(MEDIA_TITLE_MAX_LENGTH, `Oromo title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
+        .nullable()
+        .optional(),
+    descriptionAm: z.string().nullable().optional(),
+    descriptionOr: z.string().nullable().optional(),
     description: z.string().nullable().optional(),
     category: z
         .string()
@@ -576,7 +663,6 @@ export const ZAudio = z.object({
         .min(1, 'URL is required')
         .max(MEDIA_URL_MAX_LENGTH, `URL must be ${MEDIA_URL_MAX_LENGTH} characters or less`),
     thumbnail: z
-        .string()
         .url('Invalid thumbnail URL format')
         .max(MEDIA_URL_MAX_LENGTH, `Thumbnail URL must be ${MEDIA_URL_MAX_LENGTH} characters or less`)
         .nullable()
@@ -614,7 +700,10 @@ export type TAudio = z.infer<typeof ZAudio>;
 export const ZAudioBasic = ZAudio.pick({
     id: true,
     title: true,
-    titleEn: true,
+    titleAm: true,
+    titleOr: true,
+    descriptionAm: true,
+    descriptionOr: true,
     description: true,
     category: true,
     url: true,
@@ -644,12 +733,19 @@ export const ZCreateAudio = z.object({
         .string()
         .min(1, 'Title is required')
         .max(MEDIA_TITLE_MAX_LENGTH, `Title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`),
-    titleEn: z
+    titleAm: z
         .string()
         .max(MEDIA_TITLE_MAX_LENGTH, `English title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
         .optional()
         .nullable(),
+    titleOr: z
+        .string()
+        .max(MEDIA_TITLE_MAX_LENGTH, `Oromo title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
+        .optional()
+        .nullable(),
     description: z.string().optional().nullable(),
+    descriptionAm: z.string().optional().nullable(),
+    descriptionOr: z.string().optional().nullable(),
     category: z
         .string()
         .max(MEDIA_CATEGORY_MAX_LENGTH, `Category must be ${MEDIA_CATEGORY_MAX_LENGTH} characters or less`)
@@ -694,12 +790,19 @@ export const ZUpdateAudio = z.object({
         .min(1, 'Title is required')
         .max(MEDIA_TITLE_MAX_LENGTH, `Title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
         .optional(),
-    titleEn: z
+    titleAm: z
         .string()
         .max(MEDIA_TITLE_MAX_LENGTH, `English title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
         .optional()
         .nullable(),
+    titleOr: z
+        .string()
+        .max(MEDIA_TITLE_MAX_LENGTH, `Oromo title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
+        .optional()
+        .nullable(),
     description: z.string().optional().nullable(),
+    descriptionAm: z.string().optional().nullable(),
+    descriptionOr: z.string().optional().nullable(),
     category: z
         .string()
         .max(MEDIA_CATEGORY_MAX_LENGTH, `Category must be ${MEDIA_CATEGORY_MAX_LENGTH} characters or less`)
@@ -808,6 +911,22 @@ export const ZAudioDetail = ZAudio.extend({
 
 export type TAudioDetail = z.infer<typeof ZAudioDetail>;
 
+export const ZAudioAmharic = z.object({
+    id: z.string(),
+    titleAm: z.string(),
+    descriptionAm: z.string(),
+});
+
+export type TAudioAmharic = z.infer<typeof ZAudioAmharic>;
+
+export const ZAudioOromo = z.object({
+    id: z.string(),
+    titleOr: z.string(),
+    descriptionOr: z.string(),
+});
+
+export type TAudioOromo = z.infer<typeof ZAudioOromo>;
+
 // ========================================
 // Photo Schemas
 // ========================================
@@ -820,12 +939,21 @@ export const ZPhoto = z.object({
         .max(MEDIA_TITLE_MAX_LENGTH, `Title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
         .nullable()
         .optional(),
-    titleEn: z
+    titleAm: z
         .string()
         .max(MEDIA_TITLE_MAX_LENGTH, `English title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
         .nullable()
         .optional(),
+    titleOr: z
+        .string()
+        .max(MEDIA_TITLE_MAX_LENGTH, `Oromo title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
+        .nullable()
+        .optional(),
+    descriptionAm: z.string().nullable().optional(),
+    descriptionOr: z.string().nullable().optional(),
     caption: z.string().nullable().optional(),
+    captionAm: z.string().nullable().optional(),
+    captionOr: z.string().nullable().optional(),
     alt: z
         .string()
         .max(MEDIA_TITLE_MAX_LENGTH, `Alt text must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
@@ -878,7 +1006,10 @@ export type TPhoto = z.infer<typeof ZPhoto>;
 export const ZPhotoBasic = ZPhoto.pick({
     id: true,
     title: true,
-    titleEn: true,
+    titleAm: true,
+    titleOr: true,
+    descriptionAm: true,
+    descriptionOr: true,
     caption: true,
     alt: true,
     category: true,
@@ -910,12 +1041,21 @@ export const ZCreatePhoto = z.object({
         .max(MEDIA_TITLE_MAX_LENGTH, `Title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
         .optional()
         .nullable(),
-    titleEn: z
+    titleAm: z
         .string()
         .max(MEDIA_TITLE_MAX_LENGTH, `English title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
         .optional()
         .nullable(),
+    titleOr: z
+        .string()
+        .max(MEDIA_TITLE_MAX_LENGTH, `Oromo title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
+        .optional()
+        .nullable(),
+    descriptionAm: z.string().optional().nullable(),
+    descriptionOr: z.string().optional().nullable(),
     caption: z.string().optional().nullable(),
+    captionAm: z.string().optional().nullable(),
+    captionOr: z.string().optional().nullable(),
     alt: z
         .string()
         .max(MEDIA_TITLE_MAX_LENGTH, `Alt text must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
@@ -965,12 +1105,21 @@ export const ZUpdatePhoto = z.object({
         .max(MEDIA_TITLE_MAX_LENGTH, `Title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
         .optional()
         .nullable(),
-    titleEn: z
+    titleAm: z
         .string()
         .max(MEDIA_TITLE_MAX_LENGTH, `English title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
         .optional()
         .nullable(),
+    titleOr: z
+        .string()
+        .max(MEDIA_TITLE_MAX_LENGTH, `Oromo title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
+        .optional()
+        .nullable(),
+    descriptionAm: z.string().optional().nullable(),
+    descriptionOr: z.string().optional().nullable(),
     caption: z.string().optional().nullable(),
+    captionAm: z.string().optional().nullable(),
+    captionOr: z.string().optional().nullable(),
     alt: z
         .string()
         .max(MEDIA_TITLE_MAX_LENGTH, `Alt text must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
@@ -1081,6 +1230,22 @@ export const ZPhotoDetail = ZPhoto.extend({
 
 export type TPhotoDetail = z.infer<typeof ZPhotoDetail>;
 
+export const ZPhotoAmharic = z.object({
+    id: z.string(),
+    titleAm: z.string(),
+    descriptionAm: z.string(),
+});
+
+export type TPhotoAmharic = z.infer<typeof ZPhotoAmharic>;
+
+export const ZPhotoOromo = z.object({
+    id: z.string(),
+    titleOr: z.string(),
+    descriptionOr: z.string(),
+});
+
+export type TPhotoOromo = z.infer<typeof ZPhotoOromo>;
+
 // ========================================
 // Gallery Schemas
 // ========================================
@@ -1092,12 +1257,19 @@ export const ZGallery = z.object({
         .string()
         .min(1, 'Title is required')
         .max(MEDIA_TITLE_MAX_LENGTH, `Title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`),
-    titleEn: z
+    titleAm: z
         .string()
         .max(MEDIA_TITLE_MAX_LENGTH, `English title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
         .nullable()
         .optional(),
+    titleOr: z
+        .string()
+        .max(MEDIA_TITLE_MAX_LENGTH, `Oromo title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
+        .nullable()
+        .optional(),
     description: z.string().nullable().optional(),
+    descriptionAm: z.string().nullable().optional(),
+    descriptionOr: z.string().nullable().optional(),
     slug: z
         .string()
         .min(1, 'Slug is required')
@@ -1127,8 +1299,11 @@ export type TGallery = z.infer<typeof ZGallery>;
 export const ZGalleryBasic = ZGallery.pick({
     id: true,
     title: true,
-    titleEn: true,
+    titleAm: true,
+    titleOr: true,
     description: true,
+    descriptionAm: true,
+    descriptionOr: true,
     slug: true,
     category: true,
     featured: true,
@@ -1148,12 +1323,19 @@ export const ZCreateGallery = z.object({
         .string()
         .min(1, 'Title is required')
         .max(MEDIA_TITLE_MAX_LENGTH, `Title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`),
-    titleEn: z
+    titleAm: z
         .string()
         .max(MEDIA_TITLE_MAX_LENGTH, `English title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
         .optional()
         .nullable(),
+    titleOr: z
+        .string()
+        .max(MEDIA_TITLE_MAX_LENGTH, `Oromo title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
+        .optional()
+        .nullable(),
     description: z.string().optional().nullable(),
+    descriptionAm: z.string().optional().nullable(),
+    descriptionOr: z.string().optional().nullable(),
     slug: z
         .string()
         .min(1, 'Slug is required')
@@ -1183,12 +1365,19 @@ export const ZUpdateGallery = z.object({
         .min(1, 'Title is required')
         .max(MEDIA_TITLE_MAX_LENGTH, `Title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
         .optional(),
-    titleEn: z
+    titleAm: z
         .string()
         .max(MEDIA_TITLE_MAX_LENGTH, `English title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
         .optional()
         .nullable(),
+    titleOr: z
+        .string()
+        .max(MEDIA_TITLE_MAX_LENGTH, `Oromo title must be ${MEDIA_TITLE_MAX_LENGTH} characters or less`)
+        .optional()
+        .nullable(),
     description: z.string().optional().nullable(),
+    descriptionAm: z.string().optional().nullable(),
+    descriptionOr: z.string().optional().nullable(),
     slug: z
         .string()
         .min(1, 'Slug is required')
@@ -1293,3 +1482,16 @@ export const ZGalleryListResponse = z.object({
 
 export type TGalleryListResponse = z.infer<typeof ZGalleryListResponse>;
 
+export const ZGalleryAmharic = z.object({
+    id: z.string(),
+    titleAm: z.string(),
+    descriptionAm: z.string(),
+});
+
+export type TGalleryAmharic = z.infer<typeof ZGalleryAmharic>;
+
+export const ZGalleryOromo = z.object({
+    id: z.string(),
+    titleOr: z.string(),
+    descriptionOr: z.string(),
+});
