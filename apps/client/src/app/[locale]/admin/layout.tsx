@@ -13,7 +13,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
 
   return (
     <QueryProvider>
-      <MainLayout user={user} variant='superadmin'>
+      <MainLayout user={user}>
         <div className='p-4 md:p-6'>
           <div className='mx-auto'>{children}</div>
         </div>
