@@ -2,7 +2,7 @@
 
 **Ustaz Ahmedin Jebel** (አሕመዲን ጀበል) - Preacher · Historian · Community Advocate
 
-ahmadin is a comprehensive digital platform built with Next.js, NestJS, and TypeScript, serving as both a portfolio website for Ustaz Ahmedin Jebel and a platform for books, articles, and publications. The platform promotes faith, heritage, and justice for Ethiopian Muslims while providing modern, scalable architecture for content management and digital commerce.
+ahmadin is a comprehensive digital platform built with Next.js, NestJS, and TypeScript, serving as both a portfolio website for Ustaz Ahmedin Jebel and a platform for books, blogs, and publications. The platform promotes faith, heritage, and justice for Ethiopian Muslims while providing modern, scalable architecture for content management and digital commerce.
 
 ## 👤 About Ustaz Ahmedin Jebel
 
@@ -35,15 +35,15 @@ Ustaz Ahmedin Jebel is a prominent Ethiopian Islamic educator, historian, author
   - **Audio**: Audio sermons, lectures, and podcasts with availability tracking
   - **Photos**: Photo galleries with captions, alt text, and categorization
 - **Advocacy & Impact**: Showcase of community work, speeches, and advocacy efforts
-- **Articles & Publications**: Content management system for publishing articles and publications
-  - **Articles**: Rich content articles with JSON-based content, media support, and pricing
+- **Blogs & Publications**: Content management system for publishing blogs and publications
+  - **Blogs**: Rich content blogs with JSON-based content, media support, and pricing
   - **Publications**: Publication system with comments, downloads, and premium content support
 - **Multilingual Support**: Full support for English, Amharic (አማርኛ), and Oromo languages
 - **Social Media Integration**: Links to YouTube channel, Facebook, Instagram, and other platforms
 
 ### 🛍️ E-Commerce Features
 - **Book Store**: Browse and purchase books by category, search, and advanced filters
-- **Article Marketplace**: Access premium articles with flexible pricing options
+- **Blog Marketplace**: Access premium blogs with flexible pricing options
 - **Publication Content**: Access publications with comment systems, downloads, and premium content
 - **Product Details**: Detailed pages with descriptions, reviews, and related content
 - **Order Management**: Complete order tracking, status updates, and delivery management
@@ -52,9 +52,9 @@ Ustaz Ahmedin Jebel is a prominent Ethiopian Islamic educator, historian, author
 - **Reviews & Ratings**: Community-driven reviews and ratings for books and content
 
 ### 🏪 Admin & Management Features
-- **Content Management**: Admin panel for managing books, articles, publications, and categories
+- **Content Management**: Admin panel for managing books, blogs, publications, and categories
 - **Publication Management**: Add, edit, and manage book listings with inventory tracking
-- **Article & Publication Editor**: Rich content editor for creating and publishing articles and publications
+- **Blog & Publication Editor**: Rich content editor for creating and publishing blogs and publications
 - **Media Management**: Comprehensive media library for videos, audio, and photos
   - Upload and organize media files
   - YouTube and Vimeo integration
@@ -97,7 +97,7 @@ Ustaz Ahmedin Jebel is a prominent Ethiopian Islamic educator, historian, author
 - **CORS**: Configured for secure cross-origin requests with credential support
 - **Error Handling**: Global exception filters and custom error responses with detailed logging
 - **Security**: Argon2 password hashing, rate limiting, and secure session management
-- **API Architecture**: RESTful API with controllers and services for Articles, Publications, Media, Books, and more
+- **API Architecture**: RESTful API with controllers and services for Blogs, Publications, Media, Books, and more
 
 ### Development Tools
 - **Package Manager**: pnpm with workspace management
@@ -300,7 +300,7 @@ ahmadin/
 │       │   ├── events/           # Event handlers
 │       │   ├── features/         # Feature modules
 │       │   │   ├── auth/         # Authentication module
-│       │   │   ├── articles/     # Articles management
+│       │   │   ├── blogs/     # Blogs management
 │       │   │   ├── publications/ # Publications management
 │       │   │   ├── books/        # Books management
 │       │   │   ├── categories/   # Categories management
@@ -387,17 +387,17 @@ The application uses PostgreSQL with Prisma ORM. Key entities include:
 ### Content Models
 - **Users**: User accounts with authentication and profile information
 - **Books**: Book catalog with inventory, pricing, ratings, and metadata
-- **Articles**: Article content with JSON-based content, status, pricing, and related articles
+- **Blogs**: Blog content with JSON-based content, status, pricing, and related blogs
 - **Publications**: Publication content with comments, downloads, premium content, and media support
 - **PublicationComments**: Comment system for publications with parent-child relationships and moderation
-- **Categories**: Hierarchical category system for books, articles, and publications
+- **Categories**: Hierarchical category system for books, blogs, and publications
 
 ### Media Models
 - **Media**: Generic media model supporting images, videos, audio, and documents
 - **Videos**: Video content with YouTube/Vimeo integration, duration, dimensions, and analytics
 - **Audios**: Audio content (sermons, lectures) with availability tracking and metadata
 - **Photos**: Photo galleries with captions, alt text, and categorization
-- **ArticleMedia**: Junction table linking articles to media
+- **BlogMedia**: Junction table linking blogs to media
 - **PublicationMedia**: Junction table linking publications to media
 
 ### E-Commerce Models
@@ -426,7 +426,7 @@ The application uses PostgreSQL with Prisma ORM. Key entities include:
   - `user` - Regular user with content access and shopping capabilities
   - `admin` - Platform administrator with full content and user management access
   - `superAdmin` - System owner with full platform control
-- **Content Roles**: Role-based permissions for managing books, articles, publications, and media
+- **Content Roles**: Role-based permissions for managing books, blogs, publications, and media
 - **Invitation System**: Secure member invitations with pending/accepted/rejected status tracking
 
 ### Security Features
@@ -540,7 +540,7 @@ Ensure all environment variables are properly configured for your production env
 
 - **v1.0.0**: Initial release
   - Portfolio website for Ustaz Ahmedin Jebel
-  - E-commerce functionality for books, articles, and publications
+  - E-commerce functionality for books, blogs, and publications
   - Complete admin panel for content management
   - Multi-language support (English, Amharic, Oromo)
   - Modern UI with dark/light theme support
@@ -548,4 +548,4 @@ Ensure all environment variables are properly configured for your production env
   - Order management and payment processing
   - Media management system (Videos, Audio, Photos)
   - Publication system with comments and downloads
-  - Article system with rich content support
+  - Blog system with rich content support

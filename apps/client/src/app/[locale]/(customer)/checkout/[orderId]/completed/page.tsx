@@ -88,7 +88,7 @@ export default async function OrderCompletedPage({ params }: { params: Promise<{
                         <AlertDescription className="text-blue-900">
                             <p className="font-medium">Cash on Delivery</p>
                             <p className="text-sm mt-1">
-                                Please have ${order.total.toFixed(2)} ready when your order arrives.
+                                Please have {order.total.toFixed(2)} {order.currency || 'ETB'} ready when your order arrives.
                                 You can pay in cash to the delivery person.
                             </p>
                         </AlertDescription>
@@ -248,26 +248,26 @@ export default async function OrderCompletedPage({ params }: { params: Promise<{
                         <div className="space-y-3">
                             <div className="flex justify-between text-gray-700">
                                 <span>Subtotal</span>
-                                <span>${order.subtotal.toFixed(2)}</span>
+                                <span>{order.subtotal.toFixed(2)} {order.currency || 'ETB'}</span>
                             </div>
                             <div className="flex justify-between text-gray-700">
                                 <span>Tax</span>
-                                <span>${order.tax.toFixed(2)}</span>
+                                <span>{order.tax.toFixed(2)} {order.currency || 'ETB'}</span>
                             </div>
                             <div className="flex justify-between text-gray-700">
                                 <span>Shipping</span>
-                                <span>${order.shipping.toFixed(2)}</span>
+                                <span>{order.shipping.toFixed(2)} {order.currency || 'ETB'}</span>
                             </div>
                             {order.discount > 0 && (
                                 <div className="flex justify-between text-green-600">
                                     <span>Discount</span>
-                                    <span>-${order.discount.toFixed(2)}</span>
+                                    <span>-{order.discount.toFixed(2)} {order.currency || 'ETB'}</span>
                                 </div>
                             )}
                             <Separator />
                             <div className="flex justify-between text-xl font-bold text-gray-900">
                                 <span>Total</span>
-                                <span>${order.total.toFixed(2)}</span>
+                                <span>{order.total.toFixed(2)} {order.currency || 'ETB'}</span>
                             </div>
                             <div className="text-sm text-gray-500 text-right">
                                 Payment Method: {order.paymentMethod === EPaymentMethod.onDelivery

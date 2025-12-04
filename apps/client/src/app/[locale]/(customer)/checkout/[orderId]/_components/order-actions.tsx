@@ -26,7 +26,7 @@ export function OrderActions({ orderId, paymentStatus, paymentMethod }: OrderAct
 
     return (
         <div className="flex justify-between items-center">
-            <Button variant="outline" onClick={() => router.push('/orders')}>
+            <Button variant="outline" onClick={() => router.push('/my-orders')}>
                 View All Orders
             </Button>
 

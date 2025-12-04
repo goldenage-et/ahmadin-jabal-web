@@ -1,10 +1,15 @@
-import { getCategories } from '@/actions/categories.action';
+import { getCategories } from '@/actions/category.action';
 import { getBook } from '@/actions/book.action';
 import EditBookForm from '@/features/book/edit-book-form';
 import { Button } from '@/components/ui/button';
-import { TCategoryBasic } from '@repo/common';
+import {
+  TBookDetail,
+  TCategoryBasic,
+  isErrorResponse,
+} from '@repo/common';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { ErrorState } from '@/components/error-state';
 
 type PageProps = {
   params: Promise<{
@@ -14,26 +19,40 @@ type PageProps = {
 
 export default async function EditBookPage({ params }: PageProps) {
   const { bookId } = await params;
-  const bookResponse = await getBook(bookId);
 
-  if (!bookResponse || bookResponse.error) {
-    throw new Error('Book not found');
+  // Fetch data in parallel
+  const [bookResponse, categoriesResponse] = await Promise.all([
+    getBook(bookId),
+    getCategories(),
+  ]);
+
+  // Handle book response errors
+  if (isErrorResponse(bookResponse)) {
+    return (
+      <ErrorState
+        title='Book Not Found'
+        message={bookResponse.message || 'The book you are looking for does not exist.'}
+      />
+    );
   }
 
-  const book = bookResponse;
-  const categoriesResponse = await getCategories();
-
-  const categories = categoriesResponse;
-
-  let category: TCategoryBasic | undefined = undefined;
-  if (categories.length > 0) {
-    category = categories.find((cat) => cat.id === book.categoryId);
+  // Handle categories response errors
+  if (isErrorResponse(categoriesResponse)) {
+    return (
+      <ErrorState
+        title='Error Loading Categories'
+        message={categoriesResponse.message || 'Failed to load categories.'}
+      />
+    );
   }
+
+  const book = bookResponse as TBookDetail;
+  const categories = categoriesResponse as TCategoryBasic[];
 
   return (
-    <div className='min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900/10 dark:via-slate-900/10 dark:to-slate-900/10'>
-      <div className='container mx-auto px-4 py-6 space-y-8'>
-        {/* Enhanced Header */}
+    <div className='min-h-screen bg-background'>
+      <div className='container mx-auto px-4 py-6 space-y-6'>
+        {/* Header */}
         <div className='flex items-center gap-4'>
           <Button variant='ghost' size='sm' asChild>
             <Link href={`/admin/books/${bookId}`}>
@@ -42,18 +61,15 @@ export default async function EditBookPage({ params }: PageProps) {
             </Link>
           </Button>
           <div>
-            <h1 className='text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100'>
+            <h1 className='text-3xl font-bold tracking-tight text-foreground'>
               Edit Book
             </h1>
-            <p className='text-slate-600 mt-1 dark:text-slate-400'>
+            <p className='text-muted-foreground mt-1'>
               Update book information and settings
             </p>
           </div>
         </div>
-        <EditBookForm
-          book={book}
-          categories={categories}
-        />
+        <EditBookForm book={book} categories={categories} />
       </div>
     </div>
   );

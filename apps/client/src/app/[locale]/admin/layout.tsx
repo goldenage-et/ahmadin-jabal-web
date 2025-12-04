@@ -9,7 +9,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   if (!user) {
     return redirect('/auth/signin?callbackUrl=/superadmin');
   }
-  console.log({ user });
+  // console.log({ user });
 
   return (
     <QueryProvider>

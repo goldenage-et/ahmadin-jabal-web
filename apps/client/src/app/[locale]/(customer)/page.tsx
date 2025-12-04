@@ -6,6 +6,8 @@ import { BiographyPreview } from '@/features/portfolio/biography-preview';
 import { FeaturedContent } from '@/features/portfolio/featured-content';
 import { CompactBooksGrid } from '@/features/portfolio/compact-books-grid';
 import { CTASection } from '@/features/portfolio/cta-section';
+import { ErrorState } from '@/components/error-state';
+import { TBookListResponse, TBookBasic, isErrorResponse } from '@repo/common';
 
 // Force dynamic rendering since we use server actions
 export const dynamic = 'force-dynamic';
@@ -17,7 +19,20 @@ export default async function HomePage() {
       getParentCategories(),
     ]);
 
-  const featuredBooks = activeBooks.data.filter(book => book.featured)
+  // Handle books response errors
+  if (isErrorResponse(activeBooks)) {
+    return (
+      <ErrorState
+        title='Error Loading Books'
+        message={activeBooks.message}
+      />
+    );
+  }
+
+  // activeBooks is TBookListResponse when successful, which has { data: TBookBasic[], meta: {...} }
+  const booksResponse = activeBooks as TBookListResponse;
+  const books: TBookBasic[] = booksResponse?.data || [];
+  const featuredBooks = books.filter((book: TBookBasic) => book.featured) || [];
 
   return (
     <div className='min-h-screen bg-background dark:bg-background w-full'>

@@ -39,7 +39,7 @@ export class OrdersService {
     const orderNumber = generateCode('ORD');
     this.logger.log(`Order number: ${orderNumber}`);
     const orderPromises = data.map(async (orderData) => {
-      const subtotal = orderData.quantity * orderData.total;
+      const subtotal = orderData.quantity * orderData.price;
       const tax = orderData.tax || 0;
       const shipping = orderData.shipping || 0;
       const discount = orderData.discount || 0;

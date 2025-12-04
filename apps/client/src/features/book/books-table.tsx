@@ -48,7 +48,7 @@ import Link from 'next/link';
 import { useApiMutation } from '@/hooks/use-api-mutation';
 import { deleteBook } from '@/actions/book.action';
 import { toast } from 'sonner';
-
+import Image from 'next/image';
 interface BooksTableProps {
   books: TBookBasic[];
   categories: TCategoryBasic[];
@@ -110,13 +110,13 @@ export function BooksTable({
   const getStatusColor = (status: EBookStatus) => {
     switch (status) {
       case EBookStatus.active:
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
       case EBookStatus.draft:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
       case EBookStatus.archived:
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -190,45 +190,46 @@ export function BooksTable({
                   </TableCell>
                   <TableCell>
                     <div className='flex items-center gap-3'>
-                      <div className='w-12 h-12 rounded-md overflow-hidden bg-gray-100'>
+                      <div className='w-12 aspect-3/4 rounded-md overflow-hidden bg-muted relative shrink-0'>
                         {book.images && book.images.length > 0 ? (
-                          <img
-                            src={getBookImageUrl(book)}
-                            alt={book.title}
-                            className='w-full h-full object-cover'
+                          <Image
+                            src={getBookImageUrl(book) || '/placeholder-book.jpg'}
+                            alt={book.title || 'Book Image'}
+                            fill
+                            className='object-cover'
+                            sizes='48px'
                           />
                         ) : (
                           <div className='w-full h-full flex items-center justify-center'>
-                            <Package className='h-6 w-6 text-gray-400' />
+                            <Package className='h-6 w-6 text-muted-foreground' />
                           </div>
                         )}
                       </div>
-                      <div>
-                        <div className='font-medium'>{book.title}</div>
+                      <div className='min-w-0 flex-1'>
+                        <div className='font-medium text-foreground hover:text-primary transition-colors truncate'>
+                          <Link href={`/admin/books/${book.id}`}>
+                            {book.title}
+                          </Link>
+                        </div>
                         {book.featured && (
-                          <Badge variant='secondary' className='text-xs'>
+                          <Badge variant='secondary' className='text-xs mt-1'>
                             Featured
                           </Badge>
                         )}
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>{category?.name || 'No Category'}</TableCell>
+                  <TableCell className='text-foreground'>{category?.name || 'No Category'}</TableCell>
                   <TableCell>
                     <div>
-                      <div className='font-medium'>${book.price}</div>
+                      <div className='font-medium text-foreground'>ETB {(book.price || 0).toLocaleString()}</div>
                       <div className='text-sm text-muted-foreground'>
-                        Purchase Price: ${book.purchasePrice}
+                        Purchase: ETB {(book.purchasePrice || 0).toLocaleString()}
                       </div>
-                      {/* {book.compareAtPrice && (
-                        <div className='text-sm text-muted-foreground line-through'>
-                          ${book.compareAtPrice}
-                        </div>
-                      )} */}
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className={getInventoryColor(inventoryStatus)}>
+                    <div className={`font-medium ${getInventoryColor(inventoryStatus)}`}>
                       {inventoryStatus === 'unlimited'
                         ? 'Unlimited'
                         : inventoryStatus === 'out-of-stock'
@@ -246,13 +247,13 @@ export function BooksTable({
                   <TableCell>
                     <div className='flex items-center'>
                       <Star className='h-3 w-3 text-yellow-400 fill-current mr-1' />
-                      <span>{book.rating}</span>
+                      <span className='text-foreground'>{book.rating?.toFixed(1) || '0.0'}</span>
                       <span className='text-muted-foreground ml-1'>
-                        ({book.reviewCount})
+                        ({book.reviewCount || 0})
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className='text-muted-foreground'>
                     {format(new Date(book.createdAt), 'MMM dd, yyyy')}
                   </TableCell>
                   <TableCell>

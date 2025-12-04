@@ -172,26 +172,26 @@ export default async function OrderReviewPage({ params }: { params: Promise<{ or
                         <div className="space-y-3">
                             <div className="flex justify-between text-gray-700">
                                 <span>Subtotal</span>
-                                <span>${order.subtotal.toFixed(2)}</span>
+                                <span>{order.subtotal.toFixed(2)} {order.currency || 'ETB'}</span>
                             </div>
                             <div className="flex justify-between text-gray-700">
                                 <span>Tax</span>
-                                <span>${order.tax.toFixed(2)}</span>
+                                <span>{order.tax.toFixed(2)} {order.currency || 'ETB'}</span>
                             </div>
                             <div className="flex justify-between text-gray-700">
                                 <span>Shipping</span>
-                                <span>${order.shipping.toFixed(2)}</span>
+                                <span>{order.shipping.toFixed(2)} {order.currency || 'ETB'}</span>
                             </div>
                             {order.discount > 0 && (
                                 <div className="flex justify-between text-green-600">
                                     <span>Discount</span>
-                                    <span>-${order.discount.toFixed(2)}</span>
+                                    <span>-{order.discount.toFixed(2)} {order.currency || 'ETB'}</span>
                                 </div>
                             )}
                             <Separator />
                             <div className="flex justify-between text-lg font-bold text-gray-900">
                                 <span>Total</span>
-                                <span>${order.total.toFixed(2)}</span>
+                                <span>{order.total.toFixed(2)} {order.currency || 'ETB'}</span>
                             </div>
                         </div>
                     </CardContent>

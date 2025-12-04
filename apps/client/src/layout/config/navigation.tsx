@@ -62,10 +62,10 @@ export const createMainRoutes = (): Route[] => [
     isActive: (path: string) => path.startsWith(`/admin/books`),
   },
   {
-    title: 'Articles',
-    url: `/admin/articles`,
+    title: 'Blogs',
+    url: `/admin/blogs`,
     icon: <FileText className='h-4 w-4' />,
-    isActive: (path: string) => path.startsWith(`/admin/articles`),
+    isActive: (path: string) => path.startsWith(`/admin/blogs`),
   },
   {
     title: 'Publications',

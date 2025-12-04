@@ -4,7 +4,7 @@
     "about": "Waa'ee",
     "publications": "Maxxannee",
     "media": "Meediyaa",
-    "articles": "Qorannoo",
+    "blogs": "Qorannoo",
     "advocacy": "Hawaasni",
     "contact": "Qunnamii",
     "book": "Kitaaboota"
@@ -44,7 +44,7 @@
   "publications": {
     "title": "Maxxannee",
     "books": "Kitaabota",
-    "articles": "Qorannoo",
+    "blogs": "Qorannoo",
     "download": "Buufi",
     "purchase": "Bitadhu"
   },

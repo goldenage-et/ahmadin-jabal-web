@@ -41,7 +41,7 @@ export function QuickActions({ orderNumber }: QuickActionsProps) {
                     <Button
                         variant="outline"
                         className="flex flex-col h-auto py-4 space-y-2"
-                        onClick={() => router.push('/orders')}
+                        onClick={() => router.push('/my-orders')}
                     >
                         <Package className="h-5 w-5" />
                         <span className="text-xs">My Orders</span>

@@ -64,6 +64,8 @@ export const ZBook = z.object({
   publisherAm: z.string().max(255, 'Publisher name too long').optional().nullable(),
   publisherOr: z.string().max(255, 'Publisher name too long').optional().nullable(),
   isbn: z.string().max(100, 'ISBN too long').optional().nullable(),
+  sku: z.string().max(100, 'SKU too long').optional().nullable(),
+  barcode: z.string().max(100, 'Barcode too long').optional().nullable(),
   author: z.string().max(255, 'Author name too long').optional().nullable(),
   authorAm: z.string().max(255, 'Author name too long').optional().nullable(),
   authorOr: z.string().max(255, 'Author name too long').optional().nullable(),
@@ -103,6 +105,8 @@ export const ZBookBasic = ZBook.pick({
   publisherAm: true,
   publisherOr: true,
   isbn: true,
+  sku: true,
+  barcode: true,
   author: true,
   authorAm: true,
   authorOr: true,
@@ -194,6 +198,8 @@ export const ZCreateBook = z.object({
     .optional()
     .nullable(),
   specifications: z.array(ZBookSpecification).optional(),
+  status: z.enum(EBookStatus).default(EBookStatus.active),
+  featured: z.boolean().default(false),
   tags: z
     .array(z.string().min(1, 'Tag cannot be empty').max(TAG_MAX_LENGTH, `Tag must be less than ${TAG_MAX_LENGTH} characters`))
     .max(20, 'Maximum 20 tags allowed')

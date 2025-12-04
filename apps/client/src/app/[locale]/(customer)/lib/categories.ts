@@ -5,7 +5,11 @@ import { TCategoryBasic } from '@repo/common';
 export async function getAllCategories(): Promise<TCategoryBasic[]> {
   try {
     const response = await getCategories();
-    return response.error ? [] : response || [];
+    if ('error' in response && response.error) {
+      return [];
+    }
+    // When successful, response is TCategoryBasic[]
+    return Array.isArray(response) ? response : [];
   } catch (error) {
     console.error('Error fetching categories:', error);
     return [];
@@ -16,7 +20,11 @@ export async function getAllCategories(): Promise<TCategoryBasic[]> {
 export async function getParentCategories(): Promise<TCategoryBasic[]> {
   try {
     const response = await getCategories();
-    const categories = response.error ? [] : response || [];
+    if ('error' in response && response.error) {
+      return [];
+    }
+    // When successful, response is TCategoryBasic[]
+    const categories = Array.isArray(response) ? response : [];
     // Filter categories that don't have a parent (top-level categories)
     return categories.filter((category) => !category.parentId);
   } catch (error) {
@@ -31,7 +39,11 @@ export async function getSubcategories(
 ): Promise<TCategoryBasic[]> {
   try {
     const response = await getCategories({ parentId });
-    return response.error ? [] : response || [];
+    if ('error' in response && response.error) {
+      return [];
+    }
+    // When successful, response is TCategoryBasic[]
+    return Array.isArray(response) ? response : [];
   } catch (error) {
     console.error('Error fetching subcategories:', error);
     return [];
@@ -44,7 +56,11 @@ export async function getAllCategoriesWithSubcategories(): Promise<
 > {
   try {
     const response = await getCategories();
-    return response.error ? [] : response || [];
+    if ('error' in response && response.error) {
+      return [];
+    }
+    // When successful, response is TCategoryBasic[]
+    return Array.isArray(response) ? response : [];
   } catch (error) {
     console.error('Error fetching all categories:', error);
     return [];

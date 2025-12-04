@@ -466,37 +466,37 @@ export function useFilters(categories: TCategoryBasic[]) {
   const handleFilterChange = (key: keyof TBookQueryFilter, value: string | number | boolean) => {
     switch (key) {
       case 'search':
-        setSearch(value);
+        setSearch(value as string);
         break;
       case 'categoryName':
-        setCategoryName(value);
+        setCategoryName(value as string);
         break;
       case 'minPrice':
-        setMinPrice(value);
+        setMinPrice(value as number);
         break;
       case 'maxPrice':
-        setMaxPrice(value);
+        setMaxPrice(value as number);
         break;
       case 'minRating':
-        setMinRating(value);
+        setMinRating(value as number);
         break;
       case 'inStock':
-        setInStock(value);
+        setInStock(value as boolean);
         break;
       case 'featured':
-        setFeatured(value);
+        setFeatured(value as boolean);
         break;
       case 'sortBy':
-        setSortBy(value);
+        setSortBy(value as SortOption);
         break;
       case 'sortOrder':
-        setSortOrder(value);
+        setSortOrder(value as 'asc' | 'desc');
         break;
       case 'page':
-        setPage(value);
+        setPage(value as number);
         break;
       case 'limit':
-        setLimit(value);
+        setLimit(value as number);
         break;
     }
   };

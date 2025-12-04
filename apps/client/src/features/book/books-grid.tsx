@@ -39,7 +39,7 @@ import Link from 'next/link';
 import { useApiMutation } from '@/hooks/use-api-mutation';
 import { deleteBook } from '@/actions/book.action';
 import { toast } from 'sonner';
-
+import Image from 'next/image';
 interface BooksGridProps {
   books: TBookBasic[];
   categories: TCategoryBasic[];
@@ -101,13 +101,13 @@ export function BooksGrid({
   const getStatusColor = (status: EBookStatus) => {
     switch (status) {
       case EBookStatus.active:
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
       case EBookStatus.draft:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
       case EBookStatus.archived:
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -156,16 +156,18 @@ export function BooksGrid({
               className='overflow-hidden border-0 shadow-sm hover:shadow-md transition-all duration-200 group'
             >
               <div className='relative'>
-                <div className='aspect-square overflow-hidden bg-linear-to-br from-gray-50 to-gray-100'>
+                <div className='aspect-3/4 overflow-hidden bg-muted relative'>
                   {book.images && book.images.length > 0 ? (
-                    <img
-                      src={getBookImageUrl(book)}
-                      alt={book.title}
-                      className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
+                    <Image
+                      src={getBookImageUrl(book) || '/placeholder-book.jpg'}
+                      alt={book.title || 'Book Image'}
+                      fill
+                      className='object-cover group-hover:scale-105 transition-transform duration-300'
+                      sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw'
                     />
                   ) : (
                     <div className='w-full h-full flex items-center justify-center'>
-                      <Package className='h-12 w-12 text-gray-400' />
+                      <Package className='h-12 w-12 text-muted-foreground' />
                     </div>
                   )}
                 </div>
@@ -192,19 +194,16 @@ export function BooksGrid({
               <CardContent className='p-5'>
                 <div className='space-y-3'>
                   <div>
-                    <h3 className='font-semibold text-gray-900 line-clamp-2 leading-tight'>
-                      {book.title}
+                    <h3 className='font-semibold text-foreground hover:text-primary transition-colors line-clamp-2 leading-tight'>
+                      <Link href={`/admin/books/${book.id}`}>
+                        {book.title}
+                      </Link>
                     </h3>
                   </div>
                   <div className='flex items-center justify-between'>
-                    <span className='text-xl font-bold text-gray-900'>
-                      ${book.price}
+                    <span className='text-xl font-bold text-foreground'>
+                      ETB {(book.price || 0).toLocaleString()}
                     </span>
-                    {/* {book.compareAtPrice && (
-                      <span className='text-sm text-gray-400 line-through'>
-                        ${book.compareAtPrice}
-                      </span>
-                    )} */}
                   </div>
                   <div className='flex items-center justify-between text-sm'>
                     <span
@@ -218,10 +217,10 @@ export function BooksGrid({
                     </span>
                     <div className='flex items-center'>
                       <Star className='h-3 w-3 text-yellow-400 fill-current mr-1' />
-                      <span className='text-gray-600'>{book.rating}</span>
+                      <span className='text-muted-foreground'>{book.rating?.toFixed(1) || '0.0'}</span>
                     </div>
                   </div>
-                  <div className='flex items-center justify-between text-xs text-gray-500'>
+                  <div className='flex items-center justify-between text-xs text-muted-foreground'>
                     <span>{category?.name || 'No Category'}</span>
                     <span>{format(new Date(book.createdAt), 'MMM dd')}</span>
                   </div>

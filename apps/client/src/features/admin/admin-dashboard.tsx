@@ -365,7 +365,7 @@ export default function AdminDashboard({
                                             <TableCell>{new Date(order.date).toLocaleString()}</TableCell>
                                             <TableCell>
                                                 <Button asChild variant='outline' size='sm'>
-                                                    <Link href={`/store/orders/${order.id}`}>
+                                                    <Link href={`/admin/orders/${order.id}`}>
                                                         <EyeIcon className='h-4 w-4 mr-2' />
                                                         View
                                                     </Link>

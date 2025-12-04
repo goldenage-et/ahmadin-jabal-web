@@ -4,7 +4,7 @@
     "about": "ስለ",
     "publications": "ፅሁፎች",
     "media": "ሚዲያ",
-    "articles": "ጽሑፎች",
+    "blogs": "ጽሑፎች",
     "advocacy": "የማህበረሰብ ተሟጋችነት",
     "contact": "አግኙን",
     "book": "መደብር"
@@ -44,7 +44,7 @@
   "publications": {
     "title": "ፅሁፎች",
     "books": "መጻሕፍት",
-    "articles": "ጽሑፎች",
+    "blogs": "ጽሑፎች",
     "download": "አውርድ",
     "purchase": "ግዛ"
   },

@@ -12,6 +12,7 @@ import type {
     TPublicationBasic,
     TPublicationComment,
     TPublicationDetail,
+    TPublicationListResponse,
     TPublicationQueryFilter,
     TPublicationQueryUnique,
     TUpdatePublication,
@@ -19,9 +20,11 @@ import type {
 } from '@repo/common';
 import {
     EPublicationStatus,
+    EPublicationCommentStatus,
     ZPublicationBasic,
     ZPublicationComment,
     ZPublicationDetail,
+    ZPublicationListResponse,
 } from '@repo/common';
 import { PrismaClient } from '@repo/prisma';
 
@@ -42,11 +45,15 @@ export class PublicationsService {
             throw new ConflictException('Publication with this slug already exists');
         }
 
+        // Extract media from data as it's handled separately or stored as JSON
+        const { media, ...prismaData } = data;
+
         const publication = await this.db.publication.create({
             data: {
-                ...data,
+                ...prismaData,
                 authorId,
-            },
+                media: media as any, // Convert media array to JSON for Prisma
+            } as any,
         });
 
         return ZPublicationBasic.parse(publication);
@@ -54,7 +61,7 @@ export class PublicationsService {
 
     async getMany(
         query: TPublicationQueryFilter & { userId?: string },
-    ): Promise<{ data: TPublicationBasic[]; meta: any }> {
+    ): Promise<TPublicationListResponse> {
         const where: any = {};
 
         if (query.status) {
@@ -159,7 +166,7 @@ export class PublicationsService {
         const hasNext = page < totalPages;
         const hasPrev = page > 1;
 
-        return {
+        return ZPublicationListResponse.parse({
             data: ZPublicationBasic.array().parse(publications),
             meta: {
                 page,
@@ -169,7 +176,7 @@ export class PublicationsService {
                 hasNext,
                 hasPrev,
             },
-        };
+        });
     }
 
     async getOne(
@@ -272,9 +279,17 @@ export class PublicationsService {
             }
         }
 
+        // Extract media from data if present
+        const { media, ...prismaData } = data;
+
+        const updateData: any = { ...prismaData };
+        if (media !== undefined) {
+            updateData.media = media as any;
+        }
+
         const updatedPublication = await this.db.publication.update({
             where,
-            data,
+            data: updateData,
         });
 
         return ZPublicationBasic.parse(updatedPublication);
@@ -406,7 +421,7 @@ export class PublicationsService {
         const comments = await this.db.publicationComment.findMany({
             where: {
                 publicationId,
-                status: 'approved' as any,
+                status: EPublicationCommentStatus.approved,
                 parentId: null, // Only get top-level comments
             },
             include: {

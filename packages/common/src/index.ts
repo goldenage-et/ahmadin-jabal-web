@@ -11,7 +11,7 @@ export * from './schemas/categories/categories.schema';
 
 export * from './schemas/books/books.schema';
 
-export * from './schemas/articles/article.schema';
+export * from './schemas/blogs/blog.schema';
 
 export * from './schemas/publications/publication.schema';
 

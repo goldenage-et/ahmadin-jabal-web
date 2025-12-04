@@ -7,81 +7,84 @@ import {
   TBookDetail,
   TBookDetailAnalytics,
   TBookQueryFilter,
+  TBookListResponse,
   TBulkBook,
   TCreateBook,
-  TPaginationResponse,
   TSearchSuggestion,
-  TUpdateBook
+  TUpdateBook,
+  TFetcherResponse,
 } from '@repo/common';
+
+// Clean up undefined values from query parameters
+function cleanQuery<T>(query?: Partial<T>) {
+  return query
+    ? Object.fromEntries(
+      Object.entries(query).filter(([_, value]) => value !== undefined),
+    )
+    : undefined;
+}
+
 // Get many books
-export async function getManyBooks(query?: Partial<TBookQueryFilter>) {
-  const data = await api.get<TPaginationResponse<TBookBasic[]>>('/books', {
-    params: query,
+export async function getManyBooks(
+  query?: Partial<TBookQueryFilter>,
+): Promise<TFetcherResponse<TBookListResponse>> {
+  return await api.get<TBookListResponse>('/books', {
+    params: cleanQuery(query),
   });
-  if (data.error) {
-    return {
-      data: [],
-      meta: {
-        page: 1,
-        limit: 10,
-        total: 0,
-        totalPages: 0,
-        hasNext: false,
-        hasPrev: false,
-      },
-    };
-  }
-  return data;
 }
 
 // Get one book
-export async function getBook(id: string) {
+export async function getBook(
+  id: string,
+): Promise<TFetcherResponse<TBookDetail>> {
   return await api.get<TBookDetail>(`/books/${id}`);
 }
 
 // Create a new book
-export async function createBook(data: TCreateBook) {
+export async function createBook(
+  data: TCreateBook,
+): Promise<TFetcherResponse<TBookBasic>> {
   return await api.post<TBookBasic>('/books', data);
 }
 
 // Update a book
-export async function updateBook(id: string, data: TUpdateBook) {
+export async function updateBook(
+  id: string,
+  data: TUpdateBook,
+): Promise<TFetcherResponse<TBookBasic>> {
   return await api.put<TBookBasic>(`/books/${id}`, data);
 }
 
-export async function bookBulkOperation(data: TBulkBook) {
+export async function bookBulkOperation(
+  data: TBulkBook,
+): Promise<TFetcherResponse<{ message: string }>> {
   return await api.put<{ message: string }>('/books', data);
 }
 
 // Delete a book
-export async function deleteBook(id: string) {
+export async function deleteBook(
+  id: string,
+): Promise<TFetcherResponse<{ message: string }>> {
   return await api.delete<{ message: string }>(`/books/${id}`);
 }
 
 // Get book analytics
-export async function getBookAnalytics() {
+export async function getBookAnalytics(): Promise<TFetcherResponse<TBookAnalytics>> {
   return await api.get<TBookAnalytics>(`/books/analytics`);
 }
 
 // Get book detail analytics
-export async function getBookDetailAnalytics(id: string) {
+export async function getBookDetailAnalytics(
+  id: string,
+): Promise<TFetcherResponse<TBookDetailAnalytics>> {
   return await api.get<TBookDetailAnalytics>(`/books/${id}/analytics`);
 }
 
 // Get popular search analytics (search suggestions)
-export async function getPopularSearchAnalytics() {
-  const searchSuggestions = await api.get<TSearchSuggestion>(
-    `/books/search-suggestion`,
-  );
-  if (searchSuggestions.error) {
-    return {
-      error: undefined,
-      popularEvents: [],
-      trendingEvents: [],
-      recentEvents: [],
-    };
-  }
-  return searchSuggestions;
+export async function getPopularSearchAnalytics(): Promise<
+  TFetcherResponse<TSearchSuggestion>
+> {
+  return await api.get<TSearchSuggestion>(`/books/search-suggestion`);
 }
 
 import {
@@ -95,15 +98,18 @@ import {
 export async function getBookSpecifications(
   bookId: string,
   query?: Partial<TBookSpecificationQueryFilter>,
-) {
+): Promise<TFetcherResponse<TBookSpecification[]>> {
   return await api.get<TBookSpecification[]>(
     `/books/${bookId}/specifications`,
-    { params: query },
+    { params: cleanQuery(query) },
   );
 }
 
 // Get one book specification for a book
-export async function getBookSpecification(bookId: string, id: string) {
+export async function getBookSpecification(
+  bookId: string,
+  id: string,
+): Promise<TFetcherResponse<TBookSpecification>> {
   return await api.get<TBookSpecification>(
     `/books/${bookId}/specifications/${id}`,
   );
@@ -113,7 +119,7 @@ export async function getBookSpecification(bookId: string, id: string) {
 export async function createBookSpecification(
   bookId: string,
   data: TCreateBookSpecification,
-) {
+): Promise<TFetcherResponse<TBookSpecification>> {
   return await api.post<TBookSpecification>(
     `/books/${bookId}/specifications`,
     data,
@@ -125,7 +131,7 @@ export async function updateBookSpecification(
   bookId: string,
   id: string,
   data: TUpdateBookSpecification,
-) {
+): Promise<TFetcherResponse<TBookSpecification>> {
   return await api.put<TBookSpecification>(
     `/books/${bookId}/specifications/${id}`,
     data,
@@ -136,7 +142,7 @@ export async function updateBookSpecification(
 export async function deleteBookSpecification(
   bookId: string,
   id: string,
-) {
+): Promise<TFetcherResponse<{ message: string }>> {
   return await api.delete<{ message: string }>(
     `/books/${bookId}/specifications/${id}`,
   );

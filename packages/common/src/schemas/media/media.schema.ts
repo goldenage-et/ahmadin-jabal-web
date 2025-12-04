@@ -291,16 +291,16 @@ export const ZMediaDetail = ZMedia.extend({
 
 export type TMediaDetail = z.infer<typeof ZMediaDetail>;
 
-// Article Media Junction Schema
-export const ZArticleMediaJunction = z.object({
+// Blog Media Junction Schema
+export const ZBlogMediaJunction = z.object({
     id: z.uuid(),
-    articleId: z.uuid('Invalid article ID format'),
+    blogId: z.uuid('Invalid blog ID format'),
     mediaId: z.uuid('Invalid media ID format'),
     order: z.number().int().min(0, 'Order cannot be negative').default(0),
     createdAt: z.coerce.date(),
 });
 
-export type TArticleMediaJunction = z.infer<typeof ZArticleMediaJunction>;
+export type TBlogMediaJunction = z.infer<typeof ZBlogMediaJunction>;
 
 // Publication Media Junction Schema
 export const ZPublicationMediaJunction = z.object({

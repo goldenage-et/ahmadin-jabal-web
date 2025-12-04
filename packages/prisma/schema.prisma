@@ -69,7 +69,7 @@ model Category {
   subcategories        Category[]    @relation("categories_to_categories")
   booksCategory        Book[]        @relation("books_category_id_to_categories")
   booksSubcategory     Book[]        @relation("books_subcategory_id_to_categories")
-  articlesCategory     Article[]     @relation("articles_category_id_to_categories")
+  blogsCategory        Blog[]        @relation("blogs_category_id_to_categories")
   publicationsCategory Publication[] @relation("publications_category_id_to_categories")
 
   @@index([parentId])
@@ -267,6 +267,8 @@ model Book {
   publisherAm                String?      @db.VarChar(255)
   publisherOr                String?      @db.VarChar(255)
   isbn                       String?      @unique @db.VarChar(100)
+  sku                        String?      @unique @db.VarChar(50)
+  barcode                    String?      @unique @db.VarChar(50)
   author                     String?      @db.VarChar(255)
   authorAm                   String?      @db.VarChar(255)
   authorOr                   String?      @db.VarChar(255)
@@ -406,7 +408,7 @@ model User {
   searchAnalyticsEvents   SearchAnalyticsEvent[]
   sessions                Session[]
   transactions            Transaction[]
-  articles                Article[]
+  blogs                   Blog[]
   publications            Publication[]
   publicationComments     PublicationComment[]
   media                   Media[]                  @relation("MediaUploader")
@@ -461,38 +463,38 @@ model BankAccount {
   @@map("bank_accounts")
 }
 
-model Article {
-  id            String           @id @default(uuid())
+model Blog {
+  id            String        @id @default(uuid())
   authorId      String
   categoryId    String?
-  title         String           @default("No Title")
+  title         String        @default("No Title")
   titleAm       String?
   titleOr       String?
-  slug          String           @unique @db.VarChar(255)
+  slug          String        @unique @db.VarChar(255)
   excerpt       String?
   excerptAm     String?
   excerptOr     String?
-  content       Json?            @default("{}")
+  content       Json?         @default("{}")
   contentAm     Json?
   contentOr     Json?
-  medias        String[]         @default([])
+  medias        String[]      @default([])
   featuredImage String?
   tags          String[]
-  status        ArticleStatus    @default(draft)
-  featured      Boolean          @default(false)
-  isFree        Boolean          @default(true)
+  status        BlogStatus    @default(draft)
+  featured      Boolean       @default(false)
+  isFree        Boolean       @default(true)
   price         Float?
-  viewCount     Int              @default(0)
-  likeCount     Int              @default(0)
+  viewCount     Int           @default(0)
+  likeCount     Int           @default(0)
   publishedAt   DateTime?
   expiresAt     DateTime?
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
-  author        User             @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  category      Category?        @relation("articles_category_id_to_categories", fields: [categoryId], references: [id], onUpdate: NoAction, onDelete: SetNull)
-  relatedFrom   ArticleRelated[] @relation("ArticleFrom")
-  relatedTo     ArticleRelated[] @relation("ArticleTo")
-  articleMedia  ArticleMedia[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  author        User          @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  category      Category?     @relation("blogs_category_id_to_categories", fields: [categoryId], references: [id], onUpdate: NoAction, onDelete: SetNull)
+  relatedFrom   BlogRelated[] @relation("BlogFrom")
+  relatedTo     BlogRelated[] @relation("BlogTo")
+  blogMedia     BlogMedia[]
 
   @@index([authorId])
   @@index([categoryId])
@@ -508,21 +510,21 @@ model Article {
   @@index([createdAt])
   @@index([viewCount])
   @@index([likeCount])
-  @@map("articles")
+  @@map("blogs")
 }
 
-model ArticleRelated {
+model BlogRelated {
   id        String   @id @default(uuid())
   fromId    String
   toId      String
   createdAt DateTime @default(now())
-  from      Article  @relation("ArticleFrom", fields: [fromId], references: [id], onDelete: Cascade)
-  to        Article  @relation("ArticleTo", fields: [toId], references: [id], onDelete: Cascade)
+  from      Blog     @relation("BlogFrom", fields: [fromId], references: [id], onDelete: Cascade)
+  to        Blog     @relation("BlogTo", fields: [toId], references: [id], onDelete: Cascade)
 
   @@unique([fromId, toId])
   @@index([fromId])
   @@index([toId])
-  @@map("article_related")
+  @@map("blog_related")
 }
 
 model Publication {
@@ -649,7 +651,7 @@ model Media {
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
   uploader         User               @relation("MediaUploader", fields: [uploadedBy], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  articleMedia     ArticleMedia[]
+  blogMedia        BlogMedia[]
   publicationMedia PublicationMedia[]
   videos           Video[]            @relation("VideoMedia")
   audios           Audio[]            @relation("AudioMedia")
@@ -672,21 +674,21 @@ model Media {
   @@map("media")
 }
 
-model ArticleMedia {
+model BlogMedia {
   id        String   @id @default(uuid())
-  articleId String
+  blogId    String
   mediaId   String
   order     Int      @default(0)
   createdAt DateTime @default(now())
-  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  blog      Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   media     Media    @relation(fields: [mediaId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@unique([articleId, mediaId])
-  @@index([articleId])
+  @@unique([blogId, mediaId])
+  @@index([blogId])
   @@index([mediaId])
   @@index([order])
-  @@index([articleId, order])
-  @@map("article_media")
+  @@index([blogId, order])
+  @@map("blog_media")
 }
 
 model PublicationMedia {
@@ -1058,7 +1060,7 @@ enum UserStatus {
   blocked  @map("blocked")
 }
 
-enum ArticleStatus {
+enum BlogStatus {
   draft     @map("draft")
   published @map("published")
   archived  @map("archived")

@@ -24,7 +24,10 @@ import {
   ShoppingCart,
   Store,
   UserIcon,
-  Wrench
+  Wrench,
+  ChevronDown,
+  BookOpen,
+  FileText
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -32,6 +35,12 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { SearchSuggestions } from './components/search-suggestions';
 import { NavUser } from './nav-user';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 // Helper function to process backend categories into navigation format
 const processCategoriesForNavigation = (categories: TCategoryBasic[]) => {
@@ -216,12 +225,28 @@ export function Navigation({
               >
                 {t('about')}
               </Link>
-              <Link
-                href='/publications'
-                className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors whitespace-nowrap'
-              >
-                {t('publications')}
-              </Link>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors whitespace-nowrap flex items-center gap-1'>
+                    Publications
+                    <ChevronDown className='h-4 w-4' />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align='start' className='w-48'>
+                  <DropdownMenuItem asChild>
+                    <Link href='/publications' className='flex items-center gap-2'>
+                      <BookOpen className='h-4 w-4' />
+                      Publications
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href='/blogs' className='flex items-center gap-2'>
+                      <FileText className='h-4 w-4' />
+                      Blogs
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <Link
                 href='/media'
                 className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors whitespace-nowrap'
@@ -292,13 +317,27 @@ export function Navigation({
                 >
                   {t('about')}
                 </Link>
-                <Link
-                  href='/publications'
-                  className='flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary dark:hover:text-primary transition-colors'
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {t('publications')}
-                </Link>
+                <div className='px-3'>
+                  <div className='text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1'>
+                    Publications
+                  </div>
+                  <Link
+                    href='/publications'
+                    className='flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary dark:hover:text-primary transition-colors'
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <BookOpen className='h-4 w-4 mr-2' />
+                    Publications
+                  </Link>
+                  <Link
+                    href='/blogs'
+                    className='flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary dark:hover:text-primary transition-colors'
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <FileText className='h-4 w-4 mr-2' />
+                    Blogs
+                  </Link>
+                </div>
                 <Link
                   href='/media'
                   className='flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary dark:hover:text-primary transition-colors'

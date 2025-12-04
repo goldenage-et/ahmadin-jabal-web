@@ -81,9 +81,9 @@ export default function AdminBookDetail({
     return (
       <div className='flex items-center justify-center h-64'>
         <div className='text-center'>
-          <Package className='h-12 w-12 text-muted-foreground dark:text-muted-foreground mx-auto mb-4' />
-          <h3 className='text-lg font-semibold'>Book not found</h3>
-          <p className='text-muted-foreground dark:text-muted-foreground'>
+          <Package className='h-12 w-12 text-muted-foreground mx-auto mb-4' />
+          <h3 className='text-lg font-semibold text-foreground'>Book not found</h3>
+          <p className='text-muted-foreground'>
             The book you're looking for doesn't exist.
           </p>
           <Button
@@ -109,16 +109,16 @@ export default function AdminBookDetail({
   };
 
   const getStatusColor = (status?: EBookStatus) => {
-    if (!status) return 'bg-gray-100 text-gray-800';
+    if (!status) return 'bg-muted text-muted-foreground';
     switch (status) {
       case EBookStatus.active:
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
       case EBookStatus.draft:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
       case EBookStatus.archived:
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -136,11 +136,11 @@ export default function AdminBookDetail({
   const inventoryStatus = getInventoryStatus();
 
   return (
-    <div className='min-h-screen bg-linear-to-br from-background via-card to-card dark:from-background dark:via-card dark:to-card'>
-      <div className='container mx-auto px-4 py-6 space-y-8'>
-        {/* Modern Header with Breadcrumb */}
+    <div className='min-h-screen bg-background'>
+      <div className='space-y-8'>
+        {/* Header with Breadcrumb */}
         <div className='space-y-4'>
-          <div className='flex items-center gap-2 text-sm text-muted-foreground dark:text-muted-foreground'>
+          <div className='flex items-center gap-2 text-sm text-muted-foreground'>
             <Link
               href='/admin/books'
               className='hover:text-foreground transition-colors'
@@ -148,13 +148,13 @@ export default function AdminBookDetail({
               Books
             </Link>
             <span>/</span>
-            <span className='text-foreground font-medium dark:text-foreground'>{book.title}</span>
+            <span className='text-foreground font-medium'>{book.title}</span>
           </div>
 
           <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4'>
             <div className='space-y-2'>
               <div className='flex items-center gap-3'>
-                <h1 className='text-2xl lg:text-4xl font-bold tracking-tight bg-linear-to-br from-foreground to-foreground dark:from-foreground dark:to-foreground bg-clip-text text-transparent'>
+                <h1 className='text-2xl lg:text-4xl font-bold tracking-tight text-foreground'>
                   {book.title}
                 </h1>
                 <Badge
@@ -221,8 +221,8 @@ export default function AdminBookDetail({
                       )}
                     </div>
                   </div>
-                  <div className='p-3 rounded-full bg-green-100 group-hover:bg-green-200 transition-colors'>
-                    <DollarSign className='h-6 w-6 text-green-600 dark:text-green-400' />
+                  <div className='p-3 rounded-full dark:bg-green-700/10 bg-green-100 group-hover:bg-green-200 transition-colors'>
+                    <DollarSign className='h-6 w-6  text-green-600 dark:text-green-400' />
                   </div>
                 </div>
               </CardContent>
@@ -254,7 +254,7 @@ export default function AdminBookDetail({
                       </p>
                     </div>
                   </div>
-                  <div className='p-3 rounded-full bg-blue-100 group-hover:bg-blue-200 transition-colors'>
+                  <div className='p-3 rounded-full dark:bg-blue-700/10 bg-blue-100 group-hover:bg-blue-200 transition-colors'>
                     <Truck className='h-6 w-6 text-blue-600 dark:text-blue-400' />
                   </div>
                 </div>
@@ -270,17 +270,17 @@ export default function AdminBookDetail({
                     </p>
                     <div className='space-y-1'>
                       <div className='flex items-center gap-1'>
-                        <p className='text-2xl font-bold text-yellow-900'>
-                          {book.rating}
+                        <p className='text-2xl font-bold text-yellow-900 dark:text-yellow-100'>
+                          {book.rating?.toFixed(1) || '0.0'}
                         </p>
                         <Star className='h-5 w-5 text-yellow-500 fill-current' />
                       </div>
-                      <p className='text-sm text-yellow-600'>
-                        {book.reviewCount} reviews
+                      <p className='text-sm text-yellow-600 dark:text-yellow-400'>
+                        {book.reviewCount || 0} {book.reviewCount === 1 ? 'review' : 'reviews'}
                       </p>
                     </div>
                   </div>
-                  <div className='p-3 rounded-full bg-yellow-100 group-hover:bg-yellow-200 transition-colors'>
+                  <div className='p-3 rounded-full dark:bg-yellow-700/10 bg-yellow-100 group-hover:bg-yellow-200 transition-colors'>
                     <Star className='h-6 w-6 text-yellow-600' />
                   </div>
                 </div>
@@ -294,27 +294,29 @@ export default function AdminBookDetail({
                     <p className='text-sm font-medium text-purple-700 dark:text-purple-400'>
                       Status
                     </p>
-                    <div className='space-y-2'>
+                    <div className='flex flex-wrap items-center gap-2'>
                       <Badge
                         className={cn(
-                          'text-xs',
-                          getStatusColor(book.status),
+                          'text-xs px-2 py-1 font-semibold rounded-full',
+                          getStatusColor(book.status)
                         )}
+                        title={`Book status: ${book.status?.charAt(0).toUpperCase() + book.status?.slice(1)}`}
                       >
-                        {book.status}
+                        {book.status?.charAt(0).toUpperCase() + book.status?.slice(1)}
                       </Badge>
                       {book.featured && (
                         <Badge
-                          variant='secondary'
-                          className='text-xs bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/10 dark:text-yellow-100 dark:border-yellow-200'
+                          variant='outline'
+                          className='text-xs px-2 py-1 font-medium rounded-full bg-yellow-50 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-100 dark:border-yellow-400 flex items-center'
+                          title='Featured book'
                         >
-                          <Star className='h-3 w-3 mr-1' />
+                          <Star className='h-3 w-3 mr-1 text-yellow-500 fill-yellow-400' />
                           Featured
                         </Badge>
                       )}
                     </div>
                   </div>
-                  <div className='p-3 rounded-full bg-purple-100 group-hover:bg-purple-200 transition-colors'>
+                  <div className='p-3 rounded-full dark:bg-purple-700/10 bg-purple-100 group-hover:bg-purple-200 transition-colors'>
                     <CheckCircle className='h-6 w-6 text-purple-600 dark:text-purple-400' />
                   </div>
                 </div>
@@ -334,24 +336,18 @@ export default function AdminBookDetail({
             onValueChange={setActiveTab}
             className='w-full'
           >
-            <div className='b'>
-              <TabsList className=''>
-                <TabsTrigger value='overview' className=''>
-                  Overview
-                </TabsTrigger>
-                <TabsTrigger value='analytics' className=''>
-                  Analytics
-                </TabsTrigger>
-                <TabsTrigger value='reviews' className=''>
-                  Reviews
-                  {book.reviewCount > 0 && (
-                    <Badge variant='secondary' className='ml-2 text-xs'>
-                      {book.reviewCount}
-                    </Badge>
-                  )}
-                </TabsTrigger>
-              </TabsList>
-            </div>
+            <TabsList>
+              <TabsTrigger value='overview'>Overview</TabsTrigger>
+              <TabsTrigger value='analytics'>Analytics</TabsTrigger>
+              <TabsTrigger value='reviews'>
+                Reviews
+                {book.reviewCount > 0 && (
+                  <Badge variant='secondary' className='ml-2 text-xs'>
+                    {book.reviewCount}
+                  </Badge>
+                )}
+              </TabsTrigger>
+            </TabsList>
 
             {/* Overview Tab */}
             <TabsContent value='overview' className='space-y-8 mt-8'>
@@ -377,16 +373,16 @@ export default function AdminBookDetail({
                   </CardHeader>
                   <CardContent className='space-y-6'>
                     <div className='space-y-4'>
-                      <div className='flex items-center justify-between p-3 bg-slate-50 rounded-lg dark:bg-slate-900/10'>
+                      <div className='flex items-center justify-between p-3 bg-muted rounded-lg'>
                         <div>
-                          <Label className='text-sm font-medium text-slate-600 dark:text-slate-400'>
+                          <Label className='text-sm font-medium text-muted-foreground'>
                             Category
                           </Label>
-                          <p className='text-sm font-semibold text-slate-900 dark:text-slate-100'>
+                          <p className='text-sm font-semibold text-foreground'>
                             {category?.name || 'No Category'}
                           </p>
                         </div>
-                        <Package className='h-5 w-5 text-slate-400 dark:text-slate-400' />
+                        <Package className='h-5 w-5 text-muted-foreground' />
                       </div>
                     </div>
 
@@ -394,18 +390,18 @@ export default function AdminBookDetail({
 
                     <div className='space-y-3'>
                       <div className='flex items-center justify-between'>
-                        <Label className='text-sm font-medium text-slate-600 dark:text-slate-400'>
+                        <Label className='text-sm font-medium text-muted-foreground'>
                           Created
                         </Label>
-                        <p className='text-sm text-slate-900 dark:text-slate-100'>
+                        <p className='text-sm text-foreground'>
                           {format(new Date(createdAt), 'MMM dd, yyyy')}
                         </p>
                       </div>
                       <div className='flex items-center justify-between'>
-                        <Label className='text-sm font-medium text-slate-600 dark:text-slate-400'>
+                        <Label className='text-sm font-medium text-muted-foreground'>
                           Updated
                         </Label>
-                        <p className='text-sm text-slate-900 dark:text-slate-100'>
+                        <p className='text-sm text-foreground'>
                           {format(new Date(updatedAt), 'MMM dd, yyyy')}
                         </p>
                       </div>
@@ -416,26 +412,28 @@ export default function AdminBookDetail({
             </TabsContent>
 
             <TabsContent value='overview' className='space-y-8 mt-8'>
-              {/* Enhanced Book Information */}
-              <Card className='border-0 shadow-lg dark:bg-slate-900/10'>
+              {/* Book Information */}
+              <Card>
                 <CardHeader className='pb-4'>
-                  <CardTitle className='text-xl font-semibold'>
+                  <CardTitle className='text-xl font-semibold text-foreground'>
                     Book Information
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className='space-y-6'>
-                    <div className='space-y-3'>
-                      <h3 className='text-xl font-semibold text-slate-900 dark:text-slate-100'>
-                        {book.title}
-                      </h3>
-                      <p className='text-slate-600 leading-relaxed dark:text-slate-400'>
-                        {book.description}
-                      </p>
-                    </div>
+                    {book.description && (
+                      <div className='space-y-3'>
+                        <h3 className='text-xl font-semibold text-foreground'>
+                          Description
+                        </h3>
+                        <p className='text-muted-foreground leading-relaxed whitespace-pre-line'>
+                          {book.description}
+                        </p>
+                      </div>
+                    )}
                     {book.tags && book.tags.length > 0 && (
                       <div className='space-y-3'>
-                        <Label className='text-sm font-medium text-slate-600 dark:text-slate-400'>
+                        <Label className='text-sm font-medium text-muted-foreground'>
                           Tags
                         </Label>
                         <div className='flex flex-wrap gap-2'>
@@ -443,7 +441,7 @@ export default function AdminBookDetail({
                             <Badge
                               key={tag}
                               variant='secondary'
-                              className='text-xs px-3 py-1 dark:bg-slate-900/10 dark:text-slate-100'
+                              className='text-xs px-3 py-1'
                             >
                               {tag}
                             </Badge>
@@ -491,7 +489,7 @@ export default function AdminBookDetail({
                           </p>
                         </div>
                       </div>
-                      <div className='p-3 rounded-full bg-yellow-100 group-hover:bg-yellow-200 transition-colors'>
+                      <div className='p-3 rounded-full dark:bg-yellow-700/10 bg-yellow-100 group-hover:bg-yellow-200 transition-colors'>
                         <Star className='h-6 w-6 text-yellow-600 dark:text-yellow-400' />
                       </div>
                     </div>
@@ -510,7 +508,7 @@ export default function AdminBookDetail({
                         </p>
                         <p className='text-sm text-green-600 dark:text-green-400'>5-star reviews</p>
                       </div>
-                      <div className='p-3 rounded-full bg-green-100 group-hover:bg-green-200 transition-colors'>
+                      <div className='p-3 rounded-full dark:bg-green-700/10 bg-green-100 group-hover:bg-green-200 transition-colors'>
                         <CheckCircle2 className='h-6 w-6 text-green-600 dark:text-green-400' />
                       </div>
                     </div>
@@ -531,7 +529,7 @@ export default function AdminBookDetail({
                           From verified purchases
                         </p>
                       </div>
-                      <div className='p-3 rounded-full bg-blue-100 group-hover:bg-blue-200 transition-colors'>
+                      <div className='p-3 rounded-full dark:bg-blue-700/10 bg-blue-100 group-hover:bg-blue-200 transition-colors'>
                         <CheckCircle className='h-6 w-6 text-blue-600 dark:text-blue-400' />
                       </div>
                     </div>
@@ -552,7 +550,7 @@ export default function AdminBookDetail({
                           Awaiting moderation
                         </p>
                       </div>
-                      <div className='p-3 rounded-full bg-purple-100 group-hover:bg-purple-200 transition-colors'>
+                      <div className='p-3 rounded-full dark:bg-purple-700/10 bg-purple-100 group-hover:bg-purple-200 transition-colors'>
                         <MessageSquare className='h-6 w-6 text-purple-600 dark:text-purple-400' />
                       </div>
                     </div>
@@ -583,9 +581,9 @@ export default function AdminBookDetail({
                   Delete Book
                 </AlertDialogTitle>
               </div>
-              <AlertDialogDescription className='text-slate-600 dark:text-slate-400'>
+              <AlertDialogDescription className='text-muted-foreground'>
                 Are you sure you want to delete{' '}
-                <span className='font-semibold text-slate-900 dark:text-slate-100'>
+                <span className='font-semibold text-foreground'>
                   "{book.title}"
                 </span>
                 ? This action cannot be undone and will permanently remove the
@@ -593,10 +591,10 @@ export default function AdminBookDetail({
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter className='gap-3'>
-              <AlertDialogCancel className='flex-1 dark:bg-slate-900/10 dark:text-slate-100'>Cancel</AlertDialogCancel>
+              <AlertDialogCancel className='flex-1'>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleDelete}
-                className='flex-1 bg-red-600 hover:bg-red-700 focus:ring-red-600 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-600'
+                className='flex-1 bg-red-600 hover:bg-red-700 focus:ring-red-600'
               >
                 <Trash2 className='h-4 w-4 mr-2' />
                 Delete Book

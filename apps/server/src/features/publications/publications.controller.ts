@@ -22,6 +22,7 @@ import type {
     TPublicationBasic,
     TPublicationComment,
     TPublicationDetail,
+    TPublicationListResponse,
     TPublicationQueryFilter,
     TPublicationQueryUnique,
     TAuthUser,
@@ -63,7 +64,7 @@ export class PublicationsController {
     async getMany(
         @CurrentSession() session: TSessionBasic | null,
         @Query() query: TPublicationQueryFilter,
-    ): Promise<{ data: TPublicationBasic[]; meta: any }> {
+    ): Promise<TPublicationListResponse> {
         return this.publicationsService.getMany({
             ...query,
             userId: session?.userId,
@@ -76,7 +77,7 @@ export class PublicationsController {
     async getMyMany(
         @CurrentUser() user: TAuthUser,
         @Query() query: TPublicationQueryFilter,
-    ): Promise<{ data: TPublicationBasic[]; meta: any }> {
+    ): Promise<TPublicationListResponse> {
         return this.publicationsService.getMany({
             ...query,
             authorId: user.id,

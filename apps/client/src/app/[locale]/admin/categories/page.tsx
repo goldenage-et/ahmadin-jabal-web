@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { getCategories } from '@/actions/categories.action';
 import { LayoutGrid } from 'lucide-react';
 import { CategoriesContainer } from '@/features/categories/categories-container';
+import { TCategoryBasic } from '@repo/common';
 
 export const metadata: Metadata = {
   title: 'Categories Management - Super Admin',
@@ -10,8 +11,7 @@ export const metadata: Metadata = {
 
 export default async function SuperAdminCategoriesPage() {
   try {
-    const categories = await getCategories();
-
+    const categoriesResponse = await getCategories();
     return (
       <div className='space-y-6'>
         <div className='space-y-1'>
@@ -24,7 +24,7 @@ export default async function SuperAdminCategoriesPage() {
           </p>
         </div>
 
-        <CategoriesContainer categories={categories} />
+        <CategoriesContainer categories={categoriesResponse as TCategoryBasic[]} />
       </div>
     );
   } catch (error) {

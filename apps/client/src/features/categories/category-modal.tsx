@@ -8,7 +8,9 @@ import {
   TCreateCategory,
   TUpdateCategory,
   ZCreateCategory,
+  ZUpdateCategory,
 } from '@repo/common';
+import { slugify } from '@/lib/slugify';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -39,6 +41,8 @@ import { Loader2 } from 'lucide-react';
 import SingleFileUploader from '../../components/single-file-uploader';
 import { IconDropdown } from '@/components/ui/icon-dropdown';
 import { ColorPicker } from '@/components/ui/color-picker';
+import { Switch } from '@/components/ui/switch';
+import { FormDescription } from '@/components/ui/form';
 
 type CategoryModalProps = {
   isOpen: boolean;
@@ -59,15 +63,20 @@ export function CategoryModal({
 }: CategoryModalProps) {
   const isEdit = !!initialData;
 
-  const form = useForm<TCreateCategory>({
-    resolver: zodResolver(ZCreateCategory),
+  const form = useForm<TCreateCategory | TUpdateCategory>({
+    resolver: zodResolver(isEdit ? ZUpdateCategory : ZCreateCategory) as any,
     defaultValues: {
       name: '',
+      nameAm: null,
+      nameOr: null,
       description: '',
+      descriptionAm: null,
+      descriptionOr: null,
       image: undefined,
       iconName: undefined,
       backgroundColor: undefined,
       parentId: undefined,
+      active: true,
     },
   });
 
@@ -76,25 +85,44 @@ export function CategoryModal({
     if (initialData) {
       form.reset({
         name: initialData.name,
+        nameAm: initialData.nameAm || null,
+        nameOr: initialData.nameOr || null,
         description: initialData.description || '',
+        descriptionAm: initialData.descriptionAm || null,
+        descriptionOr: initialData.descriptionOr || null,
         image: initialData.image || undefined,
         iconName: initialData.iconName || undefined,
         backgroundColor: initialData.backgroundColor || undefined,
         parentId: initialData.parentId || undefined,
+        active: initialData.active ?? true,
       });
     } else {
       form.reset({
         name: '',
+        nameAm: null,
+        nameOr: null,
         description: '',
+        descriptionAm: null,
+        descriptionOr: null,
         image: undefined,
         iconName: undefined,
         backgroundColor: undefined,
         parentId: undefined,
+        active: true,
       });
     }
   }, [initialData, form]);
 
-  const handleSubmit = (data: TCreateCategory) => {
+  // Auto-generate slug from name
+  const name = form.watch('name');
+  useEffect(() => {
+    if (name) {
+      const generatedSlug = slugify(name);
+      form.setValue('slug', generatedSlug);
+    }
+  }, [name, form]);
+
+  const handleSubmit = (data: TCreateCategory | TUpdateCategory) => {
     onSubmit(data);
   };
 
@@ -133,7 +161,7 @@ export function CategoryModal({
                   name='name'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Category Name</FormLabel>
+                      <FormLabel>Category Name (English) *</FormLabel>
                       <FormControl>
                         <Input
                           placeholder='e.g. Electronics, Clothing, Books'
@@ -145,12 +173,49 @@ export function CategoryModal({
                   )}
                 />
 
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                  <FormField
+                    control={form.control}
+                    name='nameAm'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Category Name (Amharic)</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder='Category name in Amharic'
+                            {...field}
+                            value={field.value as string ?? ''}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name='nameOr'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Category Name (Oromo)</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder='Category name in Oromo'
+                            {...field}
+                            value={field.value as string ?? ''}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
                 <FormField
                   control={form.control}
                   name='description'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Description</FormLabel>
+                      <FormLabel>Description (English)</FormLabel>
                       <FormControl>
                         <Textarea
                           placeholder='Describe this category...'
@@ -162,6 +227,45 @@ export function CategoryModal({
                     </FormItem>
                   )}
                 />
+
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                  <FormField
+                    control={form.control}
+                    name='descriptionAm'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Description (Amharic)</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder='Describe this category in Amharic...'
+                            className='min-h-[100px]'
+                            {...field}
+                            value={field.value as string ?? ''}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name='descriptionOr'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Description (Oromo)</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder='Describe this category in Oromo...'
+                            className='min-h-[100px]'
+                            {...field}
+                            value={field.value as string ?? ''}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
                 <FormField
                   control={form.control}
@@ -249,6 +353,27 @@ export function CategoryModal({
                         />
                       </FormControl>
                       <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='active'
+                  render={({ field }) => (
+                    <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
+                      <div className='space-y-0.5'>
+                        <FormLabel className='text-base'>Active</FormLabel>
+                        <FormDescription>
+                          Enable or disable this category
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
                     </FormItem>
                   )}
                 />

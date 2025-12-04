@@ -4,8 +4,40 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, Package, Truck } from 'lucide-react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { getMyOrderDetails } from '@/actions/profile.action';
+import { TOrderDetail } from '@repo/common';
 
 export default function OrderConfirmation() {
+  const searchParams = useSearchParams();
+  const orderId = searchParams.get('orderId');
+  const [order, setOrder] = useState<TOrderDetail | null>(null);
+  const [isLoading, setIsLoading] = useState(!!orderId);
+
+  useEffect(() => {
+    if (orderId) {
+      getMyOrderDetails(orderId)
+        .then((response) => {
+          if (response && !('error' in response)) {
+            setOrder(response as TOrderDetail);
+          }
+        })
+        .catch(console.error)
+        .finally(() => setIsLoading(false));
+    } else {
+      setIsLoading(false);
+    }
+  }, [orderId]);
+
+  if (isLoading) {
+    return (
+      <div className='min-h-screen bg-gray-50 py-12 flex items-center justify-center'>
+        <p className='text-gray-600'>Loading order details...</p>
+      </div>
+    );
+  }
+
   return (
     <div className='min-h-screen bg-gray-50 py-12'>
       <div className='max-w-2xl mx-auto px-4 sm:px-6 lg:px-8'>
@@ -61,18 +93,26 @@ export default function OrderConfirmation() {
 
         <div className='text-center space-y-4'>
           <p className='text-gray-600'>
-            Order ID:{' '}
+            Order {order ? 'Number' : 'ID'}:{' '}
             <span className='font-mono font-semibold'>
-              #ABM-{Date.now().toString().slice(-8)}
+              {order ? `#${order.orderNumber}` : `#ABM-${Date.now().toString().slice(-8)}`}
             </span>
           </p>
+
+          {order && (
+            <p className='text-sm text-gray-500'>
+              Total: {order.total.toFixed(2)} {order.currency || 'ETB'}
+            </p>
+          )}
 
           <div className='flex flex-col sm:flex-row gap-4 justify-center'>
             <Button asChild>
               <Link href='/'>Continue Shopping</Link>
             </Button>
             <Button asChild variant='outline'>
-              <Link href='/orders'>View Order History</Link>
+              <Link href={order ? `/my-orders/${order.id}` : '/my-orders'}>
+                {order ? 'View Order Details' : 'View Order History'}
+              </Link>
             </Button>
           </div>
         </div>

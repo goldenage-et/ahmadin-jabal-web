@@ -1,8 +1,7 @@
 import { getAuth } from '@/actions/auth.action';
-import { getCategories } from '@/actions/categories.action';
+import { getCategories } from '@/actions/category.action';
 import {
   getBook,
-  getBookAnalytics,
   getBookDetailAnalytics,
 } from '@/actions/book.action';
 import AdminBookDetail from '@/features/book/admin-book-details';
@@ -10,10 +9,13 @@ import {
   getBookReviewAnalytics,
   getBookReviews,
 } from '@/features/reviews/actions/review.action';
-import { Button } from '@/components/ui/button';
-import { TCategoryBasic } from '@repo/common';
-import { ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
+import {
+  TBookDetail,
+  TCategoryBasic,
+  TReviewAnalytics,
+  isErrorResponse,
+} from '@repo/common';
+import { ErrorState } from '@/components/error-state';
 
 type PageProps = {
   params: Promise<{
@@ -23,53 +25,86 @@ type PageProps = {
 
 export default async function Page({ params }: PageProps) {
   const { bookId } = await params;
-  const bookResponse = await getBook(bookId);
-  const { user } = await getAuth();
-  const reviews = await getBookReviews({ bookId });
-  const reviewAnalytics = await getBookReviewAnalytics(bookId);
-  const bookAnalytics = await getBookDetailAnalytics(bookId);
 
-  if (reviewAnalytics.error) {
-    throw new Error('Review analytics not found');
-  }
-  if (bookAnalytics.error) {
-    throw new Error('Book analytics not found');
-  }
+  // Fetch data in parallel
+  const [
+    bookResponse,
+    reviewsResponse,
+    reviewAnalyticsResponse,
+    bookAnalyticsResponse,
+    categoriesResponse,
+    authResult,
+  ] = await Promise.all([
+    getBook(bookId),
+    getBookReviews({ bookId }),
+    getBookReviewAnalytics(bookId),
+    getBookDetailAnalytics(bookId),
+    getCategories(),
+    getAuth(),
+  ]);
 
-  console.log('bookResponse: ', bookResponse)
-
-  if (!bookResponse || bookResponse.error) {
-    throw new Error('Book not found');
-  }
-
-  const categories = await getCategories();
-
-  let category: TCategoryBasic | undefined = undefined;
-  if (categories.length > 0) {
-    category = categories.find(
-      (category) => category.id === bookResponse.categoryId,
+  // Handle book response errors
+  if (isErrorResponse(bookResponse)) {
+    return (
+      <ErrorState
+        title='Book Not Found'
+        message={bookResponse.message || 'The book you are looking for does not exist.'}
+      />
     );
   }
 
-  return (
-    <div className='space-y-6 p-6'>
-      {/* Header */}
-      <div className='flex items-center gap-4'>
-        <Button variant='ghost' size='sm' asChild>
-          <Link href='/admin/books'>
-            <ArrowLeft className='h-4 w-4 mr-2' />
-            Back to Books
-          </Link>
-        </Button>
-      </div>
-      <AdminBookDetail
-        reviews={reviews.data}
-        bookAnalytics={bookAnalytics}
-        reviewAnalytics={reviewAnalytics}
-        book={bookResponse}
-        categories={categories}
-        category={category}
+  // Handle review analytics errors
+  if (isErrorResponse(reviewAnalyticsResponse)) {
+    return (
+      <ErrorState
+        title='Review Analytics Error'
+        message={reviewAnalyticsResponse.message || 'Failed to load review analytics.'}
       />
+    );
+  }
+
+  // Handle book analytics errors
+  if (isErrorResponse(bookAnalyticsResponse)) {
+    return (
+      <ErrorState
+        title='Book Analytics Error'
+        message={bookAnalyticsResponse.message || 'Failed to load book analytics.'}
+      />
+    );
+  }
+
+  // Handle categories response errors
+  if (isErrorResponse(categoriesResponse)) {
+    return (
+      <ErrorState
+        title='Categories Error'
+        message={categoriesResponse.message || 'Failed to load categories.'}
+      />
+    );
+  }
+
+  // Extract data from responses
+  const book = bookResponse as TBookDetail;
+  const reviews = reviewsResponse?.data || [];
+  const reviewAnalytics = reviewAnalyticsResponse as TReviewAnalytics;
+  const bookAnalytics = bookAnalyticsResponse;
+  const categories = categoriesResponse as TCategoryBasic[];
+
+  // Find category
+  const category = categories.find((c) => c.id === book.categoryId);
+
+  return (
+    <div className='min-h-screen bg-background dark:bg-background'>
+      <div className='container mx-auto px-4 py-6 space-y-6'>
+        <AdminBookDetail
+          reviews={reviews}
+          bookAnalytics={bookAnalytics}
+          reviewAnalytics={reviewAnalytics}
+          book={book}
+          categories={categories}
+          category={category}
+        />
+      </div>
     </div>
   );
 }

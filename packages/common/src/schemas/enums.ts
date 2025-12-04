@@ -142,9 +142,9 @@ export enum ECurrency {
 }
 
 // ========================================
-// Article Related Enums
+// Blog Related Enums
 // ========================================
-export enum EArticleStatus {
+export enum EBlogStatus {
     draft = 'draft',
     published = 'published',
     archived = 'archived',

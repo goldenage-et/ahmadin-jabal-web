@@ -52,14 +52,43 @@ export class Fetcher {
 
     try {
       const response = await fetch(fullUrl, requestOptions);
-      const data = await response.json().catch(() => null);
 
+      // Try to parse JSON, but handle parsing errors gracefully
+      let data: any = null;
+      try {
+        const text = await response.text();
+        data = text ? JSON.parse(text) : null;
+      } catch (parseError) {
+        // If JSON parsing fails, treat as error
+        throw {
+          error: true,
+          message: 'Invalid JSON response from server',
+          details: { parseError: String(parseError) },
+          statusCode: response.status,
+          errorType: 'parseError',
+          timestamp: new Date().toISOString(),
+          path: fullUrl,
+        };
+      }
+
+      // Check if the parsed data itself is an error response (even if status is ok)
+      // This handles cases where API returns error structure with 200 status
+      if (
+        data &&
+        typeof data === 'object' &&
+        'error' in data &&
+        data.error === true
+      ) {
+        throw data;
+      }
+
+      // If response is successful, return the data as type T
       if (response.ok) {
         return data;
       }
 
       // If the response is not ok, prefer the error object if present
-      if (data && typeof data === 'object' && data.error === true) {
+      if (data && typeof data === 'object' && 'error' in data && data.error === true) {
         throw data;
       }
 

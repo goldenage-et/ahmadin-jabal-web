@@ -2,34 +2,44 @@
 
 import { api } from '@/lib/api';
 import {
-  TCategory,
+  TCategoryBasic,
+  TCategoryQueryFilter,
   TCreateCategory,
   TUpdateCategory,
   TFetcherResponse,
 } from '@repo/common';
 
+// Clean up undefined values from query parameters
+function cleanQuery<T>(query?: Partial<T>) {
+  return query
+    ? Object.fromEntries(
+      Object.entries(query).filter(([_, value]) => value !== undefined),
+    )
+    : undefined;
+}
+
 // Get all categories
-export async function getCategories(): Promise<TCategory[]> {
-  return await api
-    .get<TCategory[]>('/categories')
-    .then((response) => (response.error ? [] : response));
+export async function getCategories(
+  query?: Partial<TCategoryQueryFilter>,
+): Promise<TFetcherResponse<TCategoryBasic[]>> {
+  return await api.get<TCategoryBasic[]>('/categories', {
+    params: cleanQuery(query),
+  });
 }
 
 // Create a new category
 export async function createCategory(
   data: TCreateCategory,
-): Promise<TFetcherResponse<TCategory>> {
-  return await api
-    .post<TCategory>('/categories', data)
-    .then((response) => (response.error ? response : response));
+): Promise<TFetcherResponse<TCategoryBasic>> {
+  return await api.post<TCategoryBasic>('/categories', data);
 }
 
 // Update a category
 export async function updateCategory(
   id: string,
   data: TUpdateCategory,
-): Promise<TFetcherResponse<TCategory>> {
-  return await api.put<TCategory>(`/categories/${id}`, data);
+): Promise<TFetcherResponse<TCategoryBasic>> {
+  return await api.put<TCategoryBasic>(`/categories/${id}`, data);
 }
 
 // Delete a category

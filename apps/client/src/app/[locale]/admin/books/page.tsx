@@ -3,7 +3,15 @@ import { getManyBooks } from '@/actions/book.action';
 import BookList from '@/features/book/book-list';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { EBookStatus, TBookQueryFilter } from '@repo/common';
+import {
+  EBookStatus,
+  TBookQueryFilter,
+  TBookBasic,
+  TBookListResponse,
+  TCategoryBasic,
+  isErrorResponse,
+} from '@repo/common';
+import { ErrorState } from '@/components/error-state';
 import {
   AlertTriangle,
   Download,
@@ -29,9 +37,35 @@ export default async function BooksPage({
     getCategories(),
   ]);
 
-  // Handle responses
-  const books = booksResponse.data;
-  const categories = categoriesResponse;
+  // Handle books response errors
+  if (isErrorResponse(booksResponse)) {
+    return (
+      <ErrorState
+        title='Error Loading Books'
+        message={booksResponse.message}
+      />
+    );
+  }
+
+  // Handle categories response errors
+  if (isErrorResponse(categoriesResponse)) {
+    return (
+      <ErrorState
+        title='Error Loading Categories'
+        message={categoriesResponse.message}
+      />
+    );
+  }
+
+  // Extract data from responses
+  // booksResponse is TBookListResponse when successful: { data: TBookBasic[], meta: TPagination }
+  const booksListResponse = booksResponse as TBookListResponse;
+  const books: TBookBasic[] = booksListResponse?.data || [];
+
+  // categoriesResponse is TCategoryBasic[] when successful (array directly)
+  const categories: TCategoryBasic[] = Array.isArray(categoriesResponse)
+    ? categoriesResponse
+    : [];
 
   // Calculate stats from real data
   const stats = {

@@ -48,10 +48,18 @@ export function BookCard({
       : 'out-of-stock';
 
   if (viewMode === 'list') {
+    // Book-like aspect ratio: portrait orientation (taller than wide)
+    // Small: 96x128 (3:4 ratio), Medium: 144x192 (3:4 ratio)
+    const listImageSize = size === 'medium'
+      ? 'w-36 h-48' // 144x192px - medium book size
+      : 'w-24 h-32'; // 96x128px - small book size
+
+    const listImageSizes = size === 'medium' ? '144px' : '96px';
+
     return (
       <Card className='overflow-hidden hover:shadow-lg transition-all duration-200 group'>
         <div className='flex'>
-          <div className={`w-32 h-32 bg-gray-100 relative shrink-0 ${size === 'medium' ? 'w-48 h-48' : ''}`}>
+          <div className={`${listImageSize} bg-gray-100 relative shrink-0`}>
             <Link href={`/books/${book.id}`} className="absolute inset-0">
               <Image
                 src={getBookImage()}
@@ -59,7 +67,7 @@ export function BookCard({
                 fill
                 className='object-cover cursor-pointer'
                 onError={() => setImageError(true)}
-                sizes='128px'
+                sizes={listImageSizes}
                 style={{ zIndex: 1 }}
               />
               <span className="sr-only">{book.title}</span>
@@ -135,9 +143,19 @@ export function BookCard({
     );
   }
 
+  // Book-like aspect ratio: portrait orientation (taller than wide)
+  // Small: 3:4 ratio, Medium: 3:4 ratio but larger
+  const gridAspectRatio = size === 'medium'
+    ? 'aspect-[3/4]' // Medium: 3:4 portrait ratio
+    : 'aspect-[3/4]'; // Small: 3:4 portrait ratio (same ratio, different container size)
+
+  const gridImageSizes = size === 'medium'
+    ? '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw'
+    : '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw';
+
   return (
     <Card className='overflow-hidden hover:shadow-lg transition-all duration-200 group'>
-      <div className={`aspect-square bg-gray-100 relative ${size === 'medium' ? 'aspect-square' : 'aspect-4/3'}`}>
+      <div className={`${gridAspectRatio} bg-gray-100 relative`}>
         <Link href={`/books/${book.id}`} className="absolute inset-0">
           <Image
             src={getBookImage()}
@@ -145,7 +163,7 @@ export function BookCard({
             fill
             className='object-cover cursor-pointer'
             onError={() => setImageError(true)}
-            sizes='(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw'
+            sizes={gridImageSizes}
             style={{ zIndex: 1 }}
           />
           <span className="sr-only">{book.title}</span>

@@ -81,7 +81,7 @@ Here is a more detailed profile, incorporating verified information and deeper c
 * **August 3, 2015**: Sentencing to 22 years. ([Horn Affairs][2])
 * **February 14, 2018**: Release from prison. ([Federal Newswire][4])
 * **June 2021**: Candidacy announcement for Jimma city seat, then withdrawal. ([Addis Standard][6])
-* **June 3, 2023**: Funeral speech after mosque demolition protest, recognition in academic article. ([MDPI][1])
+* **June 3, 2023**: Funeral speech after mosque demolition protest, recognition in academic blog. ([MDPI][1])
 
 ---
 

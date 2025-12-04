@@ -269,6 +269,21 @@ export const ZPublicationDetail = ZPublication.extend({
 
 export type TPublicationDetail = z.infer<typeof ZPublicationDetail>;
 
+// Publication List Response Schema (with pagination)
+export const ZPublicationListResponse = z.object({
+    data: z.array(ZPublicationBasic),
+    meta: z.object({
+        page: z.number().int().positive(),
+        limit: z.number().int().positive(),
+        total: z.number().int().min(0),
+        totalPages: z.number().int().min(0),
+        hasNext: z.boolean(),
+        hasPrev: z.boolean(),
+    }),
+});
+
+export type TPublicationListResponse = z.infer<typeof ZPublicationListResponse>;
+
 // Publication Comment Schema
 export const ZPublicationComment = z.object({
     id: z.uuid('Invalid comment ID format'),

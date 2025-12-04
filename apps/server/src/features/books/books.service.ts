@@ -1,5 +1,5 @@
 import { PRISMA_CLIENT } from '@/database/module/prisma.module';
-import generatePassword from '@/utils/passwordGenerator';
+import { v4 as uuidv4 } from 'uuid';
 import {
   ConflictException,
   Inject,
@@ -8,7 +8,6 @@ import {
 } from '@nestjs/common';
 import {
   EBookStatus,
-  ESearchAnalyticsSource,
   TBookAnalytics,
   TBookBasic,
   TBookDetail,
@@ -34,6 +33,19 @@ import { PrismaClient } from '@repo/prisma';
 @Injectable()
 export class BooksService {
   constructor(@Inject(PRISMA_CLIENT) private readonly db: PrismaClient) { }
+
+  // Helper to validate UUID format
+  private isValidUUID(str: string): boolean {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(str);
+  }
+
+  // Helper to filter specifications with valid UUIDs
+  private filterValidSpecifications(specifications: any[]): any[] {
+    return specifications.filter((spec: any) =>
+      spec && typeof spec === 'object' && spec.id && this.isValidUUID(spec.id)
+    );
+  }
 
   async create(data: TCreateBook): Promise<TBookBasic> {
     // Convert images array of objects to JSON for Prisma
@@ -71,10 +83,13 @@ export class BooksService {
     });
 
     // Convert images JSON back to array of objects for schema validation
+    // Filter out specifications with invalid UUID format to prevent validation errors
     const bookWithImages = {
       ...book,
       images: Array.isArray(book.images) ? book.images : [],
-      specifications: Array.isArray(book.specifications) ? book.specifications : [],
+      specifications: Array.isArray(book.specifications)
+        ? this.filterValidSpecifications(book.specifications)
+        : [],
     };
 
     return ZBookBasic.parse(bookWithImages);
@@ -272,10 +287,13 @@ export class BooksService {
     }
 
     // Convert images and specifications JSON back to arrays for schema validation
+    // Filter out specifications with invalid UUID format to prevent validation errors
     const booksWithImages = books.map(book => ({
       ...book,
       images: Array.isArray(book.images) ? book.images : [],
-      specifications: Array.isArray(book.specifications) ? book.specifications : [],
+      specifications: Array.isArray(book.specifications)
+        ? this.filterValidSpecifications(book.specifications)
+        : [],
     }));
 
     return ZBookListResponse.parse({
@@ -311,10 +329,13 @@ export class BooksService {
     }
 
     // Convert images and specifications JSON back to arrays for schema validation
+    // Filter out specifications with invalid UUID format to prevent validation errors
     const bookWithImages = {
       ...book,
       images: Array.isArray(book.images) ? book.images : [],
-      specifications: Array.isArray(book.specifications) ? book.specifications : [],
+      specifications: Array.isArray(book.specifications)
+        ? this.filterValidSpecifications(book.specifications)
+        : [],
     };
 
     return ZBookDetail.parse(bookWithImages);
@@ -384,10 +405,13 @@ export class BooksService {
     });
 
     // Convert images and specifications JSON back to arrays for schema validation
+    // Filter out specifications with invalid UUID format to prevent validation errors
     const bookWithImages = {
       ...updatedBook,
       images: Array.isArray(updatedBook.images) ? updatedBook.images : [],
-      specifications: Array.isArray(updatedBook.specifications) ? updatedBook.specifications : [],
+      specifications: Array.isArray(updatedBook.specifications)
+        ? this.filterValidSpecifications(updatedBook.specifications)
+        : [],
     };
 
     return ZBookBasic.parse(bookWithImages);
@@ -635,9 +659,9 @@ export class BooksService {
       ? book.specifications
       : [];
 
-    // Create new specification object
+    // Create new specification object with UUID
     const newSpecification = {
-      id: generatePassword(10),
+      id: uuidv4(),
       name: data.name,
       value: data.value,
     };

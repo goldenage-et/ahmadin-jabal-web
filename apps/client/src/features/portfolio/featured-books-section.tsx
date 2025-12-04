@@ -188,7 +188,7 @@ export function FeaturedBooksSection({
                 }}
                 onMouseEnter={() => setHoveredBook(book.id)}
                 onMouseLeave={() => setHoveredBook(null)}
-                role='article'
+                role='blog'
                 aria-label={`Book: ${book.title}`}
               >
                 {/* Book Image */}

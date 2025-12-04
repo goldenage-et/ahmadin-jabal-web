@@ -41,10 +41,10 @@ export function FeaturedContent() {
             bgColor: 'bg-red-100 dark:bg-red-900/20',
         },
         {
-            type: 'article',
+            type: 'blog',
             title: 'The Future of Islamic Education in Ethiopia',
             description: 'A comprehensive analysis of Islamic education challenges and opportunities in contemporary Ethiopia.',
-            image: 'https://via.placeholder.com/300x200?text=Article',
+            image: 'https://via.placeholder.com/300x200?text=Blog',
             readTime: '8 min read',
             year: '2023',
             isFree: true,
@@ -125,8 +125,8 @@ export function FeaturedContent() {
 
                                     <div className="flex items-center justify-between">
                                         <Button asChild variant="outline" size="sm">
-                                            <Link href={item.type === 'book' ? '/books' : item.type === 'video' ? '/media' : '/articles'}>
-                                                {item.type === 'book' ? 'View Book' : item.type === 'video' ? 'Watch' : 'Read Article'}
+                                            <Link href={item.type === 'book' ? '/books' : item.type === 'video' ? '/media' : '/blogs'}>
+                                                {item.type === 'book' ? 'View Book' : item.type === 'video' ? 'Watch' : 'Read Blog'}
                                             </Link>
                                         </Button>
                                         <ArrowRight className="h-4 w-4 text-gray-400" />

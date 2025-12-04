@@ -1,8 +1,16 @@
 import { getManyBooks } from '@/actions/book.action';
 import { getCategories } from '@/actions/category.action';
 import { BookClient } from '@/features/book/book-client';
-import { TBookQueryFilter } from '@repo/common';
+import {
+  TBookBasic,
+  TBookListResponse,
+  TBookQueryFilter,
+  TCategoryBasic,
+  EBookStatus,
+  isErrorResponse,
+} from '@repo/common';
 import { Suspense } from 'react';
+import { ErrorState } from '@/components/error-state';
 
 // Force dynamic rendering since we use server actions
 export const dynamic = 'force-dynamic';
@@ -29,23 +37,58 @@ export default async function ShopPage({
 }: BookPageProps) {
   // Build query parameters from search params
   const searchParams = await searchParamsPromise;
+
+  // Valid sortBy values according to ZBookQueryFilter schema
+  const validSortBy = [
+    'title',
+    'price',
+    'rating',
+    'reviewCount',
+    'createdAt',
+    'updatedAt',
+    'featured',
+  ] as const;
+
   const queryParams: Partial<TBookQueryFilter> = {
-    page: searchParams.page ? parseInt(searchParams.page) : 1,
-    limit: searchParams.limit ? parseInt(searchParams.limit) : 20,
-    sortBy: (searchParams.sortBy as any) || 'createdAt',
-    sortOrder: (searchParams.sortOrder as any) || 'desc',
-    status: 'active' as any,
+    page: searchParams.page ? parseInt(searchParams.page, 10) || 1 : 1,
+    limit: searchParams.limit ? parseInt(searchParams.limit, 10) || 20 : 20,
+    sortBy: (validSortBy.includes(searchParams.sortBy as any)
+      ? searchParams.sortBy
+      : 'createdAt') as TBookQueryFilter['sortBy'],
+    sortOrder:
+      searchParams.sortOrder === 'asc' || searchParams.sortOrder === 'desc'
+        ? searchParams.sortOrder
+        : 'desc',
+    status: EBookStatus.active,
   };
 
   if (searchParams.search) queryParams.search = searchParams.search;
-  if (searchParams.categoryName) queryParams.categoryName = searchParams.categoryName;
-  if (searchParams.subcategoryName) queryParams.subcategoryName = searchParams.subcategoryName;
-  if (searchParams.minPrice)
-    queryParams.minPrice = parseFloat(searchParams.minPrice);
-  if (searchParams.maxPrice)
-    queryParams.maxPrice = parseFloat(searchParams.maxPrice);
-  if (searchParams.minRating)
-    queryParams.minRating = parseFloat(searchParams.minRating);
+  if (searchParams.categoryName)
+    queryParams.categoryName = searchParams.categoryName;
+  if (searchParams.subcategoryName)
+    queryParams.subcategoryName = searchParams.subcategoryName;
+
+  // Parse and validate numeric values
+  if (searchParams.minPrice) {
+    const parsed = parseFloat(searchParams.minPrice);
+    if (!isNaN(parsed) && parsed >= 0) {
+      queryParams.minPrice = parsed;
+    }
+  }
+  if (searchParams.maxPrice) {
+    const parsed = parseFloat(searchParams.maxPrice);
+    if (!isNaN(parsed) && parsed >= 0) {
+      queryParams.maxPrice = parsed;
+    }
+  }
+  if (searchParams.minRating) {
+    const parsed = parseFloat(searchParams.minRating);
+    if (!isNaN(parsed) && parsed >= 0 && parsed <= 5) {
+      queryParams.minRating = parsed;
+    }
+  }
+
+  // Parse boolean values
   if (searchParams.inStock)
     queryParams.inStock = searchParams.inStock === 'true';
   if (searchParams.featured)
@@ -58,10 +101,36 @@ export default async function ShopPage({
       getCategories(),
     ]);
 
+  // Handle books response errors
+  if (isErrorResponse(booksResponse)) {
+    return (
+      <ErrorState
+        title='Error Loading Books'
+        message={booksResponse.message}
+      />
+    );
+  }
+
+  // Handle categories response errors
+  if (isErrorResponse(categoriesResponse)) {
+    return (
+      <ErrorState
+        title='Error Loading Categories'
+        message={categoriesResponse.message}
+      />
+    );
+  }
+
   // Extract data from responses
-  const books = booksResponse.data || [];
-  const totalBooks = booksResponse.meta?.total || 0;
-  const categories = categoriesResponse.error ? [] : categoriesResponse;
+  // booksResponse is TBookListResponse when successful: { data: TBookBasic[], meta: TPagination }
+  const booksListResponse = booksResponse as TBookListResponse;
+  const books: TBookBasic[] = booksListResponse?.data || [];
+  const totalBooks = booksListResponse?.meta?.total || 0;
+
+  // categoriesResponse is TCategoryBasic[] when successful (array directly)
+  const categories: TCategoryBasic[] = Array.isArray(categoriesResponse)
+    ? categoriesResponse
+    : [];
 
   return (
     <div className='min-h-screen bg-gray-50'>

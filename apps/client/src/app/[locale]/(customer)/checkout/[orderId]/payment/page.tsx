@@ -64,7 +64,7 @@ export default async function PaymentMethodSelectionPage({ params }: { params: P
                     <CardContent>
                         <div className="flex justify-between items-center">
                             <div>
-                                <p className="text-2xl font-bold text-foreground dark:text-foreground">${order.total.toFixed(2)}</p>
+                                <p className="text-2xl font-bold text-foreground dark:text-foreground">{order.total.toFixed(2)} {order.currency || 'ETB'}</p>
                             </div>
                             <Badge className="bg-yellow-100 text-yellow-800">
                                 Payment Pending

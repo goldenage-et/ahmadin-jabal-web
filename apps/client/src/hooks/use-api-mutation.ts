@@ -1,6 +1,6 @@
 'use client';
 
-import { TErrorResponse, TFetcherResponse } from '@repo/common';
+import { TErrorResponse, TFetcherResponse, isErrorResponse } from '@repo/common';
 import { useRouter } from 'next/navigation';
 import { useCallback, useLayoutEffect, useState, useTransition } from 'react';
 import { toast } from 'sonner';
@@ -51,37 +51,43 @@ export const useApiMutation = () => {
         const result = await mutationFn();
         console.log(result);
         setPending(false);
-        if (result && !result.error) {
-          if (opts.onSuccess) {
-            opts.onSuccess(result as T);
+
+        // Use isErrorResponse type guard for proper type narrowing
+        if (isErrorResponse(result)) {
+          // Handle error response
+          if (opts.onError) {
+            opts.onError(result);
           }
           if (ref) {
             ref.current = {
               isLoading: false,
-              error: error,
-              data: result as T,
+              error: result,
+              data: null,
+            };
+          }
+          if (opts.errorMessage) {
+            toast.error(result.message || opts.errorMessage);
+          }
+          startTransition(router.refresh);
+          return null as T;
+        } else {
+          // Success response - TypeScript knows result is T here
+          if (opts.onSuccess) {
+            opts.onSuccess(result);
+          }
+          if (ref) {
+            ref.current = {
+              isLoading: false,
+              error: null,
+              data: result,
             };
           }
           if (opts.successMessage) {
             toast.success(opts.successMessage);
           }
-        } else {
-          if (opts.onError) {
-            opts.onError(result as TErrorResponse);
-          }
-          if (ref) {
-            ref.current = {
-              isLoading: false,
-              error: result as TErrorResponse,
-              data: null,
-            };
-          }
-          if (opts.errorMessage) {
-            toast.error(result?.message || opts.errorMessage);
-          }
+          startTransition(router.refresh);
+          return result;
         }
-        startTransition(router.refresh);
-        return result as T;
       } catch (err) {
         setPending(false);
         startTransition(router.refresh);

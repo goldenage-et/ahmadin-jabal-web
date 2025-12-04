@@ -5,13 +5,13 @@ import {
     TPublicationBasic,
     TPublicationDetail,
     TPublicationQueryFilter,
+    TPublicationListResponse,
     TCreatePublication,
     TUpdatePublication,
     TPublicationComment,
     TCreatePublicationComment,
     TUpdatePublicationComment,
     TFetcherResponse,
-    TPaginationResponse,
 } from '@repo/common';
 
 // Clean up undefined values from query parameters
@@ -26,25 +26,19 @@ function cleanQuery(query?: Partial<TPublicationQueryFilter>) {
 // Get many publications
 export async function getManyPublications(
     query?: Partial<TPublicationQueryFilter>,
-): Promise<TFetcherResponse<TPaginationResponse<TPublicationBasic[]>>> {
-    return await api.get<TPaginationResponse<TPublicationBasic[]>>(
-        '/publications',
-        {
-            params: cleanQuery(query),
-        },
-    );
+): Promise<TFetcherResponse<TPublicationListResponse>> {
+    return await api.get<TPublicationListResponse>('/publications', {
+        params: cleanQuery(query),
+    });
 }
 
 // Get my publications
 export async function getMyPublications(
     query?: Partial<TPublicationQueryFilter>,
-): Promise<TFetcherResponse<TPaginationResponse<TPublicationBasic[]>>> {
-    return await api.get<TPaginationResponse<TPublicationBasic[]>>(
-        '/publications/my',
-        {
-            params: cleanQuery(query),
-        },
-    );
+): Promise<TFetcherResponse<TPublicationListResponse>> {
+    return await api.get<TPublicationListResponse>('/publications/my', {
+        params: cleanQuery(query),
+    });
 }
 
 // Get one publication by ID
