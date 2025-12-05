@@ -81,12 +81,12 @@ export default function GalleryList({ galleries }: GalleryListProps) {
               </div>
               <div className='flex items-center gap-2'>
                 <Button variant='ghost' size='sm' asChild>
-                  <Link href={`/admin/media/galleries/${gallery.id}`}>
+                  <Link href={`/admin/media/photo-gallery/galleries/${gallery.id}`}>
                     View
                   </Link>
                 </Button>
                 <Button variant='ghost' size='sm' asChild>
-                  <Link href={`/admin/media/galleries/${gallery.id}/edit`}>
+                  <Link href={`/admin/media/photo-gallery/galleries/${gallery.id}/edit`}>
                     <Edit className='h-4 w-4' />
                   </Link>
                 </Button>

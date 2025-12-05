@@ -2,6 +2,7 @@ import { getAuth } from '@/actions/auth.action';
 import { getMedia } from '@/actions/media.action';
 import MediaDetails from '@/features/media/components/media-details';
 import { notFound } from 'next/navigation';
+import { isErrorResponse } from '@repo/common';
 
 type PageProps = {
     params: Promise<{
@@ -14,7 +15,7 @@ export default async function MediaPage({ params }: PageProps) {
     const mediaResponse = await getMedia(mediaId);
     const { user } = await getAuth();
 
-    if (!mediaResponse || mediaResponse.error || !mediaResponse.data) {
+    if (!mediaResponse || isErrorResponse(mediaResponse)) {
         notFound();
     }
 
@@ -22,7 +23,7 @@ export default async function MediaPage({ params }: PageProps) {
         <div className='min-h-screen bg-background'>
             <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
                 <MediaDetails
-                    media={mediaResponse.data}
+                    media={mediaResponse}
                     user={user}
                 />
             </div>

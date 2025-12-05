@@ -31,16 +31,16 @@ export function CompactBooksGrid({
   return (
     <section
       id={`books-grid-${title.toLowerCase().replace(/\s+/g, '-')}`}
-      className='w-full py-12 bg-white'
+      className='w-full py-12 bg-background'
     >
       <div className='w-full px-4 sm:px-6 lg:px-8'>
         {/* Header */}
         <div className='w-full flex items-center justify-between mb-8'>
           <div>
-            <h2 className='text-2xl md:text-3xl font-bold text-gray-900 mb-2'>
+            <h2 className='text-2xl md:text-3xl font-bold text-foreground mb-2'>
               {title}
             </h2>
-            {subtitle && <p className='text-gray-600'>{subtitle}</p>}
+            {subtitle && <p className='text-muted-foreground'>{subtitle}</p>}
           </div>
           {showViewAll && (
             <Link href='/books'>

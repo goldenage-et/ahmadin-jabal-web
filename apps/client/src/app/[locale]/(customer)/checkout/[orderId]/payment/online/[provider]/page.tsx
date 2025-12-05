@@ -69,7 +69,7 @@ export default async function OnlinePaymentPage({
     const ProviderIcon = providerInfo.icon;
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12">
+        <div className="min-h-screen bg-background py-12">
             <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="mb-8">
@@ -79,8 +79,8 @@ export default async function OnlinePaymentPage({
                             Back to Payment Methods
                         </Button>
                     </Link>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Online Payment</h1>
-                    <p className="text-gray-600">Order #{order.orderNumber}</p>
+                    <h1 className="text-3xl font-bold text-foreground mb-2">Online Payment</h1>
+                    <p className="text-muted-foreground">Order #{order.orderNumber}</p>
                 </div>
 
                 {/* Order Summary */}
@@ -91,9 +91,9 @@ export default async function OnlinePaymentPage({
                     <CardContent>
                         <div className="flex justify-between items-center">
                             <div>
-                                <p className="text-2xl font-bold text-gray-900">${order.total.toFixed(2)}</p>
+                                <p className="text-2xl font-bold text-foreground">${order.total.toFixed(2)}</p>
                             </div>
-                            <Badge className="bg-yellow-100 text-yellow-800">
+                            <Badge className="bg-primary/10 text-primary">
                                 Payment Pending
                             </Badge>
                         </div>
@@ -104,8 +104,8 @@ export default async function OnlinePaymentPage({
                 <Card className="mb-6">
                     <CardHeader>
                         <div className="flex items-center space-x-4">
-                            <div className="p-4 bg-purple-100 rounded-full">
-                                <ProviderIcon className="h-8 w-8 text-purple-600" />
+                            <div className="p-4 bg-primary rounded-full">
+                                <ProviderIcon className="h-8 w-8 text-primary-foreground" />
                             </div>
                             <div className="flex-1">
                                 <CardTitle className="text-2xl">{providerInfo.name}</CardTitle>
@@ -113,13 +113,13 @@ export default async function OnlinePaymentPage({
                                     {providerInfo.description}
                                 </CardDescription>
                             </div>
-                            <Badge className="bg-amber-100 text-amber-800">Coming Soon</Badge>
+                            <Badge className="bg-primary/10 text-primary">Coming Soon</Badge>
                         </div>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        <Alert className="bg-blue-50 border-blue-200">
-                            <Clock className="h-4 w-4 text-blue-600" />
-                            <AlertDescription className="text-blue-900">
+                        <Alert className="bg-primary/10 border-primary/20">
+                            <Clock className="h-4 w-4 text-primary" />
+                            <AlertDescription className="text-foreground">
                                 <p className="font-medium mb-2">Online Payment Integration Coming Soon</p>
                                 <p>
                                     We're working hard to bring you a seamless online payment experience with {providerInfo.name}.
@@ -128,36 +128,36 @@ export default async function OnlinePaymentPage({
                             </AlertDescription>
                         </Alert>
 
-                        <div className="p-6 bg-gray-50 rounded-lg space-y-4">
-                            <h3 className="font-semibold text-gray-900 mb-3">What's Coming:</h3>
+                        <div className="p-6 bg-primary/10 rounded-lg space-y-4">
+                            <h3 className="font-semibold text-foreground mb-3">What's Coming:</h3>
                             <ul className="space-y-3">
                                 <li className="flex items-start space-x-3">
-                                    <div className="mt-0.5 h-2 w-2 rounded-full bg-purple-500" />
-                                    <span className="text-gray-700">
+                                    <div className="mt-0.5 h-2 w-2 rounded-full bg-primary" />
+                                    <span className="text-muted-foreground">
                                         Secure payment processing with {providerInfo.name}
                                     </span>
                                 </li>
                                 <li className="flex items-start space-x-3">
-                                    <div className="mt-0.5 h-2 w-2 rounded-full bg-purple-500" />
-                                    <span className="text-gray-700">
+                                    <div className="mt-0.5 h-2 w-2 rounded-full bg-primary" />
+                                    <span className="text-muted-foreground">
                                         Instant payment confirmation
                                     </span>
                                 </li>
                                 <li className="flex items-start space-x-3">
-                                    <div className="mt-0.5 h-2 w-2 rounded-full bg-purple-500" />
+                                    <div className="mt-0.5 h-2 w-2 rounded-full bg-primary" />
                                     <span className="text-gray-700">
                                         Multiple payment options (cards, mobile money, etc.)
                                     </span>
                                 </li>
                                 <li className="flex items-start space-x-3">
-                                    <div className="mt-0.5 h-2 w-2 rounded-full bg-purple-500" />
-                                    <span className="text-gray-700">
+                                    <div className="mt-0.5 h-2 w-2 rounded-full bg-primary" />
+                                    <span className="text-muted-foreground">
                                         Secure encryption and fraud protection
                                     </span>
                                 </li>
                                 <li className="flex items-start space-x-3">
-                                    <div className="mt-0.5 h-2 w-2 rounded-full bg-purple-500" />
-                                    <span className="text-gray-700">
+                                    <div className="mt-0.5 h-2 w-2 rounded-full bg-primary" />
+                                    <span className="text-muted-foreground">
                                         Transaction history and receipts
                                     </span>
                                 </li>
@@ -178,10 +178,10 @@ export default async function OnlinePaymentPage({
                 </Card>
 
                 {/* Alternative Payment Options */}
-                <Card className="mb-6 bg-green-50 border-green-200">
+                <Card className="mb-6 bg-primary/10 border-primary/20">
                     <CardHeader>
-                        <CardTitle className="text-green-900">Available Payment Methods</CardTitle>
-                        <CardDescription className="text-green-700">
+                        <CardTitle className="text-foreground">Available Payment Methods</CardTitle>
+                        <CardDescription className="text-muted-foreground">
                             Use these methods to complete your payment now
                         </CardDescription>
                     </CardHeader>
@@ -190,17 +190,17 @@ export default async function OnlinePaymentPage({
                             <Link href={`/checkout/${orderId}/payment`}>
                                 <Button
                                     variant="outline"
-                                    className="w-full justify-start h-auto py-4 bg-white hover:bg-green-50 border-green-300"
+                                    className="w-full justify-start h-auto py-4 bg-white hover:bg-primary/10 border-primary/20"
                                 >
                                     <div className="flex items-center space-x-3 w-full">
-                                        <CreditCard className="h-5 w-5 text-green-600" />
+                                        <CreditCard className="h-5 w-5 text-primary" />
                                         <div className="text-left flex-1">
-                                            <p className="font-medium text-green-900">Bank Transfer</p>
-                                            <p className="text-sm text-green-700">
+                                            <p className="font-medium text-foreground">Bank Transfer</p>
+                                            <p className="text-sm text-muted-foreground">
                                                 Transfer directly to our bank account
                                             </p>
                                         </div>
-                                        <ArrowLeft className="h-4 w-4 rotate-180 text-green-600" />
+                                        <ArrowLeft className="h-4 w-4 rotate-180 text-primary" />
                                     </div>
                                 </Button>
                             </Link>
@@ -227,10 +227,10 @@ export default async function OnlinePaymentPage({
                 <Card className="mt-6 border-dashed">
                     <CardContent className="pt-6">
                         <div className="text-center">
-                            <p className="text-sm text-gray-600 mb-2">
+                            <p className="text-sm text-muted-foreground mb-2">
                                 Want to be notified when {providerInfo.name} payment is available?
                             </p>
-                            <Button variant="link" className="text-purple-600">
+                            <Button variant="link" className="text-primary">
                                 Notify Me When Available
                             </Button>
                         </div>

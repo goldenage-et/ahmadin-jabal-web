@@ -6,8 +6,9 @@ import {
 } from '@/actions/media.action';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Play, Headphones, Image, Folder, Plus } from 'lucide-react';
+import { Play, Headphones, Image, Folder } from 'lucide-react';
 import Link from 'next/link';
+import { isErrorResponse } from '@repo/common';
 
 export default async function MediaPage() {
     const [videosResponse, audiosResponse, photosResponse, galleriesResponse] =
@@ -18,41 +19,39 @@ export default async function MediaPage() {
             getManyGalleries({ limit: 5 }),
         ]);
 
-    const videos =
-        videosResponse.error || !videosResponse.data
-            ? []
-            : videosResponse.data || [];
-    const audios =
-        audiosResponse.error || !audiosResponse.data
-            ? []
-            : audiosResponse.data || [];
-    const photos =
-        photosResponse.error || !photosResponse.data
-            ? []
-            : photosResponse.data || [];
-    const galleries =
-        galleriesResponse.error || !galleriesResponse.data
-            ? []
-            : galleriesResponse.data || [];
+    const videos = isErrorResponse(videosResponse) || !videosResponse.data
+        ? []
+        : videosResponse.data || [];
+    const audios = isErrorResponse(audiosResponse) || !audiosResponse.data
+        ? []
+        : audiosResponse.data || [];
+    const photos = isErrorResponse(photosResponse) || !photosResponse.data
+        ? []
+        : photosResponse.data || [];
+    const galleries = isErrorResponse(galleriesResponse) || !galleriesResponse.data
+        ? []
+        : galleriesResponse.data || [];
 
     const stats = {
         totalVideos:
-            videosResponse.error || !videosResponse.data
+            isErrorResponse(videosResponse) || !videosResponse.data
                 ? 0
                 : videosResponse.meta?.total || 0,
         totalAudios:
-            audiosResponse.error || !audiosResponse.data
+            isErrorResponse(audiosResponse) || !audiosResponse.data
                 ? 0
                 : audiosResponse.meta?.total || 0,
         totalPhotos:
-            photosResponse.error || !photosResponse.data
+            isErrorResponse(photosResponse) || !photosResponse.data
                 ? 0
                 : photosResponse.meta?.total || 0,
         totalGalleries:
-            galleriesResponse.error || !galleriesResponse.data
+            isErrorResponse(galleriesResponse) || !galleriesResponse.data
                 ? 0
                 : galleriesResponse.meta?.total || 0,
     };
+
+    const totalPhotoGallery = stats.totalPhotos + stats.totalGalleries;
 
     return (
         <div className='min-h-screen bg-linear-to-br from-background via-card to-card dark:from-background dark:via-card dark:to-card'>
@@ -64,21 +63,13 @@ export default async function MediaPage() {
                             Media & Gallery
                         </h1>
                         <p className='text-muted-foreground mt-1'>
-                            Manage videos, audio, photos, and galleries
+                            Manage videos, audio, and photo galleries
                         </p>
-                    </div>
-                    <div className='flex items-center gap-3'>
-                        <Button variant='outline' asChild>
-                            <Link href='/admin/media/galleries/create'>
-                                <Plus className='h-4 w-4 mr-2' />
-                                New Gallery
-                            </Link>
-                        </Button>
                     </div>
                 </div>
 
                 {/* Stats Cards */}
-                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
+                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
                     <Card className='border-0 shadow-sm bg-linear-to-br from-red-50 to-red-100/50 dark:from-red-900/10 dark:to-red-900/10'>
                         <CardContent className='p-6'>
                             <div className='flex items-center justify-between'>
@@ -115,33 +106,18 @@ export default async function MediaPage() {
                         </CardContent>
                     </Card>
 
-                    <Card className='border-0 shadow-sm bg-linear-to-br from-blue-50 to-blue-100/50 dark:from-blue-900/10 dark:to-blue-900/10'>
-                        <CardContent className='p-6'>
-                            <div className='flex items-center justify-between'>
-                                <div>
-                                    <p className='text-sm font-medium text-blue-600 dark:text-blue-400'>
-                                        Photos
-                                    </p>
-                                    <p className='text-3xl font-bold text-blue-900 dark:text-blue-100'>
-                                        {stats.totalPhotos}
-                                    </p>
-                                </div>
-                                <div className='p-3 bg-blue-500/10 rounded-full'>
-                                    <Image className='h-6 w-6 text-blue-600 dark:text-blue-400' />
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-
                     <Card className='border-0 shadow-sm bg-linear-to-br from-green-50 to-green-100/50 dark:from-green-900/10 dark:to-green-900/10'>
                         <CardContent className='p-6'>
                             <div className='flex items-center justify-between'>
                                 <div>
                                     <p className='text-sm font-medium text-green-600 dark:text-green-400'>
-                                        Galleries
+                                        Photo Gallery
                                     </p>
                                     <p className='text-3xl font-bold text-green-900 dark:text-green-100'>
-                                        {stats.totalGalleries}
+                                        {totalPhotoGallery}
+                                    </p>
+                                    <p className='text-xs text-muted-foreground mt-1'>
+                                        {stats.totalPhotos} photos, {stats.totalGalleries} galleries
                                     </p>
                                 </div>
                                 <div className='p-3 bg-green-500/10 rounded-full'>
@@ -153,7 +129,7 @@ export default async function MediaPage() {
                 </div>
 
                 {/* Quick Links */}
-                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
+                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
                     <Card className='hover:shadow-md transition-shadow'>
                         <CardContent className='p-6'>
                             <div className='space-y-2'>
@@ -185,26 +161,12 @@ export default async function MediaPage() {
                     <Card className='hover:shadow-md transition-shadow'>
                         <CardContent className='p-6'>
                             <div className='space-y-2'>
-                                <h3 className='font-semibold'>Photos</h3>
+                                <h3 className='font-semibold'>Photo Gallery</h3>
                                 <p className='text-sm text-muted-foreground'>
-                                    {photos.length} recent photos
+                                    {photos.length} recent photos, {galleries.length} recent galleries
                                 </p>
                                 <Button variant='outline' size='sm' className='w-full mt-4' asChild>
-                                    <Link href='/admin/media/photos'>Manage Photos</Link>
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card className='hover:shadow-md transition-shadow'>
-                        <CardContent className='p-6'>
-                            <div className='space-y-2'>
-                                <h3 className='font-semibold'>Galleries</h3>
-                                <p className='text-sm text-muted-foreground'>
-                                    {galleries.length} recent galleries
-                                </p>
-                                <Button variant='outline' size='sm' className='w-full mt-4' asChild>
-                                    <Link href='/admin/media/galleries'>Manage Galleries</Link>
+                                    <Link href='/admin/media/photo-gallery'>Manage Photo Gallery</Link>
                                 </Button>
                             </div>
                         </CardContent>

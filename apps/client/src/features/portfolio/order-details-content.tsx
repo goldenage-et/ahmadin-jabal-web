@@ -111,25 +111,25 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
 
   const getOrderStatusColor = (status: EOrderStatus) => {
     const colors = {
-      [EOrderStatus.pending]: "bg-yellow-100 text-yellow-800 border-yellow-200",
-      [EOrderStatus.confirmed]: "bg-blue-100 text-blue-800 border-blue-200",
-      [EOrderStatus.processing]: "bg-purple-100 text-purple-800 border-purple-200",
-      [EOrderStatus.shipped]: "bg-indigo-100 text-indigo-800 border-indigo-200",
-      [EOrderStatus.delivered]: "bg-green-100 text-green-800 border-green-200",
-      [EOrderStatus.cancelled]: "bg-red-100 text-red-800 border-red-200",
-      [EOrderStatus.refunded]: "bg-gray-100 text-gray-800 border-gray-200",
+      [EOrderStatus.pending]: "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900 dark:text-yellow-100 dark:border-yellow-800",
+      [EOrderStatus.confirmed]: "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900 dark:text-blue-100 dark:border-blue-800",
+      [EOrderStatus.processing]: "bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900 dark:text-purple-100 dark:border-purple-800",
+      [EOrderStatus.shipped]: "bg-indigo-100 text-indigo-800 border-indigo-200 dark:bg-indigo-900 dark:text-indigo-100 dark:border-indigo-800",
+      [EOrderStatus.delivered]: "bg-green-100 text-green-800 border-green-200 dark:bg-green-900 dark:text-green-100 dark:border-green-800",
+      [EOrderStatus.cancelled]: "bg-red-100 text-red-800 border-red-200 dark:bg-red-900 dark:text-red-100 dark:border-red-800",
+      [EOrderStatus.refunded]: "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-900 dark:text-gray-100 dark:border-gray-800",
     };
-    return colors[status] || "bg-gray-100 text-gray-800 border-gray-200";
+    return colors[status] || "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-900 dark:text-gray-100 dark:border-gray-800";
   };
 
   const getPaymentStatusColor = (status: EPaymentStatus) => {
     const colors = {
-      [EPaymentStatus.pending]: "bg-yellow-100 text-yellow-800 border-yellow-200",
-      [EPaymentStatus.paid]: "bg-green-100 text-green-800 border-green-200",
-      [EPaymentStatus.failed]: "bg-red-100 text-red-800 border-red-200",
-      [EPaymentStatus.refunded]: "bg-gray-100 text-gray-800 border-gray-200",
+      [EPaymentStatus.pending]: "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900 dark:text-yellow-100 dark:border-yellow-800",
+      [EPaymentStatus.paid]: "bg-green-100 text-green-800 border-green-200 dark:bg-green-900 dark:text-green-100 dark:border-green-800",
+      [EPaymentStatus.failed]: "bg-red-100 text-red-800 border-red-200 dark:bg-red-900 dark:text-red-100 dark:border-red-800",
+      [EPaymentStatus.refunded]: "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-900 dark:text-gray-100 dark:border-gray-800",
     };
-    return colors[status] || "bg-gray-100 text-gray-800 border-gray-200";
+    return colors[status] || "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-900 dark:text-gray-100 dark:border-gray-800";
   };
 
   const getStatusIcon = (status: EOrderStatus) => {
@@ -191,8 +191,8 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
         </div>
       </div>
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Order #{order.orderNumber}</h1>
-        <p className="text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-foreground">Order #{order.orderNumber}</h1>
+        <p className="text-sm text-muted-foreground">
           Placed on {new Date(order.createdAt).toLocaleDateString()}
         </p>
       </div>
@@ -204,7 +204,7 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
             <div className="flex items-center space-x-3">
               {getStatusIcon(order.status)}
               <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wider">Order Status</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wider">Order Status</p>
                 <Badge className={`${getOrderStatusColor(order.status)} border mt-1`}>
                   {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                 </Badge>
@@ -216,9 +216,9 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center space-x-3">
-              <CreditCard className="h-4 w-4 text-gray-400" />
+              <CreditCard className="h-4 w-4 text-muted-foreground" />
               <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wider">Payment Status</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wider">Payment Status</p>
                 <Badge className={`${getPaymentStatusColor(order.paymentStatus)} border mt-1`}>
                   {order.paymentStatus.charAt(0).toUpperCase() + order.paymentStatus.slice(1)}
                 </Badge>
@@ -230,10 +230,10 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center space-x-3">
-              <ShoppingBag className="h-4 w-4 text-gray-400" />
+              <ShoppingBag className="h-4 w-4 text-muted-foreground" />
               <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wider">Total Items</p>
-                <p className="text-lg font-semibold text-gray-900 mt-1">
+                <p className="text-xs text-muted-foreground uppercase tracking-wider">Total Items</p>
+                <p className="text-lg font-semibold text-foreground mt-1">
                   {order.quantity}
                 </p>
               </div>
@@ -244,10 +244,10 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center space-x-3">
-              <CreditCard className="h-4 w-4 text-gray-400" />
+              <CreditCard className="h-4 w-4 text-muted-foreground" />
               <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wider">Total Amount</p>
-                <p className="text-lg font-semibold text-gray-900 mt-1">
+                <p className="text-xs text-muted-foreground uppercase tracking-wider">Total Amount</p>
+                <p className="text-lg font-semibold text-foreground mt-1">
                   {formatCurrency(order.total, order.currency)}
                 </p>
               </div>
@@ -282,23 +282,23 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
                     return (
                       <div key={`${order.id}-item-${index}`}>
                         <div className="flex items-start space-x-4">
-                          <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
-                            <Package className="h-8 w-8 text-gray-400" />
+                          <div className="w-20 h-20 bg-primary/10 rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
+                            <Package className="h-8 w-8 text-muted-foreground" />
                           </div>
 
                           <div className="flex-1 min-w-0">
-                            <h4 className="font-semibold text-gray-900 mb-1">
+                            <h4 className="font-semibold text-foreground mb-1">
                               Book {index + 1}
                             </h4>
-                            <div className="flex items-center space-x-4 text-sm text-gray-600">
-                              <span>Quantity: <span className="font-medium text-gray-900">{itemQuantity}</span></span>
+                            <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                              <span>Quantity: <span className="font-medium text-foreground">{itemQuantity}</span></span>
                               <span>•</span>
-                              <span>Price: <span className="font-medium text-gray-900">{formatCurrency(itemPrice, order.currency)}</span></span>
+                              <span>Price: <span className="font-medium text-foreground">{formatCurrency(itemPrice, order.currency)}</span></span>
                             </div>
                           </div>
 
                           <div className="text-right shrink-0">
-                            <p className="font-bold text-lg text-gray-900">{formatCurrency(itemPrice, order.currency)}</p>
+                            <p className="font-bold text-lg text-foreground">{formatCurrency(itemPrice, order.currency)}</p>
                           </div>
                         </div>
                         {index < order.quantity - 1 && <Separator className="mt-4" />}
@@ -308,9 +308,9 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
                 ) : (
                   <div className="flex items-center justify-center p-8 border-2 border-dashed border-gray-200 rounded-lg">
                     <div className="text-center">
-                      <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                       <h4 className="font-medium mb-2">No items found</h4>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-muted-foreground">
                         No items were found for this order
                       </p>
                     </div>
@@ -329,7 +329,7 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
                     <CreditCard className="h-5 w-5" />
                     <span>Payment History</span>
                   </div>
-                  <Badge variant="secondary" className="text-sm">
+                  <Badge className="text-sm">
                     {payments.length} {payments.length === 1 ? 'Payment' : 'Payments'}
                   </Badge>
                 </CardTitle>
@@ -343,42 +343,42 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
                     <div key={payment.id}>
                       <div className="flex items-start justify-between">
                         <div className="flex items-start space-x-3 flex-1">
-                          <div className={`p-3 rounded-lg ${payment.paymentStatus === EPaymentStatus.paid ? 'bg-green-100' : 'bg-gray-100'
+                          <div className={`p-3 rounded-lg ${payment.paymentStatus === EPaymentStatus.paid ? 'bg-green-100 dark:bg-green-900' : 'bg-gray-100 dark:bg-gray-900'
                             }`}>
                             {payment.paymentStatus === EPaymentStatus.paid ? (
-                              <CheckCircle className="h-5 w-5 text-green-600" />
+                              <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
                             ) : payment.paymentStatus === EPaymentStatus.failed ? (
-                              <XCircleIcon className="h-5 w-5 text-red-600" />
+                              <XCircleIcon className="h-5 w-5 text-red-600 dark:text-red-400" />
                             ) : (
-                              <Clock className="h-5 w-5 text-yellow-600" />
+                              <Clock className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
                             )}
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center space-x-2 mb-2">
-                              <h4 className="font-semibold text-gray-900">
+                              <h4 className="font-semibold text-foreground">
                                 {payment.paymentMethod === 'bankTransfer' ? 'Bank Transfer' : 'Cash on Delivery'}
                               </h4>
                               <Badge className={`${getPaymentStatusColor(payment.paymentStatus)} border text-xs`}>
                                 {payment.paymentStatus.charAt(0).toUpperCase() + payment.paymentStatus.slice(1)}
                               </Badge>
                             </div>
-                            <div className="space-y-1 text-sm text-gray-600">
+                            <div className="space-y-1 text-sm text-muted-foreground">
                               <div>
-                                <span className="text-gray-500">Amount: </span>
-                                <span className="font-semibold text-gray-900">
+                                <span className="text-muted-foreground">Amount: </span>
+                                <span className="font-semibold text-foreground">
                                   {formatCurrency(payment.amount, payment.currency)}
                                 </span>
                               </div>
                               {payment.referenceNumber && (
                                 <div>
-                                  <span className="text-gray-500">Reference: </span>
+                                  <span className="text-muted-foreground">Reference: </span>
                                   <span className="font-mono font-medium">{payment.referenceNumber}</span>
                                 </div>
                               )}
                               {payment.paidAt && (
                                 <div>
-                                  <span className="text-gray-500">Paid: </span>
-                                  <span className="text-green-700 font-medium">
+                                  <span className="text-muted-foreground">Paid: </span>
+                                  <span className="text-green-700 dark:text-green-400 font-medium">
                                     {new Date(payment.paidAt).toLocaleDateString()}
                                   </span>
                                 </div>
@@ -420,7 +420,7 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
               {order.statusHistory && order.statusHistory.length > 0 ? (
                 <div className="space-y-4 relative">
                   {/* Vertical line */}
-                  <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200" />
+                  <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-800" />
 
                   {order.statusHistory.map((history, index) => (
                     <div
@@ -434,19 +434,19 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
                       </div>
                       <div className="flex-1 pb-4">
                         <div className="flex items-start justify-between mb-1">
-                          <p className="font-semibold text-gray-900 capitalize">
+                          <p className="font-semibold text-foreground capitalize">
                             {history.status.replace('_', ' ')}
                           </p>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-muted-foreground">
                             {new Date(history.createdAt).toLocaleString()}
                           </p>
                         </div>
                         {history.notes && (
-                          <p className="text-sm text-gray-600 mb-2">
+                          <p className="text-sm text-muted-foreground mb-2">
                             {history.notes}
                           </p>
                         )}
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-muted-foreground">
                           Updated by {history.updatedBy.firstName}{" "}
                           {history.updatedBy.lastName}
                         </p>
@@ -456,9 +456,9 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500 font-medium mb-1">No timeline available</p>
-                  <p className="text-sm text-gray-400">
+                  <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground font-medium mb-1">No timeline available</p>
+                  <p className="text-sm text-muted-foreground">
                     Order timeline will be updated as the order progresses
                   </p>
                 </div>
@@ -480,20 +480,20 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
             <CardContent>
               {order.shippingAddress ? (
                 <div className="space-y-1 text-sm">
-                  <p className="font-semibold text-gray-900">
+                  <p className="font-semibold text-foreground">
                     {order.user.firstName} {order.user.lastName}
                   </p>
-                  <p className="text-gray-700">{order.shippingAddress.street}</p>
-                  <p className="text-gray-700">
+                  <p className="text-muted-foreground">{order.shippingAddress.street}</p>
+                  <p className="text-muted-foreground">
                     {order.shippingAddress.city}, {order.shippingAddress.state}{" "}
                     {order.shippingAddress.zipCode}
                   </p>
-                  <p className="text-gray-700">{order.shippingAddress.country}</p>
+                  <p className="text-muted-foreground">{order.shippingAddress.country}</p>
                 </div>
               ) : (
                 <div className="text-center py-6">
-                  <MapPin className="h-8 w-8 text-gray-300 mx-auto mb-2" />
-                  <p className="text-sm text-gray-500">No shipping address</p>
+                  <MapPin className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground">No shipping address</p>
                 </div>
               )}
             </CardContent>
@@ -506,15 +506,15 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Payment Method</p>
-                <p className="text-sm font-medium text-gray-900 capitalize">
+                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Payment Method</p>
+                <p className="text-sm font-medium text-foreground capitalize">
                   {order.paymentMethod === 'bankTransfer' ? 'Bank Transfer' : 'Cash on Delivery'}
                 </p>
               </div>
               <Separator />
               <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Shipping Method</p>
-                <p className="text-sm font-medium text-gray-900 capitalize">
+                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Shipping Method</p>
+                <p className="text-sm font-medium text-foreground capitalize">
                   {order.shippingMethod}
                 </p>
               </div>
@@ -522,8 +522,8 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
                 <>
                   <Separator />
                   <div>
-                    <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Tracking Number</p>
-                    <p className="text-sm font-mono font-medium text-gray-900">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Tracking Number</p>
+                    <p className="text-sm font-mono font-medium text-foreground">
                       {order.trackingNumber}
                     </p>
                   </div>
@@ -533,8 +533,8 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
                 <>
                   <Separator />
                   <div>
-                    <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Estimated Delivery</p>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Estimated Delivery</p>
+                    <p className="text-sm font-medium text-foreground">
                       {new Date(order.estimatedDelivery).toLocaleDateString()}
                     </p>
                   </div>
@@ -551,27 +551,27 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
             <CardContent>
               <div className="space-y-3">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Subtotal</span>
+                  <span className="text-muted-foreground">Subtotal</span>
                   <span className="font-medium">
                     {formatCurrency(order.subtotal || 0, order.currency)}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Shipping</span>
+                  <span className="text-muted-foreground">Shipping</span>
                   <span className="font-medium">
                     {formatCurrency(order.shipping || 0, order.currency)}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Tax</span>
+                  <span className="text-muted-foreground">Tax</span>
                   <span className="font-medium">
                     {formatCurrency(order.tax || 0, order.currency)}
                   </span>
                 </div>
                 {order.discount && order.discount > 0 && (
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Discount</span>
-                    <span className="text-green-600 font-medium">
+                    <span className="text-muted-foreground">Discount</span>
+                    <span className="text-green-600 dark:text-green-400 font-medium">
                       -{formatCurrency(order.discount, order.currency)}
                     </span>
                   </div>
@@ -579,7 +579,7 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
                 <Separator />
                 <div className="flex justify-between font-bold text-lg">
                   <span>Total</span>
-                  <span className="text-blue-600">{formatCurrency(order.total, order.currency)}</span>
+                  <span className="text-primary">{formatCurrency(order.total, order.currency)}</span>
                 </div>
               </div>
             </CardContent>
@@ -646,14 +646,14 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
           <CardContent className="space-y-3">
             {order.customerNotes && (
               <div>
-                <p className="text-sm font-medium text-gray-500 mb-1">Customer Notes</p>
-                <p className="text-sm text-gray-700 bg-gray-50 p-3 rounded-lg">{order.customerNotes}</p>
+                <p className="text-sm font-medium text-muted-foreground mb-1">Customer Notes</p>
+                <p className="text-sm text-muted-foreground bg-primary/10 p-3 rounded-lg">{order.customerNotes}</p>
               </div>
             )}
             {order.notes && (
               <div>
-                <p className="text-sm font-medium text-gray-500 mb-1">Store Notes</p>
-                <p className="text-sm text-gray-700 bg-blue-50 p-3 rounded-lg border border-blue-100">{order.notes}</p>
+                <p className="text-sm font-medium text-muted-foreground mb-1">Store Notes</p>
+                <p className="text-sm text-muted-foreground bg-primary/10 p-3 rounded-lg border border-primary/20">{order.notes}</p>
               </div>
             )}
           </CardContent>
@@ -691,7 +691,7 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
               Are you sure you want to cancel this order? This action cannot be
               undone.
               {order.paymentStatus === EPaymentStatus.paid && (
-                <span className="block mt-2 text-blue-600 font-medium">
+                <span className="block mt-2 text-primary font-medium">
                   A refund will be processed to your original payment method.
                 </span>
               )}
@@ -711,7 +711,7 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
               rows={4}
               className="resize-none"
             />
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               Your feedback helps us improve our service.
             </p>
           </div>
@@ -723,7 +723,7 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
             <AlertDialogAction
               onClick={handleCancelOrder}
               disabled={cancelMutation.isPending}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-destructive hover:bg-destructive/90"
             >
               {cancelMutation.isPending ? "Cancelling..." : "Yes, Cancel Order"}
             </AlertDialogAction>
@@ -745,7 +745,7 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
             <AlertDialogDescription>
               Submit a return request for this order. Our team will review your
               request and contact you within 24-48 hours.
-              <span className="block mt-2 text-blue-600 font-medium">
+              <span className="block mt-2 text-primary font-medium">
                 Returns are accepted within 30 days of delivery.
               </span>
             </AlertDialogDescription>
@@ -762,7 +762,7 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
               rows={4}
               className="resize-none"
             />
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               Providing details helps us process your return faster.
             </p>
           </div>
@@ -774,7 +774,7 @@ export function OrderDetailsContent({ order, payments }: OrderDetailsContentProp
             <AlertDialogAction
               onClick={handleReturnRequest}
               disabled={returnMutation.isPending}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-primary hover:bg-primary/90"
             >
               {returnMutation.isPending
                 ? "Submitting..."

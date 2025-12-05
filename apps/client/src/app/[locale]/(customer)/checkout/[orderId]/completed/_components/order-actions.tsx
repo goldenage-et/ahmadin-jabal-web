@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Package, Home } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/routing';
 
 export function OrderActions({ orderId }: { orderId: string }) {
     const router = useRouter();
@@ -20,7 +20,7 @@ export function OrderActions({ orderId }: { orderId: string }) {
             </Button>
             <Button
                 size="lg"
-                onClick={() => router.push('/shop')}
+                onClick={() => router.push('/books')}
                 className="w-full"
             >
                 <Home className="mr-2 h-5 w-5" />

@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { EPaymentStatus, EPaymentMethod } from '@repo/common';
 import { CheckCircle, CreditCard } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/routing';
 
 interface OrderActionsProps {
     orderId: string;

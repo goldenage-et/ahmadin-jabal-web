@@ -101,7 +101,7 @@ export default function CreateGalleryForm() {
             mutate(async () => await createGallery(data), {
               onSuccess: (created) => {
                 if (created && 'id' in created) {
-                  router.push(`/admin/media/galleries/${created.id}`);
+                  router.push(`/admin/media/photo-gallery/galleries/${created.id}`);
                 }
               },
               successMessage: 'Gallery created successfully',

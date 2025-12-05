@@ -109,13 +109,13 @@ export function CheckoutForm() {
         loadAddresses();
     }, [setValue]);
 
-    // Redirect if no buy-now item
+    // Redirect if no buy-now item (but not during form submission)
     useEffect(() => {
-        if (!buyNowItem && !isLoadingAddresses) {
+        if (!buyNowItem && !isLoadingAddresses && !isSubmitting) {
             toast.error('No item selected for checkout');
             router.push('/');
         }
-    }, [buyNowItem, isLoadingAddresses, router]);
+    }, [buyNowItem, isLoadingAddresses, isSubmitting, router]);
 
     // Update form when address is selected
     useEffect(() => {
@@ -136,7 +136,7 @@ export function CheckoutForm() {
     if (!buyNowItem) {
         return (
             <div className="text-center py-12">
-                <p className="text-gray-600">No item selected for checkout</p>
+                <p className="text-muted-foreground">No item selected for checkout</p>
                 <Button onClick={() => router.push('/')} className="mt-4">
                     Continue Shopping
                 </Button>
@@ -155,23 +155,36 @@ export function CheckoutForm() {
     const total = subtotal + tax + shippingCost - discount;
 
     const onSubmit = async (data: CheckoutFormData) => {
-        if (!book.id) {
-            toast.error('Invalid book information');
+        // Get fresh buyNowItem from state to avoid closure issues
+        const currentBuyNowItem = buyNowItem;
+        if (!currentBuyNowItem || !currentBuyNowItem.id) {
+            toast.error('No item selected for checkout');
             return;
         }
 
+        const currentBook = currentBuyNowItem as TBookBasic;
+
+        // Calculate pricing with current values
+        const currentPrice = currentBook.price || 0;
+        const currentQuantity = data.quantity || quantity;
+        const currentSubtotal = currentPrice * currentQuantity;
+        const currentTax = currentSubtotal * 0.15; // 15% tax (adjust as needed)
+        const currentShippingCost = data.shippingMethod === EShippingMethod.express ? 50 : data.shippingMethod === EShippingMethod.pickup ? 0 : 30;
+        const currentDiscount = 0; // Can be calculated based on promotions
+        const currentTotal = currentSubtotal + currentTax + currentShippingCost - currentDiscount;
+
         const orderData: TCreateOrder[] = [
             {
-                bookId: book.id,
-                quantity: data.quantity,
+                bookId: currentBook.id,
+                quantity: currentQuantity,
                 paymentMethod: data.paymentMethod,
                 shippingAddress: data.shippingAddress,
-                price: price,
-                subtotal: subtotal,
-                tax: tax,
-                shipping: shippingCost,
-                discount: discount,
-                total: total,
+                price: currentPrice,
+                subtotal: currentSubtotal,
+                tax: currentTax,
+                shipping: currentShippingCost,
+                discount: currentDiscount,
+                total: currentTotal,
                 currency: 'ETB',
                 shippingMethod: data.shippingMethod,
                 customerNotes: data.customerNotes || undefined,
@@ -181,8 +194,9 @@ export function CheckoutForm() {
         submitOrder(
             async () => {
                 const response = await createOrder(orderData);
-                if ('error' in response) {
-                    throw new Error(response.error?.message || 'Failed to create order');
+                if ('error' in response && typeof response === 'object' && response !== null) {
+                    const errorResponse = response as { error: true; message?: string };
+                    throw new Error(errorResponse.message || 'Failed to create order');
                 }
                 return response;
             },
@@ -194,7 +208,7 @@ export function CheckoutForm() {
                         router.push(`/checkout/${orders[0].id}`);
                     }
                 },
-                onError: (error) => {
+                onError: (error: any) => {
                     toast.error(error?.message || 'Failed to create order. Please try again.');
                 },
             }
@@ -243,7 +257,7 @@ export function CheckoutForm() {
                                     )}
                                     <div className="flex-1">
                                         <h3 className="font-semibold text-lg">{book.title}</h3>
-                                        <p className="text-sm text-gray-600 mt-1">
+                                        <p className="text-sm text-muted-foreground mt-1">
                                             Price: {price.toFixed(2)} ETB
                                         </p>
                                         <div className="mt-4">
@@ -257,7 +271,7 @@ export function CheckoutForm() {
                                                 className="w-24 mt-1"
                                             />
                                             {errors.quantity && (
-                                                <p className="text-sm text-red-500 mt-1">
+                                                <p className="text-sm text-destructive mt-1">
                                                     {errors.quantity.message}
                                                 </p>
                                             )}
@@ -295,10 +309,10 @@ export function CheckoutForm() {
                                                     >
                                                         <div>
                                                             <p className="font-medium">{address.street}</p>
-                                                            <p className="text-sm text-gray-600">
+                                                            <p className="text-sm text-muted-foreground">
                                                                 {address.city}, {address.state} {address.zipCode}
                                                             </p>
-                                                            <p className="text-sm text-gray-600">
+                                                            <p className="text-sm text-muted-foreground">
                                                                 {address.country}
                                                             </p>
                                                             {address.isDefault && (
@@ -338,7 +352,7 @@ export function CheckoutForm() {
                                             className={errors.shippingAddress?.street ? 'border-red-500' : ''}
                                         />
                                         {errors.shippingAddress?.street && (
-                                            <p className="text-sm text-red-500 mt-1">
+                                            <p className="text-sm text-destructive mt-1">
                                                 {errors.shippingAddress.street.message}
                                             </p>
                                         )}
@@ -354,7 +368,7 @@ export function CheckoutForm() {
                                                 className={errors.shippingAddress?.city ? 'border-red-500' : ''}
                                             />
                                             {errors.shippingAddress?.city && (
-                                                <p className="text-sm text-red-500 mt-1">
+                                                <p className="text-sm text-destructive mt-1">
                                                     {errors.shippingAddress.city.message}
                                                 </p>
                                             )}
@@ -369,7 +383,7 @@ export function CheckoutForm() {
                                                 className={errors.shippingAddress?.state ? 'border-red-500' : ''}
                                             />
                                             {errors.shippingAddress?.state && (
-                                                <p className="text-sm text-red-500 mt-1">
+                                                <p className="text-sm text-destructive mt-1">
                                                     {errors.shippingAddress.state.message}
                                                 </p>
                                             )}
@@ -386,7 +400,7 @@ export function CheckoutForm() {
                                                 className={errors.shippingAddress?.country ? 'border-red-500' : ''}
                                             />
                                             {errors.shippingAddress?.country && (
-                                                <p className="text-sm text-red-500 mt-1">
+                                                <p className="text-sm text-destructive mt-1">
                                                     {errors.shippingAddress.country.message}
                                                 </p>
                                             )}
@@ -401,7 +415,7 @@ export function CheckoutForm() {
                                                 className={errors.shippingAddress?.zipCode ? 'border-red-500' : ''}
                                             />
                                             {errors.shippingAddress?.zipCode && (
-                                                <p className="text-sm text-red-500 mt-1">
+                                                <p className="text-sm text-destructive mt-1">
                                                     {errors.shippingAddress.zipCode.message}
                                                 </p>
                                             )}
@@ -435,7 +449,7 @@ export function CheckoutForm() {
                                             <Label htmlFor="standard" className="flex-1 cursor-pointer">
                                                 <div className="flex justify-between items-center">
                                                     <span>Standard Shipping</span>
-                                                    <span className="text-sm text-gray-600">30 ETB</span>
+                                                    <span className="text-sm text-muted-foreground">30 ETB</span>
                                                 </div>
                                             </Label>
                                         </div>
@@ -447,7 +461,7 @@ export function CheckoutForm() {
                                             <Label htmlFor="express" className="flex-1 cursor-pointer">
                                                 <div className="flex justify-between items-center">
                                                     <span>Express Shipping</span>
-                                                    <span className="text-sm text-gray-600">50 ETB</span>
+                                                    <span className="text-sm text-muted-foreground">50 ETB</span>
                                                 </div>
                                             </Label>
                                         </div>
@@ -459,7 +473,7 @@ export function CheckoutForm() {
                                             <Label htmlFor="pickup" className="flex-1 cursor-pointer">
                                                 <div className="flex justify-between items-center">
                                                     <span>Pickup</span>
-                                                    <span className="text-sm text-gray-600">Free</span>
+                                                    <span className="text-sm text-muted-foreground">Free</span>
                                                 </div>
                                             </Label>
                                         </div>
@@ -549,7 +563,7 @@ export function CheckoutForm() {
                                         <span>{shippingCost.toFixed(2)} ETB</span>
                                     </div>
                                     {discount > 0 && (
-                                        <div className="flex justify-between text-green-600">
+                                        <div className="flex justify-between text-success">
                                             <span>Discount</span>
                                             <span>-{discount.toFixed(2)} ETB</span>
                                         </div>

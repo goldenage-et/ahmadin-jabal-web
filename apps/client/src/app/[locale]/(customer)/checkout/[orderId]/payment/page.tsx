@@ -3,7 +3,7 @@ import { getMyOrderDetails } from '@/actions/profile.action';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { EPaymentMethod, EPaymentStatus, TBankAccount, type TOrderDetail } from '@repo/common';
+import { EPaymentMethod, EPaymentStatus, TBankAccount, TBankInfo, type TOrderDetail } from '@repo/common';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
@@ -15,21 +15,35 @@ export default async function PaymentMethodSelectionPage({ params }: { params: P
 
     const response = await getMyOrderDetails(orderId);
 
-    if (!response || response.error) {
+    if (!response || 'error' in response) {
         notFound();
     }
-
-    const bankAccounts = await getBankAccounts();
-
-    if (!bankAccounts || bankAccounts.length === 0) {
-        notFound();
-    }
-
-
-    const banks = await getBanks();
-
 
     const order = response as TOrderDetail;
+
+    // Fetch bank accounts and banks, handle errors gracefully
+    let bankAccounts: TBankAccount[] = [];
+    let banks: TBankInfo[] = [];
+
+    try {
+        bankAccounts = await getBankAccounts();
+        if (!Array.isArray(bankAccounts)) {
+            bankAccounts = [];
+        }
+    } catch (error) {
+        console.error('Error fetching bank accounts:', error);
+        bankAccounts = [];
+    }
+
+    try {
+        banks = await getBanks();
+        if (!Array.isArray(banks)) {
+            banks = [];
+        }
+    } catch (error) {
+        console.error('Error fetching banks:', error);
+        banks = [];
+    }
 
     // Redirect if already paid
     if (order.paymentStatus === EPaymentStatus.paid) {
@@ -79,11 +93,11 @@ export default async function PaymentMethodSelectionPage({ params }: { params: P
                 />
 
                 {/* Help Text */}
-                <Card className="bg-blue-50 border-blue-200">
+                <Card className="bg-primary/10 border-primary/20">
                     <CardContent className="pt-6">
                         <div className="flex items-start space-x-3">
-                            <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
-                            <div className="text-sm text-blue-900">
+                            <AlertCircle className="h-5 w-5 text-primary mt-0.5" />
+                            <div className="text-sm text-foreground">
                                 <p className="font-medium mb-1">Need Help?</p>
                                 <p>
                                     If you have any questions about payment methods or need assistance,

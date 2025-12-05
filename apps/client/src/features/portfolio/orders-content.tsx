@@ -120,36 +120,36 @@ export function OrdersContent({ ordersData }: {
   const getOrderStatusColor = (status: EOrderStatus) => {
     switch (status) {
       case EOrderStatus.pending:
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100';
       case EOrderStatus.confirmed:
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100';
       case EOrderStatus.processing:
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100';
       case EOrderStatus.shipped:
-        return 'bg-indigo-100 text-indigo-800';
+        return 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-100';
       case EOrderStatus.delivered:
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100';
       case EOrderStatus.cancelled:
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100';
       case EOrderStatus.refunded:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100';
     }
   };
 
   const getPaymentStatusColor = (status: EPaymentStatus) => {
     switch (status) {
       case EPaymentStatus.pending:
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100';
       case EPaymentStatus.paid:
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100';
       case EPaymentStatus.failed:
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100';
       case EPaymentStatus.refunded:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100';
     }
   };
 
@@ -159,24 +159,24 @@ export function OrdersContent({ ordersData }: {
   return (
     <div className='space-y-6'>
       {/* Breadcrumb */}
-      <div className='flex items-center space-x-2 text-sm text-gray-500'>
+      <div className='flex items-center space-x-2 text-sm text-muted-foreground'>
         <Link href='/' className='hover:text-gray-700'>Home</Link>
         <span>›</span>
-        <Link href='/profile' className='hover:text-gray-700'>Account</Link>
+        <Link href='/profile' className='hover:text-muted-foreground'>Account</Link>
         <span>›</span>
-        <span className='text-gray-900 font-medium'>Orders</span>
+        <span className='text-foreground font-medium'>Orders</span>
       </div>
 
       {/* Order Tabs */}
       <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
-        <div className='flex space-x-1 bg-gray-100 p-1 rounded-lg overflow-x-auto'>
+        <div className='flex space-x-1 bg-primary/10 p-1 rounded-lg overflow-x-auto'>
           {orderTabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveOrderTab(tab.id)}
               className={`px-3 sm:px-4 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap ${activeOrderTab === tab.id
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-primary/10 text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
                 }`}
             >
               {tab.label}
@@ -196,7 +196,7 @@ export function OrdersContent({ ordersData }: {
       <div className='space-y-4'>
         <div className='flex flex-col sm:flex-row sm:items-center gap-4'>
           <div className='relative flex-1 max-w-md'>
-            <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400' />
+            <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground' />
             <Input
               placeholder='Search orders, books, or SKU...'
               value={searchTerm}
@@ -317,13 +317,13 @@ export function OrdersContent({ ordersData }: {
                   </div>
                   <div className='text-left sm:text-right'>
                     <div className='font-semibold text-lg'>${order.total.toFixed(2)}</div>
-                    <div className='text-sm text-gray-500'>
+                    <div className='text-sm text-muted-foreground'>
                       {new Date(order.createdAt).toLocaleDateString()}
                     </div>
                   </div>
                 </div>
                 <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
-                  <div className='text-sm text-gray-600'>
+                  <div className='text-sm text-muted-foreground'>
                     {order.totalItems || 0} item(s)
                   </div>
                   <div className='flex flex-col sm:flex-row gap-2 sm:space-x-2'>
@@ -360,13 +360,13 @@ export function OrdersContent({ ordersData }: {
         </div>
       ) : (
         <div className='flex flex-col items-center justify-center py-12 text-center'>
-          <div className='w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4'>
-            <FileText className='w-8 h-8 text-gray-400' />
+          <div className='w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-4'>
+            <FileText className='w-8 h-8 text-muted-foreground' />
           </div>
-          <h3 className='text-lg font-semibold text-gray-900 mb-2'>No orders yet.</h3>
-          <p className='text-gray-600 mb-6'>
+          <h3 className='text-lg font-semibold text-foreground mb-2'>No orders yet.</h3>
+          <p className='text-muted-foreground mb-6'>
             Please switch account or{' '}
-            <Link href='#' className='text-blue-600 hover:underline'>
+            <Link href='#' className='text-primary hover:underline'>
               feedback
             </Link>
           </p>

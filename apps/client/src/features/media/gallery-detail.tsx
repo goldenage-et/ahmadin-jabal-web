@@ -67,7 +67,7 @@ export default function GalleryDetail({ gallery }: GalleryDetailProps) {
   const handleDelete = () => {
     deleteMutate(async () => await deleteGallery(gallery.id), {
       onSuccess: () => {
-        router.push('/admin/media');
+        router.push('/admin/media/photo-gallery');
         toast.success('Gallery deleted successfully');
       },
       errorMessage: 'Failed to delete gallery',
@@ -78,14 +78,14 @@ export default function GalleryDetail({ gallery }: GalleryDetailProps) {
     <div className='space-y-6'>
       <div className='flex items-center justify-between'>
         <Button variant='ghost' size='sm' asChild>
-          <Link href='/admin/media'>
+          <Link href='/admin/media/photo-gallery'>
             <ArrowLeft className='h-4 w-4 mr-2' />
-            Back to Media
+            Back to Photo Gallery
           </Link>
         </Button>
         <div className='flex items-center gap-2'>
           <Button variant='outline' size='sm' asChild>
-            <Link href={`/admin/media/galleries/${gallery.id}/edit`}>
+            <Link href={`/admin/media/photo-gallery/galleries/${gallery.id}/edit`}>
               <Edit className='h-4 w-4 mr-2' />
               Edit
             </Link>

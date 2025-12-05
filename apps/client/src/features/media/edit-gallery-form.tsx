@@ -127,7 +127,7 @@ export default function EditGalleryForm({ gallery }: EditGalleryFormProps) {
           onSubmit={form.handleSubmit((data) => {
             mutate(async () => await updateGallery(gallery.id, data), {
               onSuccess: () => {
-                router.push(`/admin/media/galleries/${gallery.id}`);
+                router.push(`/admin/media/photo-gallery/galleries/${gallery.id}`);
               },
               successMessage: 'Gallery updated successfully',
               errorMessage: 'Failed to update gallery',

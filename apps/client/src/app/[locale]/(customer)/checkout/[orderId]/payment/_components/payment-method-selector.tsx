@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { CreditCard, Building2, CheckCircle, AlertCircle, ArrowRight } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/routing';
 import { EPaymentMethod, TBankAccount, TBankInfo, TOrderBasic } from '@repo/common';
 import { Separator } from '@/components/ui/separator';
 import { useState } from 'react';
@@ -57,7 +57,7 @@ export function PaymentMethodSelector({ order, bankAccounts, banks }: PaymentMet
                     <Separator />
                     <div>
                         <h3 className="text-lg font-semibold mb-2">Select Your Bank</h3>
-                        <p className="text-sm text-gray-600 mb-4">
+                        <p className="text-sm text-muted-foreground mb-4">
                             Choose the bank you'll transfer money from
                         </p>
                         {banks && banks.length > 0 ? (
@@ -65,7 +65,7 @@ export function PaymentMethodSelector({ order, bankAccounts, banks }: PaymentMet
                                 {/* Recommended Banks */}
                                 {recommendedBanks.length > 0 && (
                                     <div>
-                                        <p className="text-sm text-green-700 font-medium mb-3 flex items-center">
+                                        <p className="text-sm text-primary font-medium mb-3 flex items-center">
                                             <CheckCircle className="h-4 w-4 mr-1" />
                                             Recommended (Faster Verification)
                                         </p>
@@ -74,8 +74,8 @@ export function PaymentMethodSelector({ order, bankAccounts, banks }: PaymentMet
                                                 <Card
                                                     key={bank.code}
                                                     className={`cursor-pointer transition-all border-2 ${selectedBank === bank.code
-                                                        ? 'border-green-500 shadow-md bg-green-50'
-                                                        : 'border-green-200 hover:border-green-400 hover:shadow-md'
+                                                        ? 'border-primary shadow-md bg-primary/10'
+                                                        : 'border-primary/20 hover:border-primary hover:shadow-md'
                                                         }`}
                                                     onClick={() => handleBankSelection(bank.code)}
                                                 >
@@ -94,22 +94,22 @@ export function PaymentMethodSelector({ order, bankAccounts, banks }: PaymentMet
                                                                 )}
                                                                 <div className="flex-1">
                                                                     <div className="flex items-center space-x-2 mb-1">
-                                                                        <span className="font-semibold text-gray-900 text-sm">
+                                                                        <span className="font-semibold text-foreground text-sm">
                                                                             {bank.name}
                                                                         </span>
-                                                                        <Badge className="bg-green-100 text-green-800 text-xs">
+                                                                        <Badge className="bg-primary/10 text-primary text-xs">
                                                                             Fast
                                                                         </Badge>
                                                                     </div>
                                                                     {bank.description && (
-                                                                        <p className="text-xs text-gray-600 line-clamp-1">
+                                                                        <p className="text-xs text-muted-foreground line-clamp-1">
                                                                             {bank.description}
                                                                         </p>
                                                                     )}
                                                                 </div>
                                                             </div>
                                                             {selectedBank === bank.code && (
-                                                                <CheckCircle className="h-5 w-5 text-green-600 shrink-0 ml-2" />
+                                                                <CheckCircle className="h-5 w-5 text-primary shrink-0 ml-2" />
                                                             )}
                                                         </div>
                                                     </CardContent>
@@ -123,7 +123,7 @@ export function PaymentMethodSelector({ order, bankAccounts, banks }: PaymentMet
                                 {otherBanks.length > 0 && (
                                     <div>
                                         {recommendedBanks.length > 0 && (
-                                            <p className="text-sm text-gray-600 font-medium mb-3 mt-6">
+                                            <p className="text-sm text-muted-foreground font-medium mb-3 mt-6">
                                                 Other Available Banks
                                             </p>
                                         )}
@@ -132,8 +132,8 @@ export function PaymentMethodSelector({ order, bankAccounts, banks }: PaymentMet
                                                 <Card
                                                     key={bank.code}
                                                     className={`cursor-pointer transition-all border-2 ${selectedBank === bank.code
-                                                        ? 'border-blue-500 shadow-md bg-blue-50'
-                                                        : 'border-gray-200 hover:border-blue-400 hover:shadow-md'
+                                                        ? 'border-primary shadow-md bg-primary/10'
+                                                        : 'border-primary/20 hover:border-primary hover:shadow-md'
                                                         }`}
                                                     onClick={() => handleBankSelection(bank.code)}
                                                 >
@@ -151,18 +151,18 @@ export function PaymentMethodSelector({ order, bankAccounts, banks }: PaymentMet
                                                                     </div>
                                                                 )}
                                                                 <div className="flex-1">
-                                                                    <div className="font-semibold text-gray-900 text-sm mb-1">
+                                                                    <div className="font-semibold text-foreground text-sm mb-1">
                                                                         {bank.name}
                                                                     </div>
                                                                     {bank.description && (
-                                                                        <p className="text-xs text-gray-600 line-clamp-1">
+                                                                        <p className="text-xs text-muted-foreground line-clamp-1">
                                                                             {bank.description}
                                                                         </p>
                                                                     )}
                                                                 </div>
                                                             </div>
                                                             {selectedBank === bank.code && (
-                                                                <CheckCircle className="h-5 w-5 text-blue-600 shrink-0 ml-2" />
+                                                                <CheckCircle className="h-5 w-5 text-primary shrink-0 ml-2" />
                                                             )}
                                                         </div>
                                                     </CardContent>
@@ -175,9 +175,9 @@ export function PaymentMethodSelector({ order, bankAccounts, banks }: PaymentMet
                         ) : (
                             <Card className="border-dashed">
                                 <CardContent className="pt-6 text-center">
-                                    <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-                                    <p className="text-gray-600 font-medium mb-1">No Banks Available</p>
-                                    <p className="text-sm text-gray-500">
+                                    <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+                                    <p className="text-muted-foreground font-medium mb-1">No Banks Available</p>
+                                    <p className="text-sm text-muted-foreground">
                                         Bank transfer is temporarily unavailable. Please try another payment method.
                                     </p>
                                 </CardContent>
@@ -210,13 +210,13 @@ export function PaymentMethodSelector({ order, bankAccounts, banks }: PaymentMet
 
             {/* Info Card for Bank Transfer */}
             {order.paymentMethod === EPaymentMethod.bankTransfer && (
-                <Card className="bg-blue-50 border-blue-200">
+                <Card className="bg-primary/10 border-primary/20">
                     <CardContent className="pt-6">
                         <div className="flex items-start space-x-3">
-                            <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" />
-                            <div className="text-sm text-blue-900">
+                            <AlertCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                            <div className="text-sm text-foreground">
                                 <p className="font-medium mb-1">How Bank Transfer Works</p>
-                                <ol className="list-decimal list-inside space-y-1 text-blue-800">
+                                <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
                                     <li>Select your bank from the list above</li>
                                     <li>You'll see the store's account details to transfer to</li>
                                     <li>Complete the transfer using your bank's app or branch</li>

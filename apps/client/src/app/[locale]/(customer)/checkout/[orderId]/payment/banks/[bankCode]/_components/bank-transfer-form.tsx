@@ -21,7 +21,7 @@ import {
     ArrowRight,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/routing';
 import { useApiMutation } from '@/hooks/use-api-mutation';
 
 interface BankTransferFormProps {
@@ -92,7 +92,7 @@ export function BankTransferForm({
                 <CardTitle className="flex items-center justify-between">
                     <span>Payment Verification</span>
                     {isCompleted && (
-                        <CheckCircle className="h-6 w-6 text-green-600" />
+                        <CheckCircle className="h-6 w-6 text-primary" />
                     )}
                 </CardTitle>
                 <CardDescription>
@@ -135,14 +135,14 @@ export function BankTransferForm({
                                     )}
                                 </Button>
                             </div>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-muted-foreground">
                                 We'll automatically validate your reference and confirm the payment
                             </p>
                         </div>
 
-                        <Alert className="bg-blue-50 border-blue-200">
-                            <AlertCircle className="h-4 w-4 text-blue-600" />
-                            <AlertDescription className="text-blue-900">
+                        <Alert className="bg-primary/10 border-primary/20">
+                            <AlertCircle className="h-4 w-4 text-primary" />
+                            <AlertDescription className="text-foreground">
                                 <p className="font-medium mb-1">What happens next?</p>
                                 <ol className="text-sm space-y-1 list-decimal list-inside">
                                     <li>We'll validate your reference number with {bankName}</li>
@@ -156,9 +156,9 @@ export function BankTransferForm({
                 ) : (
                     <div className="space-y-4">
                         {/* Payment Completed Successfully */}
-                        <Alert className="bg-green-50 border-green-200">
-                            <CheckCircle className="h-5 w-5 text-green-600" />
-                            <AlertDescription className="text-green-900">
+                        <Alert className="bg-primary/10 border-primary/20">
+                            <CheckCircle className="h-5 w-5 text-primary" />
+                            <AlertDescription className="text-foreground">
                                 <p className="font-medium text-base mb-1">Payment Completed Successfully! 🎉</p>
                                 <p className="text-sm">
                                     Your payment has been verified and confirmed. Redirecting to order confirmation...
@@ -168,35 +168,35 @@ export function BankTransferForm({
 
                         {/* Receipt Data Display */}
                         {receiptData && (
-                            <div className="mt-6 p-4 border-2 border-green-200 bg-green-50 rounded-lg space-y-4">
-                                <div className="flex items-center space-x-2 text-green-800 mb-4">
+                            <div className="mt-6 p-4 border-2 border-primary/20 bg-primary/10 rounded-lg space-y-4">
+                                <div className="flex items-center space-x-2 text-primary mb-4">
                                     <CheckCircle className="h-5 w-5" />
                                     <span className="font-semibold">Payment Receipt</span>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <div className="flex items-center space-x-2 text-sm text-gray-600 mb-1">
+                                        <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-1">
                                             <User className="h-4 w-4" />
                                             <span>Sender</span>
                                         </div>
                                         <p className="font-medium">{receiptData.senderName}</p>
-                                        <p className="text-sm text-gray-600">{receiptData.senderBank}</p>
-                                        <p className="text-sm text-gray-500 font-mono">{receiptData.senderAccountNumber}</p>
+                                        <p className="text-sm text-muted-foreground">{receiptData.senderBank}</p>
+                                        <p className="text-sm text-muted-foreground font-mono">{receiptData.senderAccountNumber}</p>
                                     </div>
 
                                     <div>
-                                        <div className="flex items-center space-x-2 text-sm text-gray-600 mb-1">
+                                        <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-1">
                                             <User className="h-4 w-4" />
                                             <span>Receiver</span>
                                         </div>
                                         <p className="font-medium">{receiptData.receiverName}</p>
-                                        <p className="text-sm text-gray-600">{receiptData.receiverBank}</p>
-                                        <p className="text-sm text-gray-500 font-mono">{receiptData.receiverAccountNumber}</p>
+                                        <p className="text-sm text-muted-foreground">{receiptData.receiverBank}</p>
+                                        <p className="text-sm text-muted-foreground font-mono">{receiptData.receiverAccountNumber}</p>
                                     </div>
 
                                     <div>
-                                        <div className="flex items-center space-x-2 text-sm text-gray-600 mb-1">
+                                        <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-1">
                                             <Hash className="h-4 w-4" />
                                             <span>Reference Number</span>
                                         </div>
@@ -204,7 +204,7 @@ export function BankTransferForm({
                                     </div>
 
                                     <div>
-                                        <div className="flex items-center space-x-2 text-sm text-gray-600 mb-1">
+                                        <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-1">
                                             <Calendar className="h-4 w-4" />
                                             <span>Date & Time</span>
                                         </div>
@@ -216,20 +216,20 @@ export function BankTransferForm({
                                     </div>
 
                                     <div>
-                                        <div className="flex items-center space-x-2 text-sm text-gray-600 mb-1">
+                                        <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-1">
                                             <DollarSign className="h-4 w-4" />
                                             <span>Transferred Amount</span>
                                         </div>
-                                        <p className="text-lg font-bold text-green-700">{receiptData.transferredAmount}</p>
+                                        <p className="text-lg font-bold text-primary">{receiptData.transferredAmount}</p>
                                     </div>
 
                                     <div>
-                                        <div className="flex items-center space-x-2 text-sm text-gray-600 mb-1">
+                                        <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-1">
                                             <CreditCard className="h-4 w-4" />
                                             <span>Total Amount</span>
                                         </div>
-                                        <p className="text-lg font-bold">{receiptData.totalAmount}</p>
-                                        <p className="text-xs text-gray-500">
+                                        <p className="text-lg font-bold text-primary">{receiptData.totalAmount}</p>
+                                        <p className="text-xs text-muted-foreground">
                                             (includes commission: {receiptData.commission}, VAT: {receiptData.vat})
                                         </p>
                                     </div>
@@ -239,7 +239,7 @@ export function BankTransferForm({
                                     <>
                                         <Separator />
                                         <div>
-                                            <p className="text-sm text-gray-600 mb-1">Narrative</p>
+                                            <p className="text-sm text-muted-foreground mb-1">Narrative</p>
                                             <p className="text-sm">{receiptData.narrative}</p>
                                         </div>
                                     </>

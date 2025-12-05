@@ -3,3 +3,4 @@ export { PageHeader } from './page-header';
 export { LoadingState } from './loading-state';
 export { ErrorState } from './error-state';
 export { CardSection } from './card-section';
+export { CheckoutForm } from './checkout-form';
