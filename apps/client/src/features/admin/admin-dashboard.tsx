@@ -24,11 +24,11 @@ import {
 } from '@/components/ui/table';
 import type { TAdminDashboardStats, TCategoryData, TRecentOrder, TRevenueTrendData } from '@repo/common';
 import {
+    Book,
     DollarSign,
     EyeIcon,
     MoreHorizontal,
     Newspaper,
-    Package,
     RefreshCw,
     ShoppingCart,
     TrendingUp,
@@ -87,7 +87,7 @@ export default function AdminDashboard({
                             Admin Dashboard
                         </h1>
                         <p className='text-muted-foreground mt-1'>
-                            Store analytics and management overview
+                            Book analytics and management overview
                         </p>
                     </div>
                     <div className='flex items-center space-x-3'>
@@ -195,7 +195,7 @@ export default function AdminDashboard({
                                 className='h-20 flex flex-col items-center justify-center space-y-2'
                             >
                                 <Link href={`/admin/books`}>
-                                    <Package className='h-6 w-6' />
+                                    <Book className='h-6 w-6' />
                                     <span>Manage Books</span>
                                 </Link>
                             </Button>
@@ -263,9 +263,9 @@ export default function AdminDashboard({
                     {/* Category Distribution */}
                     <Card>
                         <CardHeader>
-                            <CardTitle>Store Categories</CardTitle>
+                            <CardTitle>Book Categories</CardTitle>
                             <CardDescription>
-                                Distribution of stores by category
+                                Distribution of books by category
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -328,7 +328,7 @@ export default function AdminDashboard({
                     <Card>
                         <CardHeader>
                             <CardTitle>Recent Orders</CardTitle>
-                            <CardDescription>Latest orders across all stores</CardDescription>
+                            <CardDescription>Latest orders across all books</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <Table>

@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { getOrder } from '@/features/orders/actions/order.action';
-import { EPaymentStatus, type TOrderDetail } from '@repo/common';
+import { EPaymentStatus, ErrorType, type TOrderDetail, isErrorResponse } from '@repo/common';
 import {
     CreditCard,
     ArrowLeft,
@@ -14,13 +14,29 @@ import {
 import Link from 'next/link';
 import { redirect, notFound } from 'next/navigation';
 import { getMyOrderDetails } from '@/actions/profile.action';
+import { getAuth } from '@/actions/auth.action';
 
 export default async function OnlinePaymentPage({
     params
 }: {
-    params: Promise<{ orderId: string; provider: string }>
+    params: Promise<{ orderId: string; provider: string; locale: string }>
 }) {
-    const { orderId, provider } = await params;
+    const { orderId, provider, locale } = await params;
+    const { user, session, error } = await getAuth();
+
+    // Check if there's no session or invalid session
+    if (
+        !user ||
+        !session ||
+        (error && isErrorResponse(error) &&
+            (error.errorType === ErrorType.NOT_ACCESS_SESSION ||
+                error.errorType === ErrorType.INVALID_SESSION ||
+                error.errorType === ErrorType.EXPIRED_SESSION))
+    ) {
+        const loginUrl = `/${locale}/auth/signin`;
+        const callbackUrl = `/${locale}/checkout/${orderId}/payment/online/${provider}`;
+        redirect(`${loginUrl}?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+    }
 
     const response = await getMyOrderDetails(orderId);
 

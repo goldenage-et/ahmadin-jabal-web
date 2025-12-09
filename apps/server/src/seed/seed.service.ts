@@ -7,7 +7,8 @@ import {
 } from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { PrismaClient } from '@repo/prisma';
-import { initialUsers, initialRoles } from './seed.data';
+import { initialUsers, initialRoles, initialPlans } from './seed.data';
+import { ESubscriptionStatus } from '@repo/common';
 
 @Injectable()
 export class SeedService implements OnApplicationBootstrap {
@@ -19,6 +20,8 @@ export class SeedService implements OnApplicationBootstrap {
     this.logger.log('Seeding initial data...');
     await this.seedRoles();
     await this.seedOwnerUser();
+    await this.seedPlans();
+    await this.migratePremiumUsers();
     this.logger.log('Seeding complete.');
   }
 
@@ -116,6 +119,99 @@ export class SeedService implements OnApplicationBootstrap {
       this.logger.log(`Owner user created successfully.`);
     } catch (error) {
       this.logger.error('Error seeding owner user:', error);
+    }
+  }
+
+  private async seedPlans() {
+    try {
+      this.logger.log('Seeding plans...');
+
+      for (const planData of initialPlans) {
+        const existing = await this.db.plan.findFirst({
+          where: { name: planData.name },
+        });
+
+        if (existing) {
+          this.logger.log(`Plan '${planData.name}' already exists. Skipping.`);
+          continue;
+        }
+
+        await this.db.plan.create({
+          data: {
+            name: planData.name,
+            description: planData.description,
+            price: planData.price,
+            currency: planData.currency,
+            durationDays: planData.durationDays,
+            isLifetime: planData.isLifetime,
+            features: planData.features as any,
+            active: planData.active,
+          },
+        });
+
+        this.logger.log(`Plan '${planData.name}' created successfully.`);
+      }
+    } catch (error) {
+      this.logger.error('Error seeding plans:', error);
+    }
+  }
+
+  private async migratePremiumUsers() {
+    try {
+      this.logger.log('Migrating premium users to Legacy Premium plan...');
+
+      // Get Legacy Premium plan
+      const legacyPlan = await this.db.plan.findFirst({
+        where: { name: 'Legacy Premium' },
+      });
+
+      if (!legacyPlan) {
+        this.logger.warn('Legacy Premium plan not found. Skipping migration.');
+        return;
+      }
+
+      // Find all users with isPremium = true
+      const premiumUsers = await this.db.user.findMany({
+        where: { isPremium: true },
+      });
+
+      if (premiumUsers.length === 0) {
+        this.logger.log('No premium users found. Skipping migration.');
+        return;
+      }
+
+      let migratedCount = 0;
+      for (const user of premiumUsers) {
+        // Check if user already has an active subscription
+        const existingSubscription = await this.db.subscription.findFirst({
+          where: {
+            userId: user.id,
+            status: ESubscriptionStatus.active,
+          },
+        });
+
+        if (existingSubscription) {
+          this.logger.log(`User ${user.id} already has an active subscription. Skipping.`);
+          continue;
+        }
+
+        // Create Legacy Premium subscription
+        await this.db.subscription.create({
+          data: {
+            userId: user.id,
+            planId: legacyPlan.id,
+            status: ESubscriptionStatus.active,
+            startDate: new Date(),
+            endDate: null, // Lifetime
+          },
+        });
+
+        migratedCount++;
+      }
+
+      this.logger.log(`Migrated ${migratedCount} premium users to Legacy Premium plan.`);
+    } catch (error) {
+      this.logger.error('Error migrating premium users:', error);
     }
   }
 }

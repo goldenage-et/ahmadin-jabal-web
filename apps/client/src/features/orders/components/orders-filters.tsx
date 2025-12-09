@@ -68,11 +68,11 @@ export function OrdersFilters({ currentFilters }: OrdersFiltersProps) {
       <CardContent>
         <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
           <div>
-            <label className='text-sm font-medium text-gray-700 mb-2 block'>
+            <label className='text-sm font-medium text-muted-foreground mb-2 block'>
               Search
             </label>
             <div className='relative'>
-              <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400' />
+              <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground' />
               <Input
                 placeholder='Search by order number...'
                 value={filters.search}
@@ -84,7 +84,7 @@ export function OrdersFilters({ currentFilters }: OrdersFiltersProps) {
           </div>
 
           <div>
-            <label className='text-sm font-medium text-gray-700 mb-2 block'>
+            <label className='text-sm font-medium text-muted-foreground mb-2 block'>
               Status
             </label>
             <Select
@@ -113,7 +113,7 @@ export function OrdersFilters({ currentFilters }: OrdersFiltersProps) {
           </div>
 
           <div>
-            <label className='text-sm font-medium text-gray-700 mb-2 block'>
+            <label className='text-sm font-medium text-muted-foreground mb-2 block'>
               Payment Status
             </label>
             <Select
@@ -142,7 +142,7 @@ export function OrdersFilters({ currentFilters }: OrdersFiltersProps) {
           </div>
 
           <div>
-            <label className='text-sm font-medium text-gray-700 mb-2 block'>
+            <label className='text-sm font-medium text-muted-foreground mb-2 block'>
               Sort By
             </label>
             <Select
@@ -162,7 +162,7 @@ export function OrdersFilters({ currentFilters }: OrdersFiltersProps) {
             </Select>
           </div>
           <div>
-            <label className='text-sm font-medium text-gray-700 mb-2 block'>
+            <label className='text-sm font-medium text-muted-foreground mb-2 block'>
               Sort Order
             </label>
             <Select
@@ -181,7 +181,7 @@ export function OrdersFilters({ currentFilters }: OrdersFiltersProps) {
               </SelectContent>
             </Select>
             {isPending && (
-              <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900'></div>
+              <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-muted-foreground'></div>
             )}
           </div>
         </div>

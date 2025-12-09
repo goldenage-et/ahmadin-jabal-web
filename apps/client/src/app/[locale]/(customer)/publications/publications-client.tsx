@@ -6,17 +6,24 @@ import { Badge } from '@/components/ui/badge';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
-import { BookOpen, FileText, Download, Calendar, Globe, Star, ArrowRight } from 'lucide-react';
+import { BookOpen, FileText, Download, Calendar, Globe, Star, ArrowRight, Play, File, Image as ImageIcon } from 'lucide-react';
 import { formatPrice } from '@/lib/format';
 import { TPublicationBasic, TBlogBasic, TPaginationResponse } from '@repo/common';
+import {
+    getLocalizedPublicationTitle,
+    getLocalizedPublicationExcerpt,
+    getLocalizedTitle,
+    getLocalizedExcerpt,
+} from '@/lib/locale-utils';
 
 type PublicationsClientProps = {
     publications: TPublicationBasic[];
     publicationsMeta?: TPaginationResponse<TPublicationBasic[]>['meta'];
     featuredBlogs: TBlogBasic[];
+    locale: 'en' | 'am' | 'om';
 };
 
-export function PublicationsClient({ publications, publicationsMeta, featuredBlogs }: PublicationsClientProps) {
+export function PublicationsClient({ publications, publicationsMeta, featuredBlogs, locale }: PublicationsClientProps) {
     const t = useTranslations('publications');
 
     const getCategoryColor = (category: string | undefined) => {
@@ -55,22 +62,30 @@ export function PublicationsClient({ publications, publicationsMeta, featuredBlo
                 ) : (
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {publications.map((publication) => {
-                            const title = typeof publication.title === 'string'
-                                ? publication.title
-                                : publication.titleAm || publication.titleOr || 'Untitled';
+                            const title = getLocalizedPublicationTitle(publication, locale);
+                            const excerpt = getLocalizedPublicationExcerpt(publication, locale);
 
-                            const excerpt = typeof publication.excerpt === 'string'
-                                ? publication.excerpt
-                                : (publication.excerpt as any)?.en || publication.excerptAm || publication.excerptOr || '';
+                            // Get display image: featured image or first media item
+                            // Type assertion needed as TPublicationBasic may not include media in type but backend might return it
+                            const media = (publication as any).media as Array<{ id: string; url: string; type?: 'image' | 'video' | 'document'; alt?: string }> | undefined;
+                            const displayImage = publication.featuredImage ||
+                                (media && media.length > 0 && (media[0].type === 'image' || !media[0].type)
+                                    ? media[0].url
+                                    : null);
 
-                            const featuredImage = publication.featuredImage;
+                            // Get media counts by type
+                            const mediaCounts = media ? {
+                                images: media.filter(m => m.type === 'image' || !m.type).length,
+                                videos: media.filter(m => m.type === 'video').length,
+                                documents: media.filter(m => m.type === 'document').length,
+                            } : { images: 0, videos: 0, documents: 0 };
 
                             return (
                                 <Card key={publication.id} className="group hover:shadow-xl transition-all duration-300 overflow-hidden">
-                                    {featuredImage && (
+                                    {displayImage && (
                                         <div className="relative aspect-video overflow-hidden">
                                             <Image
-                                                src={featuredImage}
+                                                src={displayImage}
                                                 alt={title}
                                                 fill
                                                 className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -87,6 +102,29 @@ export function PublicationsClient({ publications, publicationsMeta, featuredBlo
                                                     <Badge variant="secondary" className="bg-yellow-600 text-white">
                                                         Premium
                                                     </Badge>
+                                                </div>
+                                            )}
+                                            {/* Media indicator overlay */}
+                                            {media && media.length > 0 && (
+                                                <div className="absolute bottom-4 right-4 flex items-center gap-2">
+                                                    {mediaCounts.images > 0 && (
+                                                        <Badge variant="secondary" className="bg-black/60 text-white backdrop-blur-sm">
+                                                            <ImageIcon className="h-3 w-3 mr-1" />
+                                                            {mediaCounts.images}
+                                                        </Badge>
+                                                    )}
+                                                    {mediaCounts.videos > 0 && (
+                                                        <Badge variant="secondary" className="bg-black/60 text-white backdrop-blur-sm">
+                                                            <Play className="h-3 w-3 mr-1" />
+                                                            {mediaCounts.videos}
+                                                        </Badge>
+                                                    )}
+                                                    {mediaCounts.documents > 0 && (
+                                                        <Badge variant="secondary" className="bg-black/60 text-white backdrop-blur-sm">
+                                                            <File className="h-3 w-3 mr-1" />
+                                                            {mediaCounts.documents}
+                                                        </Badge>
+                                                    )}
                                                 </div>
                                             )}
                                         </div>
@@ -153,11 +191,18 @@ export function PublicationsClient({ publications, publicationsMeta, featuredBlo
                                                         Read More
                                                     </Link>
                                                 </Button>
-                                                {publication.downloadCount > 0 && (
-                                                    <Button variant="ghost" size="sm">
-                                                        <Download className="h-4 w-4" />
-                                                    </Button>
-                                                )}
+                                                <div className="flex items-center gap-2">
+                                                    {media && media.length > 0 && (
+                                                        <Badge variant="outline" className="text-xs">
+                                                            {media.length} {media.length === 1 ? 'media' : 'media'}
+                                                        </Badge>
+                                                    )}
+                                                    {publication.downloadCount > 0 && (
+                                                        <Button variant="ghost" size="sm">
+                                                            <Download className="h-4 w-4" />
+                                                        </Button>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     </CardContent>
@@ -191,17 +236,14 @@ export function PublicationsClient({ publications, publicationsMeta, featuredBlo
 
                         <div className="grid md:grid-cols-2 gap-6">
                             {featuredBlogs.slice(0, 4).map((blog) => {
-                                const title = typeof blog.title === 'string'
-                                    ? blog.title
-                                    : (blog.title as any)?.en || blog.titleAm || blog.titleOr || 'Untitled';
+                                const title = getLocalizedTitle(blog, locale);
+                                const excerpt = getLocalizedExcerpt(blog, locale);
 
-                                const excerpt = typeof blog.excerpt === 'string'
-                                    ? blog.excerpt
-                                    : (blog.excerpt as any)?.en || blog.excerptAm || blog.excerptOr || '';
-
+                                // Type assertion for blog medias (may not be in type but backend might return it)
+                                const blogMedias = (blog as any).medias as Array<{ url: string }> | undefined;
                                 const featuredImage = blog.featuredImage ||
-                                    (blog.medias && Array.isArray(blog.medias) && blog.medias.length > 0
-                                        ? (blog.medias[0] as any)?.url
+                                    (blogMedias && Array.isArray(blogMedias) && blogMedias.length > 0
+                                        ? blogMedias[0]?.url
                                         : null);
 
                                 return (
@@ -221,13 +263,9 @@ export function PublicationsClient({ publications, publicationsMeta, featuredBlo
 
                                                 <div className="flex-1">
                                                     <div className="flex items-center space-x-2 mb-2">
-                                                        {blog.isFree ? (
+                                                        {blog.isPremium && (
                                                             <Badge variant="default" className="bg-yellow-600 text-white">
-                                                                Free
-                                                            </Badge>
-                                                        ) : (
-                                                            <Badge variant="secondary">
-                                                                {formatPrice(blog.price ?? 0)}
+                                                                Premium
                                                             </Badge>
                                                         )}
                                                         {blog.featured && (

@@ -2,13 +2,13 @@
 
 import { api } from '@/lib/api';
 
-import { TAdminDashboardStats } from '@repo/common';
+import { TAdminDashboardStats, isErrorResponse } from '@repo/common';
 
 // Get dashboard statistics from analytics endpoint
 export async function getDashboardStats(): Promise<TAdminDashboardStats> {
   try {
     const response = await api.get<TAdminDashboardStats>('/admin/analytics/dashboard');
-    if (response.error) {
+    if (isErrorResponse(response)) {
       return {
         totalRevenue: 0,
         totalOrders: 0,

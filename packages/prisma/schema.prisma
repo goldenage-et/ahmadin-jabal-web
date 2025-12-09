@@ -105,37 +105,40 @@ model Invitation {
 }
 
 model Order {
-  id                String         @id @default(uuid())
+  id                String          @id @default(uuid())
   userId            String
-  bookId            String
-  orderNumber       String         @unique(map: "orders_order_number_unique") @db.VarChar(50)
+  bookId            String?
+  planId            String?
+  orderNumber       String          @unique(map: "orders_order_number_unique") @db.VarChar(50)
   status            OrderStatus
   paymentStatus     PaymentStatus
   paymentMethod     PaymentMethod
-  shippingAddress   Json
+  shippingAddress   Json?
   subtotal          Float
-  tax               Float          @default(0)
-  shipping          Float          @default(0)
-  discount          Float          @default(0)
+  tax               Float           @default(0)
+  shipping          Float           @default(0)
+  discount          Float           @default(0)
   total             Float
   quantity          Int
-  currency          String         @default("ETB") @db.VarChar(8)
-  shippingMethod    ShippingMethod
-  trackingNumber    String?        @unique @db.VarChar(100)
+  currency          String          @default("ETB") @db.VarChar(8)
+  shippingMethod    ShippingMethod?
+  trackingNumber    String?         @unique @db.VarChar(100)
   estimatedDelivery DateTime?
   notes             String?
   customerNotes     String?
   statusHistory     Json?
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime       @updatedAt
-  book              Book           @relation(fields: [bookId], references: [id], onDelete: Restrict, onUpdate: NoAction)
-  user              User           @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  book              Book?           @relation(fields: [bookId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  plan              Plan?           @relation(fields: [planId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  user              User            @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: NoAction)
   bookReviews       BookReview[]
   payments          Payment[]
   transactions      Transaction[]
 
   @@index([userId])
   @@index([bookId])
+  @@index([planId])
   @@index([status])
   @@index([paymentStatus])
   @@index([orderNumber])
@@ -148,28 +151,29 @@ model Order {
 }
 
 model Payment {
-  id              String        @id @default(uuid())
-  orderId         String
+  id              String         @id @default(uuid())
+  orderId         String?
   userId          String
   amount          Float
-  currency        String        @default("ETB") @db.VarChar(8)
+  currency        String         @default("ETB") @db.VarChar(8)
   paymentMethod   PaymentMethod
-  paymentStatus   PaymentStatus @default(pending)
-  transactionId   String?       @unique @db.VarChar(255)
-  referenceNumber String?       @db.VarChar(255)
-  bankCode        String?       @db.VarChar(50)
+  paymentStatus   PaymentStatus  @default(pending)
+  transactionId   String?        @unique @db.VarChar(255)
+  referenceNumber String?        @db.VarChar(255)
+  bankCode        String?        @db.VarChar(50)
   bankAccountId   String?
   receiptData     Json?
   metadata        Json?
   failureReason   String?
   paidAt          DateTime?
   refundedAt      DateTime?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  order           Order         @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  user            User          @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  bankAccount     BankAccount?  @relation(fields: [bankAccountId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  order           Order?         @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user            User           @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  bankAccount     BankAccount?   @relation(fields: [bankAccountId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   transactions    Transaction[]
+  subscriptions   Subscription[]
 
   @@index([orderId])
   @@index([userId])
@@ -276,6 +280,7 @@ model Book {
   inventoryLowStockThreshold Int?
   status                     BookStatus   @default(active)
   featured                   Boolean      @default(false)
+  isPremium                  Boolean      @default(false)
   rating                     Float        @default(0)
   reviewCount                Int          @default(0)
   viewCount                  Int          @default(0)
@@ -296,9 +301,11 @@ model Book {
   @@index([subcategoryId])
   @@index([status])
   @@index([featured])
+  @@index([isPremium])
   @@index([slug])
   @@index([isbn])
   @@index([status, featured])
+  @@index([status, isPremium])
   @@index([status, publishedAt])
   @@index([publishedAt])
   @@index([createdAt])
@@ -391,6 +398,7 @@ model User {
   phone                   String?                  @unique
   emailVerified           Boolean
   active                  Boolean
+  isPremium               Boolean                  @default(false)
   image                   String?
   ltpHash                 String?
   otpHash                 String?
@@ -421,13 +429,15 @@ model User {
   contactSubmissions      ContactSubmission[]      @relation("ContactSubmissions")
   contactReplies          ContactSubmission[]      @relation("ContactReplies")
 
-  roles Role[] @relation("user_roles")
+  roles         Role[]         @relation("user_roles")
+  subscriptions Subscription[]
 
   @@index([email])
   @@index([phone])
   @@index([active])
   @@index([deletedAt])
   @@index([emailVerified])
+  @@index([isPremium])
   @@map("user")
 }
 
@@ -482,7 +492,7 @@ model Blog {
   tags          String[]
   status        BlogStatus    @default(draft)
   featured      Boolean       @default(false)
-  isFree        Boolean       @default(true)
+  isPremium     Boolean       @default(false)
   price         Float?
   viewCount     Int           @default(0)
   likeCount     Int           @default(0)
@@ -500,13 +510,13 @@ model Blog {
   @@index([categoryId])
   @@index([status])
   @@index([featured])
-  @@index([isFree])
+  @@index([isPremium])
   @@index([publishedAt])
   @@index([slug])
   @@index([status, featured])
   @@index([status, publishedAt])
   @@index([authorId, status])
-  @@index([status, isFree])
+  @@index([status, isPremium])
   @@index([createdAt])
   @@index([viewCount])
   @@index([likeCount])
@@ -644,6 +654,7 @@ model Media {
   likeCount        Int                @default(0)
   downloadCount    Int                @default(0)
   featured         Boolean            @default(false)
+  isPremium        Boolean            @default(false)
   status           MediaStatus        @default(draft)
   metadata         Json? // Additional metadata (tags, location, etc.)
   uploadedBy       String
@@ -661,12 +672,14 @@ model Media {
   @@index([category])
   @@index([status])
   @@index([featured])
+  @@index([isPremium])
   @@index([uploadedBy])
   @@index([source])
   @@index([externalId])
   @@index([publishedAt])
   @@index([createdAt])
   @@index([status, featured])
+  @@index([status, isPremium])
   @@index([type, status])
   @@index([type, category])
   @@index([viewCount])
@@ -730,6 +743,7 @@ model Video {
   likeCount     Int         @default(0)
   downloadCount Int         @default(0)
   featured      Boolean     @default(false)
+  isPremium     Boolean     @default(false)
   status        MediaStatus @default(draft)
   metadata      Json? // Additional metadata (tags, location, transcript, etc.)
   uploadedBy    String
@@ -743,12 +757,14 @@ model Video {
   @@index([category])
   @@index([status])
   @@index([featured])
+  @@index([isPremium])
   @@index([uploadedBy])
   @@index([source])
   @@index([externalId])
   @@index([publishedAt])
   @@index([createdAt])
   @@index([status, featured])
+  @@index([status, isPremium])
   @@index([source, status])
   @@index([viewCount])
   @@index([likeCount])
@@ -775,6 +791,7 @@ model Audio {
   likeCount     Int         @default(0)
   downloadCount Int         @default(0)
   featured      Boolean     @default(false)
+  isPremium     Boolean     @default(false)
   status        MediaStatus @default(draft)
   isAvailable   Boolean     @default(true) // For audio availability
   metadata      Json? // Additional metadata (tags, transcript, etc.)
@@ -789,6 +806,7 @@ model Audio {
   @@index([category])
   @@index([status])
   @@index([featured])
+  @@index([isPremium])
   @@index([isAvailable])
   @@index([uploadedBy])
   @@index([source])
@@ -796,6 +814,7 @@ model Audio {
   @@index([publishedAt])
   @@index([createdAt])
   @@index([status, featured])
+  @@index([status, isPremium])
   @@index([category, status])
   @@index([status, isAvailable])
   @@index([viewCount])
@@ -825,6 +844,7 @@ model Photo {
   likeCount     Int            @default(0)
   downloadCount Int            @default(0)
   featured      Boolean        @default(false)
+  isPremium     Boolean        @default(false)
   status        MediaStatus    @default(draft)
   metadata      Json? // Additional metadata (tags, location, camera info, etc.)
   uploadedBy    String
@@ -839,12 +859,14 @@ model Photo {
   @@index([category])
   @@index([status])
   @@index([featured])
+  @@index([isPremium])
   @@index([uploadedBy])
   @@index([source])
   @@index([externalId])
   @@index([publishedAt])
   @@index([createdAt])
   @@index([status, featured])
+  @@index([status, isPremium])
   @@index([category, status])
   @@index([viewCount])
   @@index([likeCount])
@@ -862,6 +884,7 @@ model Gallery {
   slug          String         @unique @db.VarChar(255)
   category      String?        @db.VarChar(100)
   featured      Boolean        @default(false)
+  isPremium     Boolean        @default(false)
   status        MediaStatus    @default(draft)
   coverImage    String?        @db.VarChar(500)
   metadata      Json? // Additional metadata (tags, location, etc.)
@@ -875,11 +898,13 @@ model Gallery {
   @@index([category])
   @@index([status])
   @@index([featured])
+  @@index([isPremium])
   @@index([slug])
   @@index([createdBy])
   @@index([publishedAt])
   @@index([createdAt])
   @@index([status, featured])
+  @@index([status, isPremium])
   @@map("galleries")
 }
 
@@ -911,6 +936,7 @@ model Newsletter {
   content        Json?            @default("{}")
   contentAm      Json?            @default("{}")
   contentOr      Json?            @default("{}")
+  isPremium      Boolean          @default(false)
   status         NewsletterStatus @default(draft)
   scheduledAt    DateTime?
   sentAt         DateTime?
@@ -923,11 +949,13 @@ model Newsletter {
   creator        User             @relation("NewsletterCreator", fields: [createdBy], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([status])
+  @@index([isPremium])
   @@index([createdBy])
   @@index([scheduledAt])
   @@index([sentAt])
   @@index([createdAt])
   @@index([status, scheduledAt])
+  @@index([status, isPremium])
   @@map("newsletters")
 }
 
@@ -983,6 +1011,48 @@ model ContactSubmission {
   @@index([status, createdAt])
   @@index([repliedAt])
   @@map("contact_submissions")
+}
+
+model Plan {
+  id            String         @id @default(uuid())
+  name          String         @db.VarChar(255)
+  description   String?        @db.Text
+  price         Float          @default(0)
+  currency      String         @default("ETB") @db.VarChar(8)
+  durationDays  Int? // Nullable for lifetime plans
+  isLifetime    Boolean        @default(false)
+  features      Json?          @default("{}")
+  active        Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  subscriptions Subscription[]
+  orders        Order[]
+
+  @@index([active])
+  @@index([name])
+  @@map("plans")
+}
+
+model Subscription {
+  id        String             @id @default(uuid())
+  userId    String
+  planId    String
+  status    SubscriptionStatus @default(active)
+  startDate DateTime           @default(now())
+  endDate   DateTime? // Nullable for lifetime subscriptions
+  paymentId String?
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  plan      Plan               @relation(fields: [planId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  payment   Payment?           @relation(fields: [paymentId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+
+  @@index([userId])
+  @@index([planId])
+  @@index([status])
+  @@index([endDate])
+  @@index([userId, status])
+  @@map("subscriptions")
 }
 
 enum PaymentMethod {
@@ -1128,4 +1198,10 @@ enum ContactSubmissionStatus {
   read     @map("read")
   replied  @map("replied")
   archived @map("archived")
+}
+
+enum SubscriptionStatus {
+  active    @map("active")
+  expired   @map("expired")
+  cancelled @map("cancelled")
 }

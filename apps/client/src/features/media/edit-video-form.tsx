@@ -20,12 +20,22 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { format } from 'date-fns';
+import { CalendarIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { useApiMutation } from '@/hooks/use-api-mutation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   TUpdateVideo,
   ZUpdateVideo,
   EMediaStatus,
+  EMediaSource,
   TVideoDetail,
 } from '@repo/common';
 import { ArrowLeft } from 'lucide-react';
@@ -46,30 +56,56 @@ export default function EditVideoForm({ video }: EditVideoFormProps) {
     resolver: zodResolver(ZUpdateVideo) as any,
     defaultValues: {
       title: video.title,
-      titleEn: video.titleEn || undefined,
-      description: video.description || undefined,
+      titleAm: video.titleAm || null,
+      titleOr: video.titleOr || null,
+      description: video.description || null,
+      descriptionAm: video.descriptionAm || null,
+      descriptionOr: video.descriptionOr || null,
+      category: video.category || null,
       url: video.url || undefined,
-      duration: video.duration || undefined,
+      thumbnail: video.thumbnail || null,
+      duration: video.duration || null,
+      fileSize: video.fileSize || null,
+      mimeType: video.mimeType || null,
+      width: video.width || null,
+      height: video.height || null,
+      source: video.source || undefined,
+      externalId: video.externalId || null,
       featured: video.featured,
       status: video.status,
+      metadata: video.metadata || null,
+      mediaId: video.mediaId || null,
       publishedAt: video.publishedAt
         ? new Date(video.publishedAt)
-        : undefined,
+        : null,
     },
   });
 
   useEffect(() => {
     form.reset({
       title: video.title,
-      titleEn: video.titleEn || undefined,
-      description: video.description || undefined,
+      titleAm: video.titleAm || null,
+      titleOr: video.titleOr || null,
+      description: video.description || null,
+      descriptionAm: video.descriptionAm || null,
+      descriptionOr: video.descriptionOr || null,
+      category: video.category || null,
       url: video.url || undefined,
-      duration: video.duration || undefined,
+      thumbnail: video.thumbnail || null,
+      duration: video.duration || null,
+      fileSize: video.fileSize || null,
+      mimeType: video.mimeType || null,
+      width: video.width || null,
+      height: video.height || null,
+      source: video.source || undefined,
+      externalId: video.externalId || null,
       featured: video.featured,
       status: video.status,
+      metadata: video.metadata || null,
+      mediaId: video.mediaId || null,
       publishedAt: video.publishedAt
         ? new Date(video.publishedAt)
-        : undefined,
+        : null,
     });
   }, [video, form]);
 
@@ -109,15 +145,35 @@ export default function EditVideoForm({ video }: EditVideoFormProps) {
 
               <FormField
                 control={form.control}
-                name='titleEn'
+                name='titleAm'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>English Title</FormLabel>
+                    <FormLabel>Amharic Title</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder='Enter English title (optional)'
+                        placeholder='Enter Amharic title (optional)'
                         {...field}
                         value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='titleOr'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Oromo Title</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='Enter Oromo title (optional)'
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
                       />
                     </FormControl>
                     <FormMessage />
@@ -137,6 +193,66 @@ export default function EditVideoForm({ video }: EditVideoFormProps) {
                         rows={4}
                         {...field}
                         value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='descriptionAm'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Amharic Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder='Amharic description (optional)'
+                        rows={3}
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='descriptionOr'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Oromo Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder='Oromo description (optional)'
+                        rows={3}
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='category'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='Video category (optional)'
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
                       />
                     </FormControl>
                     <FormMessage />
@@ -164,17 +280,72 @@ export default function EditVideoForm({ video }: EditVideoFormProps) {
 
               <FormField
                 control={form.control}
+                name='thumbnail'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Thumbnail URL</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='https://example.com/thumbnail.jpg'
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name='duration'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Duration</FormLabel>
+                    <FormLabel>Duration (seconds)</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder='e.g., 45:30'
+                        type='number'
+                        placeholder='e.g., 2730 for 45:30'
                         {...field}
-                        value={field.value || ''}
+                        value={field.value ?? ''}
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value ? parseInt(e.target.value) : null
+                          )
+                        }
                       />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='source'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Source</FormLabel>
+                    <Select
+                      onValueChange={(value) =>
+                        field.onChange(value as EMediaSource)
+                      }
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value={EMediaSource.upload}>Upload</SelectItem>
+                        <SelectItem value={EMediaSource.youtube}>YouTube</SelectItem>
+                        <SelectItem value={EMediaSource.external}>
+                          External
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -234,6 +405,48 @@ export default function EditVideoForm({ video }: EditVideoFormProps) {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name='publishedAt'
+                render={({ field }) => (
+                  <FormItem className='flex flex-col'>
+                    <FormLabel>Published Date</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={'outline'}
+                            className={cn(
+                              'w-full pl-3 text-left font-normal',
+                              !field.value && 'text-muted-foreground'
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, 'PPP')
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className='w-auto p-0' align='start'>
+                        <Calendar
+                          mode='single'
+                          selected={field.value || undefined}
+                          onSelect={(date) => field.onChange(date || null)}
+                          disabled={(date) =>
+                            date > new Date() || date < new Date('1900-01-01')
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </CardContent>
           </Card>
 
@@ -255,4 +468,5 @@ export default function EditVideoForm({ video }: EditVideoFormProps) {
     </div>
   );
 }
+
 

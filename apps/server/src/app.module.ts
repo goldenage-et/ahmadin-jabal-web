@@ -28,6 +28,8 @@ import { PublicationsModule } from './features/publications/publications.module'
 import { MediaModule } from './features/media/media.module';
 import { NewsletterModule } from './features/newsletter/newsletter.module';
 import { ContactModule } from './features/contact/contact.module';
+import { PlansModule } from './features/plans/plans.module';
+import { SubscriptionsModule } from './features/subscriptions/subscriptions.module';
 
 @Module({
   imports: [
@@ -64,6 +66,8 @@ import { ContactModule } from './features/contact/contact.module';
     MediaModule,
     NewsletterModule,
     ContactModule,
+    PlansModule,
+    SubscriptionsModule,
   ],
   controllers: [],
   providers: [ConfigService],

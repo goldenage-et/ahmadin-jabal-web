@@ -59,8 +59,8 @@ export function MainLayout({
             <SidebarHeader className='overflow-hidden'>
               <Link href='/admin/' className='block px-2 py-1 h-8'>
                 <div className='flex items-center gap-3'>
-                  <div className='size-7 aspect-square shrink-0 bg-purple-500 rounded-lg flex items-center justify-center'>
-                    <span className='text-white font-bold text-lg'>A</span>
+                  <div className='size-7 aspect-square shrink-0 bg-primary rounded-lg flex items-center justify-center'>
+                    <span className='text-background font-bold text-lg'>A</span>
                   </div>
                   <span className='text-xl font-extrabold tracking-tight text-sidebar-foreground text-nowrap'>
                     Ahmadin

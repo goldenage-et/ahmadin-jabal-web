@@ -28,7 +28,7 @@ import {
   ZCreateGallery,
   EMediaStatus,
 } from '@repo/common';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, CalendarIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -36,6 +36,14 @@ import { createGallery } from '@/actions/media.action';
 import { uploadFile } from '@/lib/file-upload';
 import { slugify } from '@/lib/slugify';
 import { toast } from 'sonner';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 export default function CreateGalleryForm() {
   const router = useRouter();
@@ -47,15 +55,18 @@ export default function CreateGalleryForm() {
     resolver: zodResolver(ZCreateGallery) as any,
     defaultValues: {
       title: '',
-      titleEn: '',
-      description: '',
+      titleAm: null,
+      titleOr: null,
+      description: null,
+      descriptionAm: null,
+      descriptionOr: null,
       slug: '',
-      category: '',
+      category: null,
       featured: false,
       status: EMediaStatus.draft,
-      coverImage: undefined,
-      metadata: undefined,
-      publishedAt: undefined,
+      coverImage: null,
+      metadata: null,
+      publishedAt: null,
     },
   });
 
@@ -131,21 +142,42 @@ export default function CreateGalleryForm() {
 
               <FormField
                 control={form.control}
-                name='titleEn'
+                name='titleAm'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>English Title</FormLabel>
+                    <FormLabel>Amharic Title</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder='Enter English title (optional)'
+                        placeholder='Enter Amharic title (optional)'
                         {...field}
                         value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name='titleOr'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Oromo Title</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='Enter Oromo title (optional)'
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name='description'
@@ -158,6 +190,47 @@ export default function CreateGalleryForm() {
                         rows={4}
                         {...field}
                         value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='descriptionAm'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Amharic Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder='Amharic description (optional)'
+                        rows={3}
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='descriptionOr'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Oromo Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder='Oromo description (optional)'
+                        rows={3}
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
                       />
                     </FormControl>
                     <FormMessage />
@@ -172,7 +245,12 @@ export default function CreateGalleryForm() {
                   <FormItem>
                     <FormLabel>Category</FormLabel>
                     <FormControl>
-                      <Input placeholder='Gallery category' {...field} value={field.value || ''} />
+                      <Input
+                        placeholder='Gallery category (optional)'
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -229,6 +307,48 @@ export default function CreateGalleryForm() {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name='publishedAt'
+                render={({ field }) => (
+                  <FormItem className='flex flex-col'>
+                    <FormLabel>Published Date</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={'outline'}
+                            className={cn(
+                              'w-full pl-3 text-left font-normal',
+                              !field.value && 'text-muted-foreground'
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, 'PPP')
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className='w-auto p-0' align='start'>
+                        <Calendar
+                          mode='single'
+                          selected={field.value || undefined}
+                          onSelect={(date) => field.onChange(date || null)}
+                          disabled={(date) =>
+                            date > new Date() || date < new Date('1900-01-01')
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </CardContent>
           </Card>
 
@@ -260,6 +380,14 @@ export default function CreateGalleryForm() {
                             />
                           </div>
                         )}
+                        <Input
+                          placeholder='Or enter cover image URL directly'
+                          value={coverImage}
+                          onChange={(e) => {
+                            setCoverImage(e.target.value);
+                            form.setValue('coverImage', e.target.value || null);
+                          }}
+                        />
                       </div>
                     </FormControl>
                     <FormMessage />

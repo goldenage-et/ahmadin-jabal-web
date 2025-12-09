@@ -62,12 +62,14 @@ export class PublicationsController {
     @UseGuards(UserAuthGuard)
     @UsePipes(QueryPipe(ZPublicationQueryFilter))
     async getMany(
+        @CurrentUser() user: TAuthUser | null,
         @CurrentSession() session: TSessionBasic | null,
         @Query() query: TPublicationQueryFilter,
     ): Promise<TPublicationListResponse> {
         return this.publicationsService.getMany({
             ...query,
             userId: session?.userId,
+            user: user,
         });
     }
 
@@ -82,6 +84,7 @@ export class PublicationsController {
             ...query,
             authorId: user.id,
             userId: user.id,
+            user: user,
         });
     }
 
@@ -90,20 +93,22 @@ export class PublicationsController {
     @UseGuards(UserAuthGuard)
     @UsePipes(QueryPipe(ZPublicationQueryUnique))
     async getOne(
+        @CurrentUser() user: TAuthUser | null,
         @CurrentSession() session: TSessionBasic | null,
         @Param('id') id: string,
     ): Promise<TPublicationDetail> {
-        return this.publicationsService.getOne({ id }, session?.userId);
+        return this.publicationsService.getOne({ id }, session?.userId, user);
     }
 
     @Get('slug/:slug')
     @UserAuthOptions({ safeAuth: true })
     @UseGuards(UserAuthGuard)
     async getOneBySlug(
+        @CurrentUser() user: TAuthUser | null,
         @CurrentSession() session: TSessionBasic | null,
         @Param('slug') slug: string,
     ): Promise<TPublicationDetail> {
-        return this.publicationsService.getOne({ slug }, session?.userId);
+        return this.publicationsService.getOne({ slug }, session?.userId, user);
     }
 
     @Put(':id')

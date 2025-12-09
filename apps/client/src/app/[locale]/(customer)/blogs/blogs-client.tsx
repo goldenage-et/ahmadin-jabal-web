@@ -9,6 +9,7 @@ import { formatPrice } from '@/lib/format';
 import { TBlogBasic, TPaginationResponse } from '@repo/common';
 import Image from 'next/image';
 import { getLocalizedTitle, getLocalizedExcerpt } from '@/lib/locale-utils';
+import { Crown } from 'lucide-react';
 
 type BlogsClientProps = {
     blogs: TBlogBasic[];
@@ -81,13 +82,15 @@ export function BlogsClient({ blogs, meta, locale }: BlogsClientProps) {
                                                                 Category
                                                             </Badge>
                                                         )}
-                                                        {blog.isFree ? (
-                                                            <Badge variant="default" className="bg-yellow-600 text-white">
-                                                                Free
+                                                        {blog.isPremium && (
+                                                            <Badge variant="outline" className="bg-yellow-500/90 text-white border-yellow-400">
+                                                                <Crown className="h-3 w-3 mr-1" />
+                                                                Premium
                                                             </Badge>
-                                                        ) : (
+                                                        )}
+                                                        {blog.price && (
                                                             <Badge variant="secondary">
-                                                                {formatPrice(blog.price ?? 0)}
+                                                                {formatPrice(blog.price)}
                                                             </Badge>
                                                         )}
                                                         {blog.featured && (

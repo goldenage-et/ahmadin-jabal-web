@@ -1,14 +1,35 @@
 import { getMyOrderDetails } from '@/actions/profile.action';
+import { getAuth } from '@/actions/auth.action';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { EOrderStatus, EPaymentMethod, EPaymentStatus, type TOrderDetail } from '@repo/common';
+import { EOrderStatus, EPaymentMethod, EPaymentStatus, ErrorType, type TOrderDetail, isErrorResponse } from '@repo/common';
 import { Clock, CreditCard, MapPin, Package, Truck } from 'lucide-react';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { OrderActions } from './_components/order-actions';
 
-export default async function OrderReviewPage({ params }: { params: Promise<{ orderId: string }> }) {
-    const { orderId } = await params;
+export default async function OrderReviewPage({
+    params
+}: {
+    params: Promise<{ orderId: string; locale: string }>
+}) {
+    const { orderId, locale } = await params;
+    const { user, session, error } = await getAuth();
+
+    // Check if there's no session or invalid session
+    if (
+        !user ||
+        !session ||
+        (error &&
+            isErrorResponse(error) &&
+            (error.errorType === ErrorType.NOT_ACCESS_SESSION ||
+                error.errorType === ErrorType.INVALID_SESSION ||
+                error.errorType === ErrorType.EXPIRED_SESSION))
+    ) {
+        const loginUrl = `/${locale}/auth/signin`;
+        const callbackUrl = `/${locale}/checkout/${orderId}`;
+        redirect(`${loginUrl}?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+    }
 
     const response = await getMyOrderDetails(orderId);
 
@@ -86,24 +107,46 @@ export default async function OrderReviewPage({ params }: { params: Promise<{ or
                     </Card>
                 </div>
 
-                {/* Shipping Address */}
-                <Card className="mb-6">
-                    <CardHeader>
-                        <CardTitle className="flex items-center space-x-2">
-                            <MapPin className="h-5 w-5" />
-                            <span>Shipping Address</span>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-foreground">
-                            <p>{order.shippingAddress.street}</p>
-                            <p>
-                                {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}
-                            </p>
-                            <p>{order.shippingAddress.country}</p>
-                        </div>
-                    </CardContent>
-                </Card>
+                {/* Shipping Address - Only show for book orders */}
+                {order.shippingAddress && !order.planId && (
+                    <Card className="mb-6">
+                        <CardHeader>
+                            <CardTitle className="flex items-center space-x-2">
+                                <MapPin className="h-5 w-5" />
+                                <span>Shipping Address</span>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-foreground">
+                                <p>{order.shippingAddress.street}</p>
+                                <p>
+                                    {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}
+                                </p>
+                                <p>{order.shippingAddress.country}</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
+
+                {/* Subscription Plan Info - Only show for subscription orders */}
+                {order.planId && (
+                    <Card className="mb-6">
+                        <CardHeader>
+                            <CardTitle className="flex items-center space-x-2">
+                                <Package className="h-5 w-5" />
+                                <span>Subscription Plan</span>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-foreground">
+                                <p className="font-semibold">This is a subscription order</p>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                    No physical shipping required. Your subscription will be activated after payment confirmation.
+                                </p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
 
                 {/* Payment & Shipping Details */}
                 <Card className="mb-6">
@@ -123,15 +166,19 @@ export default async function OrderReviewPage({ params }: { params: Promise<{ or
                             </div>
                         </div>
 
-                        <Separator />
+                        {!order.planId && (
+                            <>
+                                <Separator />
 
-                        <div className="flex items-center space-x-3">
-                            <Truck className="h-5 w-5 text-gray-500" />
-                            <div>
-                                <p className="text-sm text-muted-foreground">Shipping Method</p>
-                                <p className="font-medium capitalize">{order.shippingMethod}</p>
-                            </div>
-                        </div>
+                                <div className="flex items-center space-x-3">
+                                    <Truck className="h-5 w-5 text-gray-500" />
+                                    <div>
+                                        <p className="text-sm text-muted-foreground">Shipping Method</p>
+                                        <p className="font-medium capitalize">{order.shippingMethod || 'N/A'}</p>
+                                    </div>
+                                </div>
+                            </>
+                        )}
 
                         {order.trackingNumber && (
                             <>
@@ -178,10 +225,12 @@ export default async function OrderReviewPage({ params }: { params: Promise<{ or
                                 <span>Tax</span>
                                 <span>{order.tax.toFixed(2)} {order.currency || 'ETB'}</span>
                             </div>
-                            <div className="flex justify-between text-foreground">
-                                <span>Shipping</span>
-                                <span>{order.shipping.toFixed(2)} {order.currency || 'ETB'}</span>
-                            </div>
+                            {!order.planId && (
+                                <div className="flex justify-between text-foreground">
+                                    <span>Shipping</span>
+                                    <span>{order.shipping.toFixed(2)} {order.currency || 'ETB'}</span>
+                                </div>
+                            )}
                             {order.discount > 0 && (
                                 <div className="flex justify-between text-primary">
                                     <span>Discount</span>

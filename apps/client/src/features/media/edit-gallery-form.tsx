@@ -29,7 +29,7 @@ import {
   EMediaStatus,
   TGalleryDetail,
 } from '@repo/common';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, CalendarIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -37,6 +37,14 @@ import { updateGallery } from '@/actions/media.action';
 import { uploadFile } from '@/lib/file-upload';
 import { slugify } from '@/lib/slugify';
 import { toast } from 'sonner';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 interface EditGalleryFormProps {
   gallery: TGalleryDetail;
@@ -54,34 +62,40 @@ export default function EditGalleryForm({ gallery }: EditGalleryFormProps) {
     resolver: zodResolver(ZUpdateGallery) as any,
     defaultValues: {
       title: gallery.title,
-      titleEn: gallery.titleEn || undefined,
-      description: gallery.description || undefined,
+      titleAm: gallery.titleAm || null,
+      titleOr: gallery.titleOr || null,
+      description: gallery.description || null,
+      descriptionAm: gallery.descriptionAm || null,
+      descriptionOr: gallery.descriptionOr || null,
       slug: gallery.slug,
-      category: gallery.category || undefined,
+      category: gallery.category || null,
       featured: gallery.featured,
       status: gallery.status,
-      coverImage: gallery.coverImage || undefined,
-      metadata: gallery.metadata || undefined,
+      coverImage: gallery.coverImage || null,
+      metadata: gallery.metadata || null,
       publishedAt: gallery.publishedAt
         ? new Date(gallery.publishedAt)
-        : undefined,
+        : null,
     },
   });
 
   useEffect(() => {
     form.reset({
       title: gallery.title,
-      titleEn: gallery.titleEn || undefined,
-      description: gallery.description || undefined,
+      titleAm: gallery.titleAm || null,
+      titleOr: gallery.titleOr || null,
+      description: gallery.description || null,
+      descriptionAm: gallery.descriptionAm || null,
+      descriptionOr: gallery.descriptionOr || null,
       slug: gallery.slug,
-      category: gallery.category || undefined,
+      category: gallery.category || null,
       featured: gallery.featured,
       status: gallery.status,
-      coverImage: gallery.coverImage || undefined,
-      metadata: gallery.metadata || undefined,
+      coverImage: gallery.coverImage || null,
+      metadata: gallery.metadata || null,
       publishedAt: gallery.publishedAt
         ? new Date(gallery.publishedAt)
-        : undefined,
+        : null,
     });
     setCoverImage(gallery.coverImage || '');
   }, [gallery, form]);
@@ -156,15 +170,35 @@ export default function EditGalleryForm({ gallery }: EditGalleryFormProps) {
 
               <FormField
                 control={form.control}
-                name='titleEn'
+                name='titleAm'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>English Title</FormLabel>
+                    <FormLabel>Amharic Title</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder='Enter English title (optional)'
+                        placeholder='Enter Amharic title (optional)'
                         {...field}
                         value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='titleOr'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Oromo Title</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='Enter Oromo title (optional)'
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
                       />
                     </FormControl>
                     <FormMessage />
@@ -208,6 +242,47 @@ export default function EditGalleryForm({ gallery }: EditGalleryFormProps) {
                         rows={4}
                         {...field}
                         value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='descriptionAm'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Amharic Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder='Amharic description (optional)'
+                        rows={3}
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='descriptionOr'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Oromo Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder='Oromo description (optional)'
+                        rows={3}
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
                       />
                     </FormControl>
                     <FormMessage />
@@ -223,9 +298,10 @@ export default function EditGalleryForm({ gallery }: EditGalleryFormProps) {
                     <FormLabel>Category</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder='Gallery category'
+                        placeholder='Gallery category (optional)'
                         {...field}
                         value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
                       />
                     </FormControl>
                     <FormMessage />
@@ -283,6 +359,48 @@ export default function EditGalleryForm({ gallery }: EditGalleryFormProps) {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name='publishedAt'
+                render={({ field }) => (
+                  <FormItem className='flex flex-col'>
+                    <FormLabel>Published Date</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={'outline'}
+                            className={cn(
+                              'w-full pl-3 text-left font-normal',
+                              !field.value && 'text-muted-foreground'
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, 'PPP')
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className='w-auto p-0' align='start'>
+                        <Calendar
+                          mode='single'
+                          selected={field.value || undefined}
+                          onSelect={(date) => field.onChange(date || null)}
+                          disabled={(date) =>
+                            date > new Date() || date < new Date('1900-01-01')
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </CardContent>
           </Card>
 
@@ -314,6 +432,14 @@ export default function EditGalleryForm({ gallery }: EditGalleryFormProps) {
                             />
                           </div>
                         )}
+                        <Input
+                          placeholder='Or enter cover image URL directly'
+                          value={coverImage}
+                          onChange={(e) => {
+                            setCoverImage(e.target.value);
+                            form.setValue('coverImage', e.target.value || null);
+                          }}
+                        />
                       </div>
                     </FormControl>
                     <FormMessage />

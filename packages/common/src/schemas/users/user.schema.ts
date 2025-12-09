@@ -2,6 +2,7 @@ import phone from 'phone';
 import { z } from 'zod';
 import { EInvitationStatus } from '../enums';
 import { ZRole } from '../roles.schema';
+import { ZSubscriptionWithPlan } from '../subscriptions/subscription.schema';
 
 export const ZUser = z.object({
   id: z.string(),
@@ -19,16 +20,20 @@ export const ZUser = z.object({
   emailVerified: z.boolean(),
   image: z.string().nullable(),
   active: z.boolean(),
+  isPremium: z.boolean().default(false),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
 });
 export type TUser = z.infer<typeof ZUser>;
 
-export const ZUserBasic = ZUser.extend({});
+export const ZUserBasic = ZUser.extend({
+  activeSubscription: ZSubscriptionWithPlan.nullable().optional(),
+});
 export type TUserBasic = z.infer<typeof ZUserBasic>;
 
 export const ZAuthUser = ZUser.extend({
   roles: z.array(ZRole),
+  activeSubscription: ZSubscriptionWithPlan.nullable().optional(),
 });
 export type TAuthUser = z.infer<typeof ZAuthUser>;
 

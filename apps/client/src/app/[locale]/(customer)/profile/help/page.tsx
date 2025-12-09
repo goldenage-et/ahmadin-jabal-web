@@ -1,4 +1,4 @@
-import { HelpContent } from '../../components/help-content';
+import { HelpContent } from "@/features/portfolio/help-content";
 
 export default function HelpPage() {
   return <HelpContent />;

@@ -44,6 +44,7 @@ export const ZNewsletter = z.object({
     content: z.json().default({}).nullable().optional(),
     contentAm: z.json().default({}).nullable().optional(),
     contentOr: z.json().default({}).nullable().optional(),
+    isPremium: z.boolean().default(false),
     status: z.enum(Object.values(ENewsletterStatus) as [string, ...string[]]).default(ENewsletterStatus.draft),
     scheduledAt: z.coerce.date().nullable().optional(),
     sentAt: z.coerce.date().nullable().optional(),
@@ -66,6 +67,7 @@ export const ZNewsletterBasic = ZNewsletter.pick({
     title: true,
     titleAm: true,
     titleOr: true,
+    isPremium: true,
     status: true,
     scheduledAt: true,
     sentAt: true,
@@ -112,6 +114,7 @@ export const ZCreateNewsletter = z.object({
     content: z.json().default({}).optional().nullable(),
     contentAm: z.json().default({}).optional().nullable(),
     contentOr: z.json().default({}).optional().nullable(),
+    isPremium: z.boolean().default(false),
     status: z.enum(Object.values(ENewsletterStatus) as [string, ...string[]]).default(ENewsletterStatus.draft),
     scheduledAt: z.coerce.date().optional().nullable(),
 });
@@ -153,6 +156,7 @@ export const ZUpdateNewsletter = z.object({
     content: z.json().default({}).optional().nullable(),
     contentAm: z.json().default({}).optional().nullable(),
     contentOr: z.json().default({}).optional().nullable(),
+    isPremium: z.boolean().optional(),
     status: z.enum(Object.values(ENewsletterStatus) as [string, ...string[]]).optional(),
     scheduledAt: z.coerce.date().optional().nullable(),
 });

@@ -1,8 +1,8 @@
 import { getOrders } from '@/features/orders/actions/order.action';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { EOrderStatus, TOrderBasic, TOrderQueryFilter } from '@repo/common';
-import { Clock, DollarSign, Download, Package, Truck } from 'lucide-react';
+import { EOrderStatus, TOrderBasic, TOrderQueryFilter, isErrorResponse } from '@repo/common';
+import { Clock, DollarSign, Download, Package, Truck, Sparkles } from 'lucide-react';
 import { OrdersFilters } from '../../../../features/orders/components/orders-filters';
 import { OrdersPagination } from '../../../../features/orders/components/orders-pagination';
 import { OrdersTable } from '../../../../features/orders/components/orders-table';
@@ -19,7 +19,7 @@ export default async function OrdersPage({
   const ordersData = await getOrders(searchParams as TOrderQueryFilter);
 
   // Handle the response properly
-  if (!ordersData || ordersData.error) {
+  if (!ordersData || isErrorResponse(ordersData)) {
     throw new Error(ordersData.message);
   }
 
@@ -39,8 +39,8 @@ export default async function OrdersPage({
       {/* Header */}
       <div className='flex items-center justify-between'>
         <div>
-          <h1 className='text-3xl font-bold text-foreground dark:text-foreground'>Orders</h1>
-          <p className='text-muted-foreground dark:text-muted-foreground'>Manage and track customer orders</p>
+          <h1 className='text-3xl font-bold text-foreground'>Orders</h1>
+          <p className='text-muted-foreground'>Manage and track customer orders</p>
         </div>
         <div className='flex items-center gap-2'>
           <Button variant='outline' size='sm'>
@@ -51,18 +51,18 @@ export default async function OrdersPage({
       </div>
 
       {/* Stats Cards */}
-      <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4'>
         <Card>
           <CardContent className='p-6'>
             <div className='flex items-center'>
-              <div className='p-2 bg-blue-100 rounded-lg'>
-                <Package className='h-6 w-6 text-blue-600' />
+              <div className='p-2 bg-blue-100 rounded-lg dark:bg-blue-900 dark:text-blue-100'>
+                <Package className='h-6 w-6 text-blue-600 dark:text-blue-400' />
               </div>
               <div className='ml-4'>
-                <p className='text-sm font-medium text-muted-foreground dark:text-muted-foreground'>
+                <p className='text-sm font-medium text-muted-foreground'>
                   Total Orders
                 </p>
-                <p className='text-2xl font-bold text-foreground dark:text-foreground'>{total}</p>
+                <p className='text-2xl font-bold text-foreground'>{total}</p>
               </div>
             </div>
           </CardContent>
@@ -71,14 +71,14 @@ export default async function OrdersPage({
         <Card>
           <CardContent className='p-6'>
             <div className='flex items-center'>
-              <div className='p-2 bg-green-100 rounded-lg'>
-                <DollarSign className='h-6 w-6 text-green-600' />
+              <div className='p-2 bg-green-100 rounded-lg dark:bg-green-900 dark:text-green-100'>
+                <DollarSign className='h-6 w-6 text-green-600 dark:text-green-400' />
               </div>
               <div className='ml-4'>
-                <p className='text-sm font-medium text-muted-foreground dark:text-muted-foreground'>
+                <p className='text-sm font-medium text-muted-foreground'>
                   Total Revenue
                 </p>
-                <p className='text-2xl font-bold text-gray-900'>
+                <p className='text-2xl font-bold text-foreground'>
                   {formatCurrency(
                     orders.reduce(
                       (sum: number, order: TOrderBasic) => sum + order.total,
@@ -94,14 +94,14 @@ export default async function OrdersPage({
         <Card>
           <CardContent className='p-6'>
             <div className='flex items-center'>
-              <div className='p-2 bg-yellow-100 rounded-lg'>
-                <Clock className='h-6 w-6 text-yellow-600' />
+              <div className='p-2 bg-yellow-100 rounded-lg dark:bg-yellow-900 dark:text-yellow-100'>
+                <Clock className='h-6 w-6 text-yellow-600 dark:text-yellow-400' />
               </div>
               <div className='ml-4'>
-                <p className='text-sm font-medium text-muted-foreground dark:text-muted-foreground'>
+                <p className='text-sm font-medium text-muted-foreground'>
                   Pending Orders
                 </p>
-                <p className='text-2xl font-bold text-gray-900'>
+                <p className='text-2xl font-bold text-foreground'>
                   {
                     orders.filter(
                       (order: TOrderBasic) =>
@@ -117,18 +117,40 @@ export default async function OrdersPage({
         <Card>
           <CardContent className='p-6'>
             <div className='flex items-center'>
-              <div className='p-2 bg-purple-100 rounded-lg'>
-                <Truck className='h-6 w-6 text-purple-600' />
+              <div className='p-2 bg-purple-100 rounded-lg dark:bg-purple-900 dark:text-purple-100'>
+                <Truck className='h-6 w-6 text-purple-600 dark:text-purple-400' />
               </div>
               <div className='ml-4'>
-                <p className='text-sm font-medium text-muted-foreground dark:text-muted-foreground'>
+                <p className='text-sm font-medium text-muted-foreground'>
                   Shipped Orders
                 </p>
-                <p className='text-2xl font-bold text-gray-900'>
+                <p className='text-2xl font-bold text-foreground'>
                   {
                     orders.filter(
                       (order: TOrderBasic) =>
                         order.status === EOrderStatus.shipped,
+                    ).length
+                  }
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className='p-6'>
+            <div className='flex items-center'>
+              <div className='p-2 bg-pink-100 rounded-lg dark:bg-pink-900 dark:text-pink-100'>
+                <Sparkles className='h-6 w-6 text-pink-600 dark:text-pink-400' />
+              </div>
+              <div className='ml-4'>
+                <p className='text-sm font-medium text-muted-foreground'>
+                  Subscription Orders
+                </p>
+                <p className='text-2xl font-bold text-foreground'>
+                  {
+                    orders.filter(
+                      (order: TOrderBasic) => !!order.planId,
                     ).length
                   }
                 </p>

@@ -1,9 +1,11 @@
 import { getMyOrderDetails } from '@/actions/profile.action';
+import { getAuth } from '@/actions/auth.action';
+import { getMySubscription } from '@/actions/subscription.action';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { EOrderStatus, EPaymentMethod, EPaymentStatus, type TOrderDetail } from '@repo/common';
+import { EOrderStatus, EPaymentMethod, EPaymentStatus, ErrorType, type TOrderDetail, type TSubscriptionWithPlan, isErrorResponse } from '@repo/common';
 import {
     AlertCircle,
     CheckCircle,
@@ -13,8 +15,9 @@ import {
     Package,
     ShoppingBag,
     Truck,
+    Sparkles,
 } from 'lucide-react';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { CelebrationToast } from './_components/celebration-toast';
 import { OrderActions as CompletedOrderActions } from './_components/order-actions';
 import { QuickActions } from './_components/quick-actions';
@@ -23,8 +26,25 @@ function Label({ className, children }: { className?: string; children: React.Re
     return <div className={className}>{children}</div>;
 }
 
-export default async function OrderCompletedPage({ params }: { params: Promise<{ orderId: string }> }) {
-    const { orderId } = await params;
+export default async function OrderCompletedPage({
+    params
+}: {
+    params: Promise<{ orderId: string; locale: string }>
+}) {
+    const { orderId, locale } = await params;
+    const { user, session, error } = await getAuth();
+
+    // Check if there's no session or invalid session
+    const hasError = error && isErrorResponse(error) &&
+        (error.errorType === ErrorType.NOT_ACCESS_SESSION ||
+            error.errorType === ErrorType.INVALID_SESSION ||
+            error.errorType === ErrorType.EXPIRED_SESSION);
+
+    if (!user || !session || hasError) {
+        const loginUrl = `/${locale}/auth/signin`;
+        const callbackUrl = `/${locale}/checkout/${orderId}/completed`;
+        redirect(`${loginUrl}?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+    }
 
     const response = await getMyOrderDetails(orderId);
 
@@ -33,6 +53,18 @@ export default async function OrderCompletedPage({ params }: { params: Promise<{
     }
 
     const order = response as TOrderDetail;
+
+    // Check if this is a subscription order
+    const isSubscriptionOrder = !!order.planId;
+
+    // If it's a subscription order and payment is confirmed, check subscription status
+    let subscription: TSubscriptionWithPlan | null = null;
+    if (isSubscriptionOrder && order.paymentStatus === EPaymentStatus.paid) {
+        const subscriptionResponse = await getMySubscription();
+        if (subscriptionResponse && !('error' in subscriptionResponse) && subscriptionResponse !== null) {
+            subscription = subscriptionResponse;
+        }
+    }
 
     const getStatusColor = (status: EOrderStatus) => {
         const colors = {
@@ -61,10 +93,14 @@ export default async function OrderCompletedPage({ params }: { params: Promise<{
                         <CheckCircle className="h-12 w-12 text-primary" />
                     </div>
                     <h1 className="text-4xl font-bold text-foreground mb-2">
-                        {isPaid || isCashOnDelivery ? 'Order Confirmed!' : 'Order Placed!'}
+                        {isSubscriptionOrder
+                            ? (isPaid ? 'Subscription Activated!' : 'Subscription Order Placed!')
+                            : (isPaid || isCashOnDelivery ? 'Order Confirmed!' : 'Order Placed!')}
                     </h1>
                     <p className="text-xl text-muted-foreground">
-                        Thank you for your order
+                        {isSubscriptionOrder
+                            ? (isPaid ? 'Thank you for subscribing!' : 'Thank you for your subscription order')
+                            : 'Thank you for your order'}
                     </p>
                     <p className="text-muted-foreground mt-2">
                         Order Number: <span className="font-mono font-semibold">#{order.orderNumber}</span>
@@ -76,9 +112,24 @@ export default async function OrderCompletedPage({ params }: { params: Promise<{
                     <Alert className="mb-6 bg-primary/10 border-primary/20">
                         <CheckCircle className="h-4 w-4 text-primary" />
                         <AlertDescription className="text-foreground">
-                            <p className="font-medium">Payment Successful</p>
+                            <p className="font-medium">
+                                {isSubscriptionOrder ? 'Payment Successful & Subscription Activated' : 'Payment Successful'}
+                            </p>
                             <p className="text-sm mt-1">
-                                Your payment has been confirmed and your order is being processed.
+                                {isSubscriptionOrder ? (
+                                    subscription ? (
+                                        <>
+                                            Your payment has been confirmed and your subscription is now active!
+                                            <span className="block mt-2 font-medium">
+                                                You can now access all premium features and content.
+                                            </span>
+                                        </>
+                                    ) : (
+                                        'Your payment has been confirmed. Your subscription will be activated shortly.'
+                                    )
+                                ) : (
+                                    'Your payment has been confirmed and your order is being processed.'
+                                )}
                             </p>
                         </AlertDescription>
                     </Alert>
@@ -113,7 +164,7 @@ export default async function OrderCompletedPage({ params }: { params: Promise<{
                 <Card className="mb-6">
                     <CardHeader>
                         <CardTitle className="flex items-center justify-between">
-                            <span>Order Status</span>
+                            <span>{isSubscriptionOrder ? 'Subscription Status' : 'Order Status'}</span>
                             <Badge className={getStatusColor(order.status)}>
                                 {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                             </Badge>
@@ -126,7 +177,9 @@ export default async function OrderCompletedPage({ params }: { params: Promise<{
                                     <CheckCircle className="h-4 w-4 text-primary" />
                                 </div>
                                 <div className="flex-1">
-                                    <p className="font-medium text-foreground">Order Placed</p>
+                                    <p className="font-medium text-foreground">
+                                        {isSubscriptionOrder ? 'Subscription Order Placed' : 'Order Placed'}
+                                    </p>
                                     <p className="text-sm text-muted-foreground">
                                         {new Date(order.createdAt).toLocaleString()}
                                     </p>
@@ -141,103 +194,178 @@ export default async function OrderCompletedPage({ params }: { params: Promise<{
                                     <div className="flex-1">
                                         <p className="font-medium text-foreground">Payment Confirmed</p>
                                         <p className="text-sm text-muted-foreground">
-                                            Your payment has been received and verified
+                                            {isSubscriptionOrder
+                                                ? 'Your payment has been received and verified'
+                                                : 'Your payment has been received and verified'}
                                         </p>
                                     </div>
                                 </div>
                             )}
 
-                            <div className="flex items-start space-x-3">
-                                <div className="p-2 bg-primary/10 rounded-full">
-                                    <Package className="h-4 w-4 text-muted-foreground" />
-                                </div>
-                                <div className="flex-1">
-                                    <p className="font-medium text-muted-foreground">Processing</p>
-                                    <p className="text-sm text-muted-foreground">
-                                        We'll start processing your order soon
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-start space-x-3">
-                                <div className="p-2 bg-primary/10 rounded-full">
-                                    <Truck className="h-4 w-4 text-muted-foreground" />
-                                </div>
-                                <div className="flex-1">
-                                    <p className="font-medium text-muted-foreground">Shipped</p>
-                                    <p className="text-sm text-muted-foreground">
-                                        Your order will be shipped when ready
-                                    </p>
-                                </div>
-                            </div>
-
-                            {order.estimatedDelivery && (
-                                <div className="mt-4 p-3 bg-primary/10 border border-primary/20 rounded-lg">
-                                    <div className="flex items-center space-x-2 text-foreground">
-                                        <Clock className="h-4 w-4" />
-                                        <span className="text-sm font-medium">
-                                            Estimated Delivery: {new Date(order.estimatedDelivery).toLocaleDateString()}
-                                        </span>
+                            {isSubscriptionOrder && isPaid && subscription && (
+                                <div className="flex items-start space-x-3">
+                                    <div className="p-2 bg-primary/10 rounded-full">
+                                        <Sparkles className="h-4 w-4 text-primary" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="font-medium text-foreground">Subscription Activated</p>
+                                        <p className="text-sm text-muted-foreground">
+                                            Your subscription is now active! Access premium features and content.
+                                        </p>
                                     </div>
                                 </div>
+                            )}
+
+                            {!isSubscriptionOrder && (
+                                <>
+                                    <div className="flex items-start space-x-3">
+                                        <div className="p-2 bg-primary/10 rounded-full">
+                                            <Package className="h-4 w-4 text-muted-foreground" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="font-medium text-muted-foreground">Processing</p>
+                                            <p className="text-sm text-muted-foreground">
+                                                We'll start processing your order soon
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-start space-x-3">
+                                        <div className="p-2 bg-primary/10 rounded-full">
+                                            <Truck className="h-4 w-4 text-muted-foreground" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="font-medium text-muted-foreground">Shipped</p>
+                                            <p className="text-sm text-muted-foreground">
+                                                Your order will be shipped when ready
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {order.estimatedDelivery && (
+                                        <div className="mt-4 p-3 bg-primary/10 border border-primary/20 rounded-lg">
+                                            <div className="flex items-center space-x-2 text-foreground">
+                                                <Clock className="h-4 w-4" />
+                                                <span className="text-sm font-medium">
+                                                    Estimated Delivery: {new Date(order.estimatedDelivery).toLocaleDateString()}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
                             )}
                         </div>
                     </CardContent>
                 </Card>
 
-                {/* Order Items (details removed from schema) */}
-                <Card className="mb-6">
-                    <CardHeader>
-                        <CardTitle className="flex items-center space-x-2">
-                            <ShoppingBag className="h-5 w-5" />
-                            <span>Order Quantity</span>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-sm text-muted-foreground">
-                            Total items: <span className="font-medium">{order.quantity}</span>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Delivery Information */}
-                <Card className="mb-6">
-                    <CardHeader>
-                        <CardTitle className="flex items-center space-x-2">
-                            <MapPin className="h-5 w-5" />
-                            <span>Delivery Information</span>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div>
-                            <Label className="text-sm text-muted-foreground mb-1">Shipping Address</Label>
-                            <div className="text-muted-foreground">
-                                <p className="text-muted-foreground">{order.shippingAddress.street}</p>
-                                <p>
-                                    <span className="text-muted-foreground">{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}</span>
-                                </p>
-                                <p className="text-muted-foreground">{order.shippingAddress.country}</p>
-                            </div>
-                        </div>
-
-                        <Separator />
-
-                        <div>
-                            <Label className="text-sm text-muted-foreground mb-1">Shipping Method</Label>
-                            <p className="font-medium capitalize">{order.shippingMethod}</p>
-                        </div>
-
-                        {order.trackingNumber && (
-                            <>
-                                <Separator />
-                                <div>
-                                    <Label className="text-sm text-muted-foreground mb-1">Tracking Number</Label>
-                                    <p className="font-mono font-medium">{order.trackingNumber}</p>
+                {/* Subscription Plan Info - Only show for subscription orders */}
+                {isSubscriptionOrder && (
+                    <Card className="mb-6">
+                        <CardHeader>
+                            <CardTitle className="flex items-center space-x-2">
+                                <Sparkles className="h-5 w-5" />
+                                <span>Subscription Plan</span>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            {subscription ? (
+                                <div className="space-y-2">
+                                    <div>
+                                        <p className="font-semibold text-foreground">{subscription.plan.name}</p>
+                                        <p className="text-sm text-muted-foreground">{subscription.plan.description}</p>
+                                    </div>
+                                    <div className="flex items-center space-x-4 text-sm">
+                                        <div>
+                                            <span className="text-muted-foreground">Status: </span>
+                                            <Badge variant="outline" className="ml-1">
+                                                {subscription.status}
+                                            </Badge>
+                                        </div>
+                                        {subscription.endDate && (
+                                            <div>
+                                                <span className="text-muted-foreground">Expires: </span>
+                                                <span className="font-medium">
+                                                    {new Date(subscription.endDate).toLocaleDateString()}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-                            </>
-                        )}
-                    </CardContent>
-                </Card>
+                            ) : (
+                                <div className="text-foreground">
+                                    <p className="font-semibold">Subscription Order</p>
+                                    <p className="text-sm text-muted-foreground mt-1">
+                                        {isPaid
+                                            ? 'Your subscription is being activated. Please refresh the page in a moment.'
+                                            : 'Your subscription will be activated after payment confirmation.'}
+                                    </p>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                )}
+
+                {/* Order Items - Only show for book orders */}
+                {!isSubscriptionOrder && (
+                    <Card className="mb-6">
+                        <CardHeader>
+                            <CardTitle className="flex items-center space-x-2">
+                                <ShoppingBag className="h-5 w-5" />
+                                <span>Order Quantity</span>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-sm text-muted-foreground">
+                                Total items: <span className="font-medium">{order.quantity}</span>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
+
+                {/* Delivery Information - Only show for book orders */}
+                {!isSubscriptionOrder && order.shippingAddress && (
+                    <Card className="mb-6">
+                        <CardHeader>
+                            <CardTitle className="flex items-center space-x-2">
+                                <MapPin className="h-5 w-5" />
+                                <span>Delivery Information</span>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            {order.shippingAddress && (
+                                <div>
+                                    <Label className="text-sm text-muted-foreground mb-1">Shipping Address</Label>
+                                    <div className="text-muted-foreground">
+                                        <p className="text-muted-foreground">{order.shippingAddress.street}</p>
+                                        <p>
+                                            <span className="text-muted-foreground">{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}</span>
+                                        </p>
+                                        <p className="text-muted-foreground">{order.shippingAddress.country}</p>
+                                    </div>
+                                </div>
+                            )}
+                            {order.shippingMethod && (
+                                <>
+                                    <Separator />
+                                    <div>
+                                        <Label className="text-sm text-muted-foreground mb-1">Shipping Method</Label>
+                                        <p className="font-medium capitalize">{order.shippingMethod}</p>
+                                    </div>
+                                </>
+                            )}
+
+                            {order.trackingNumber && (
+                                <>
+                                    <Separator />
+                                    <div>
+                                        <Label className="text-sm text-muted-foreground mb-1">Tracking Number</Label>
+                                        <p className="font-mono font-medium">{order.trackingNumber}</p>
+                                    </div>
+                                </>
+                            )}
+                        </CardContent>
+                    </Card>
+                )}
 
                 {/* Order Summary */}
                 <Card className="mb-6">
@@ -283,34 +411,92 @@ export default async function OrderCompletedPage({ params }: { params: Promise<{
                     <CardHeader>
                         <CardTitle className="text-foreground">What's Next?</CardTitle>
                         <CardDescription className="text-muted-foreground">
-                            Here's what you can expect
+                            {isSubscriptionOrder ? 'Here\'s what you can do now' : 'Here\'s what you can expect'}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                        <div className="flex items-start space-x-3">
-                            <div className="mt-0.5 h-2 w-2 rounded-full bg-primary" />
-                            <p className="text-foreground">
-                                You'll receive an email confirmation with your order details
-                            </p>
-                        </div>
-                        <div className="flex items-start space-x-3">
-                            <div className="mt-0.5 h-2 w-2 rounded-full bg-primary" />
-                            <p className="text-foreground">
-                                We'll notify you when your order is being processed
-                            </p>
-                        </div>
-                        <div className="flex items-start space-x-3">
-                            <div className="mt-0.5 h-2 w-2 rounded-full bg-primary" />
-                            <p className="text-foreground">
-                                Track your order status in the "My Orders" section
-                            </p>
-                        </div>
-                        <div className="flex items-start space-x-3">
-                            <div className="mt-0.5 h-2 w-2 rounded-full bg-primary" />
-                            <p className="text-foreground">
-                                You'll receive tracking information when your order ships
-                            </p>
-                        </div>
+                        {isSubscriptionOrder ? (
+                            <>
+                                {isPaid && subscription ? (
+                                    <>
+                                        <div className="flex items-start space-x-3">
+                                            <div className="mt-0.5 h-2 w-2 rounded-full bg-primary" />
+                                            <p className="text-foreground">
+                                                Your subscription is active! Access premium content and features now
+                                            </p>
+                                        </div>
+                                        <div className="flex items-start space-x-3">
+                                            <div className="mt-0.5 h-2 w-2 rounded-full bg-primary" />
+                                            <p className="text-foreground">
+                                                Browse premium publications, blogs, and exclusive content
+                                            </p>
+                                        </div>
+                                        <div className="flex items-start space-x-3">
+                                            <div className="mt-0.5 h-2 w-2 rounded-full bg-primary" />
+                                            <p className="text-foreground">
+                                                Manage your subscription in the "My Subscription" section
+                                            </p>
+                                        </div>
+                                        <div className="flex items-start space-x-3">
+                                            <div className="mt-0.5 h-2 w-2 rounded-full bg-primary" />
+                                            <p className="text-foreground">
+                                                You'll receive email updates about your subscription
+                                            </p>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className="flex items-start space-x-3">
+                                            <div className="mt-0.5 h-2 w-2 rounded-full bg-primary" />
+                                            <p className="text-foreground">
+                                                You'll receive an email confirmation with your subscription details
+                                            </p>
+                                        </div>
+                                        <div className="flex items-start space-x-3">
+                                            <div className="mt-0.5 h-2 w-2 rounded-full bg-primary" />
+                                            <p className="text-foreground">
+                                                {isPaid
+                                                    ? 'Your subscription will be activated shortly after payment verification'
+                                                    : 'Complete payment to activate your subscription'}
+                                            </p>
+                                        </div>
+                                        <div className="flex items-start space-x-3">
+                                            <div className="mt-0.5 h-2 w-2 rounded-full bg-primary" />
+                                            <p className="text-foreground">
+                                                Track your subscription status in the "My Orders" section
+                                            </p>
+                                        </div>
+                                    </>
+                                )}
+                            </>
+                        ) : (
+                            <>
+                                <div className="flex items-start space-x-3">
+                                    <div className="mt-0.5 h-2 w-2 rounded-full bg-primary" />
+                                    <p className="text-foreground">
+                                        You'll receive an email confirmation with your order details
+                                    </p>
+                                </div>
+                                <div className="flex items-start space-x-3">
+                                    <div className="mt-0.5 h-2 w-2 rounded-full bg-primary" />
+                                    <p className="text-foreground">
+                                        We'll notify you when your order is being processed
+                                    </p>
+                                </div>
+                                <div className="flex items-start space-x-3">
+                                    <div className="mt-0.5 h-2 w-2 rounded-full bg-primary" />
+                                    <p className="text-foreground">
+                                        Track your order status in the "My Orders" section
+                                    </p>
+                                </div>
+                                <div className="flex items-start space-x-3">
+                                    <div className="mt-0.5 h-2 w-2 rounded-full bg-primary" />
+                                    <p className="text-foreground">
+                                        You'll receive tracking information when your order ships
+                                    </p>
+                                </div>
+                            </>
+                        )}
                     </CardContent>
                 </Card>
 

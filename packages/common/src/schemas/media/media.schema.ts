@@ -62,6 +62,7 @@ export const ZMedia = z.object({
     likeCount: z.number().int().min(0, 'Like count cannot be negative').default(0),
     downloadCount: z.number().int().min(0, 'Download count cannot be negative').default(0),
     featured: z.boolean().default(false),
+    isPremium: z.boolean().default(false),
     status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.draft),
     metadata: z.any().nullable().optional(),
     uploadedBy: z.uuid('Invalid uploader ID format'),
@@ -96,6 +97,7 @@ export const ZMediaBasic = ZMedia.pick({
     likeCount: true,
     downloadCount: true,
     featured: true,
+    isPremium: true,
     status: true,
     uploadedBy: true,
     publishedAt: true,
@@ -156,6 +158,7 @@ export const ZCreateMedia = z.object({
         .optional()
         .nullable(),
     featured: z.boolean().default(false),
+    isPremium: z.boolean().default(false),
     status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.draft),
     metadata: z.any().optional().nullable(),
     publishedAt: z.coerce.date().optional().nullable(),
@@ -215,6 +218,7 @@ export const ZUpdateMedia = z.object({
         .optional()
         .nullable(),
     featured: z.boolean().optional(),
+    isPremium: z.boolean().optional(),
     status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).optional(),
     metadata: z.any().optional().nullable(),
     publishedAt: z.coerce.date().optional().nullable(),
@@ -386,6 +390,7 @@ export const ZVideo = z.object({
     likeCount: z.number().int().min(0, 'Like count cannot be negative').default(0),
     downloadCount: z.number().int().min(0, 'Download count cannot be negative').default(0),
     featured: z.boolean().default(false),
+    isPremium: z.boolean().default(false),
     status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.draft),
     metadata: z.any().nullable().optional(),
     uploadedBy: z.uuid('Invalid uploader ID format'),
@@ -420,6 +425,7 @@ export const ZVideoBasic = ZVideo.pick({
     likeCount: true,
     downloadCount: true,
     featured: true,
+    isPremium: true,
     status: true,
     uploadedBy: true,
     publishedAt: true,
@@ -478,6 +484,7 @@ export const ZCreateVideo = z.object({
         .optional()
         .nullable(),
     featured: z.boolean().default(false),
+    isPremium: z.boolean().default(false),
     status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.draft),
     metadata: z.any().optional().nullable(),
     mediaId: z.uuid('Invalid media ID format').optional().nullable(),
@@ -537,6 +544,7 @@ export const ZUpdateVideo = z.object({
         .optional()
         .nullable(),
     featured: z.boolean().optional(),
+    isPremium: z.boolean().optional(),
     status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).optional(),
     metadata: z.any().optional().nullable(),
     mediaId: z.uuid('Invalid media ID format').optional().nullable(),
@@ -684,6 +692,7 @@ export const ZAudio = z.object({
     likeCount: z.number().int().min(0, 'Like count cannot be negative').default(0),
     downloadCount: z.number().int().min(0, 'Download count cannot be negative').default(0),
     featured: z.boolean().default(false),
+    isPremium: z.boolean().default(false),
     status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.draft),
     isAvailable: z.boolean().default(true),
     metadata: z.any().nullable().optional(),
@@ -717,6 +726,7 @@ export const ZAudioBasic = ZAudio.pick({
     likeCount: true,
     downloadCount: true,
     featured: true,
+    isPremium: true,
     status: true,
     isAvailable: true,
     uploadedBy: true,
@@ -774,6 +784,7 @@ export const ZCreateAudio = z.object({
         .optional()
         .nullable(),
     featured: z.boolean().default(false),
+    isPremium: z.boolean().default(false),
     status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.draft),
     isAvailable: z.boolean().default(true),
     metadata: z.any().optional().nullable(),
@@ -833,6 +844,7 @@ export const ZUpdateAudio = z.object({
         .optional()
         .nullable(),
     featured: z.boolean().optional(),
+    isPremium: z.boolean().optional(),
     status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).optional(),
     isAvailable: z.boolean().optional(),
     metadata: z.any().optional().nullable(),
@@ -991,6 +1003,7 @@ export const ZPhoto = z.object({
     likeCount: z.number().int().min(0, 'Like count cannot be negative').default(0),
     downloadCount: z.number().int().min(0, 'Download count cannot be negative').default(0),
     featured: z.boolean().default(false),
+    isPremium: z.boolean().default(false),
     status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.draft),
     metadata: z.any().nullable().optional(),
     uploadedBy: z.uuid('Invalid uploader ID format'),
@@ -1025,6 +1038,7 @@ export const ZPhotoBasic = ZPhoto.pick({
     likeCount: true,
     downloadCount: true,
     featured: true,
+    isPremium: true,
     status: true,
     uploadedBy: true,
     publishedAt: true,
@@ -1090,6 +1104,7 @@ export const ZCreatePhoto = z.object({
         .optional()
         .nullable(),
     featured: z.boolean().default(false),
+    isPremium: z.boolean().default(false),
     status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.draft),
     metadata: z.any().optional().nullable(),
     mediaId: z.uuid('Invalid media ID format').optional().nullable(),
@@ -1155,6 +1170,7 @@ export const ZUpdatePhoto = z.object({
         .optional()
         .nullable(),
     featured: z.boolean().optional(),
+    isPremium: z.boolean().optional(),
     status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).optional(),
     metadata: z.any().optional().nullable(),
     mediaId: z.uuid('Invalid media ID format').optional().nullable(),
@@ -1280,6 +1296,7 @@ export const ZGallery = z.object({
         .nullable()
         .optional(),
     featured: z.boolean().default(false),
+    isPremium: z.boolean().default(false),
     status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.draft),
     coverImage: z
         .url('Invalid cover image URL format')
@@ -1307,6 +1324,7 @@ export const ZGalleryBasic = ZGallery.pick({
     slug: true,
     category: true,
     featured: true,
+    isPremium: true,
     status: true,
     coverImage: true,
     createdBy: true,
@@ -1346,6 +1364,7 @@ export const ZCreateGallery = z.object({
         .optional()
         .nullable(),
     featured: z.boolean().default(false),
+    isPremium: z.boolean().default(false),
     status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).default(EMediaStatus.draft),
     coverImage: z
         .url('Invalid cover image URL format')
@@ -1389,6 +1408,7 @@ export const ZUpdateGallery = z.object({
         .optional()
         .nullable(),
     featured: z.boolean().optional(),
+    isPremium: z.boolean().optional(),
     status: z.enum(Object.values(EMediaStatus) as [string, ...string[]]).optional(),
     coverImage: z
         .url('Invalid cover image URL format')

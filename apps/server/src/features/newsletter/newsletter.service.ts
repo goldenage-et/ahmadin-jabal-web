@@ -16,6 +16,7 @@ import {
     ZNewsletterBasic,
     ZNewsletterListResponse,
     ZNewsletterDetail,
+    TAuthUser,
     TCreateNewsletterSubscription,
     TUpdateNewsletterSubscription,
     TNewsletterSubscription,
@@ -28,10 +29,15 @@ import {
     ZNewsletterSubscriptionDetail,
 } from '@repo/common';
 import { PrismaClient } from '@repo/prisma';
+import { getContentAccessLevel, isPremiumUser } from '@/helpers/premium-access.helper';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service';
 
 @Injectable()
 export class NewsletterService {
-    constructor(@Inject(PRISMA_CLIENT) private readonly db: PrismaClient) { }
+    constructor(
+        @Inject(PRISMA_CLIENT) private readonly db: PrismaClient,
+        private readonly subscriptionsService: SubscriptionsService,
+    ) { }
 
     // ==================== NEWSLETTER CRUD ====================
 
@@ -50,7 +56,7 @@ export class NewsletterService {
     }
 
     async getManyNewsletters(
-        query: TNewsletterQueryFilter,
+        query: TNewsletterQueryFilter & { user?: TAuthUser | null },
     ): Promise<TNewsletterListResponse> {
         const where: any = {};
 
@@ -105,12 +111,30 @@ export class NewsletterService {
             take: limit,
         });
 
+        // Apply premium access control - hide full content for non-premium users
+        const hasActiveSubscription = query.user
+            ? await this.subscriptionsService.hasActiveSubscription(query.user.id)
+            : false;
+        const newslettersWithAccessControl = newsletters.map(newsletter => {
+            const accessLevel = getContentAccessLevel(query.user || null, newsletter.isPremium, hasActiveSubscription);
+            if (accessLevel === 'preview' && newsletter.isPremium) {
+                // For preview, hide full content but keep title and subject
+                return {
+                    ...newsletter,
+                    content: null,
+                    contentAm: null,
+                    contentOr: null,
+                };
+            }
+            return newsletter;
+        });
+
         const totalPages = Math.ceil(total / limit);
         const hasNext = page < totalPages;
         const hasPrev = page > 1;
 
         return ZNewsletterListResponse.parse({
-            data: newsletters,
+            data: newslettersWithAccessControl,
             meta: {
                 page,
                 limit,
@@ -124,6 +148,7 @@ export class NewsletterService {
 
     async getOneNewsletter(
         query: TNewsletterQueryUnique,
+        user?: TAuthUser | null,
     ): Promise<TNewsletterDetail> {
         const newsletter = await this.db.newsletter.findUnique({
             where: { id: query.id },
@@ -143,6 +168,22 @@ export class NewsletterService {
 
         if (!newsletter) {
             throw new NotFoundException('Newsletter not found');
+        }
+
+        // Check premium access (check subscription)
+        const hasActiveSubscription = user
+            ? await this.subscriptionsService.hasActiveSubscription(user.id)
+            : false;
+        const accessLevel = getContentAccessLevel(user || null, newsletter.isPremium, hasActiveSubscription);
+        if (accessLevel === 'preview' && newsletter.isPremium) {
+            // Return preview version (title, subject, but no full content)
+            const newsletterPreview = {
+                ...newsletter,
+                content: null,
+                contentAm: null,
+                contentOr: null,
+            };
+            return ZNewsletterDetail.parse(newsletterPreview);
         }
 
         return ZNewsletterDetail.parse(newsletter);

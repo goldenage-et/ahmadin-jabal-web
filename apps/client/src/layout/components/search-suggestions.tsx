@@ -27,9 +27,12 @@ interface SearchSuggestionsProps {
 
 // Convert backend analytics events to search suggestions
 const convertAnalyticsToSuggestions = (
-  events: TSearchAnalyticsEvent[],
+  events: TSearchAnalyticsEvent[] | undefined,
   type: 'popular' | 'recent' | 'trending',
 ): SearchSuggestion[] => {
+  if (!events || !Array.isArray(events)) {
+    return [];
+  }
   return events.map((event) => ({
     id: event.id,
     text: event.query,

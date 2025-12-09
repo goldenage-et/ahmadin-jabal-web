@@ -1,4 +1,4 @@
-import { PaymentContent } from '../../components/payment-content';
+import { PaymentContent } from "@/features/portfolio/payment-content";
 
 export default function PaymentPage() {
   return <PaymentContent />;

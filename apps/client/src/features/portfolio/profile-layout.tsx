@@ -23,7 +23,8 @@ import {
   HelpCircle,
   BarChart3,
   UserPlus,
-  Menu
+  Menu,
+  CreditCard
 } from 'lucide-react';
 import { useState } from 'react';
 import Link from 'next/link';
@@ -60,6 +61,7 @@ export function ProfileLayout({
   const sidebarItems = [
     { id: 'overview', label: 'Overview', icon: User, href: '/profile' },
     { id: 'payment', label: 'Payment', icon: FileText, href: '/profile/payment' },
+    { id: 'subscription', label: 'Subscription', icon: CreditCard, href: '/profile/subscription' },
     { id: 'returns', label: 'Returns/refunds', icon: BarChart3, href: '/profile/returns' },
     { id: 'feedback', label: 'Feedback', icon: Star, href: '/profile/feedback' },
     { id: 'settings', label: 'Settings', icon: Settings, href: '/profile/settings' },
@@ -94,8 +96,8 @@ export function ProfileLayout({
                 href={item.href}
                 onClick={() => setIsMobileSidebarOpen(false)}
                 className={`flex items-center space-x-3 px-4 py-3 text-left text-sm font-medium transition-colors ${activeSection === item.id
-                  ? 'bg-red-50 text-red-700 border-r-2 border-red-500'
-                  : 'text-gray-700 hover:bg-gray-50'
+                  ? 'bg-primary text-primary-foreground border-r-2 border-primary'
+                  : 'text-foreground hover:bg-accent'
                   }`}
               >
                 <Icon className='h-4 w-4' />
@@ -109,7 +111,7 @@ export function ProfileLayout({
   );
 
   return (
-    <div className='min-h-screen bg-gray-50'>
+    <div className='min-h-screen bg-background'>
       <div className='max-w-7xl mx-auto px-4 py-4 md:py-8'>
         {/* Mobile Header with Menu Button */}
         <div className='lg:hidden flex items-center justify-between mb-6'>

@@ -14,6 +14,7 @@ import type {
     TBlogQueryUnique,
     TCreateBlog,
     TUpdateBlog,
+    TAuthUser,
 } from '@repo/common';
 import {
     EBlogStatus,
@@ -21,10 +22,15 @@ import {
     ZBlogDetail,
 } from '@repo/common';
 import { PrismaClient } from '@repo/prisma';
+import { getContentAccessLevel, isPremiumUser } from '@/helpers/premium-access.helper';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service';
 
 @Injectable()
 export class BlogsService {
-    constructor(@Inject(PRISMA_CLIENT) private readonly db: PrismaClient) { }
+    constructor(
+        @Inject(PRISMA_CLIENT) private readonly db: PrismaClient,
+        private readonly subscriptionsService: SubscriptionsService,
+    ) { }
 
     async create(authorId: string, data: TCreateBlog): Promise<TBlogBasic> {
         // Check if slug already exists
@@ -58,7 +64,7 @@ export class BlogsService {
                 tags: data.tags || [],
                 status: data.status || EBlogStatus.draft,
                 featured: data.featured || false,
-                isFree: data.isFree || true,
+                isPremium: data.isPremium || false,
                 price: data.price,
                 publishedAt: data.publishedAt,
                 expiresAt: data.expiresAt,
@@ -79,9 +85,10 @@ export class BlogsService {
     }
 
     async getMany(
-        query: TBlogQueryFilter & { userId?: string },
+        query: TBlogQueryFilter & { userId?: string; user?: TAuthUser | null },
     ): Promise<{ data: TBlogBasic[]; meta: any }> {
         const where: any = {};
+        let hasActiveSubscription = false;
 
         if (query.status) {
             where.status = query.status;
@@ -102,8 +109,21 @@ export class BlogsService {
             where.featured = query.featured;
         }
 
-        if (typeof query.isFree === 'boolean') {
-            where.isFree = query.isFree;
+        if (typeof query.isPremium === 'boolean') {
+            where.isPremium = query.isPremium;
+        }
+
+        // Filter premium content based on user status (check subscription)
+        hasActiveSubscription = query.user
+            ? await this.subscriptionsService.hasActiveSubscription(query.user.id)
+            : false;
+        const userIsPremium = isPremiumUser(query.user || null, hasActiveSubscription);
+        if (!userIsPremium) {
+            // Non-premium users can see all content (we'll show preview for premium)
+            // But if they specifically filter for premium, show only non-premium
+            if (query.isPremium === true) {
+                where.isPremium = false;
+            }
         }
 
         if (query.tags && Array.isArray(query.tags) && query.tags.length > 0) {
@@ -171,14 +191,31 @@ export class BlogsService {
         });
 
         // Convert medias array of URLs to array of objects for schema validation
-        const blogsWithMedias = blogs.map(blog => ({
-            ...blog,
-            medias: blog.medias.map(url => ({
-                id: '',
-                url,
-                alt: undefined,
-            })),
-        }));
+        // Apply premium access control - hide full content for non-premium users
+        hasActiveSubscription = query.user
+            ? await this.subscriptionsService.hasActiveSubscription(query.user.id)
+            : false;
+        const blogsWithMedias = blogs.map(blog => {
+            const accessLevel = getContentAccessLevel(query.user || null, blog.isPremium, hasActiveSubscription);
+            const blogData: any = {
+                ...blog,
+                medias: blog.medias.map(url => ({
+                    id: '',
+                    url,
+                    alt: undefined,
+                })),
+            };
+
+            // If user doesn't have full access to premium content, hide full content
+            if (accessLevel === 'preview' && blog.isPremium) {
+                // Keep title, excerpt, featuredImage, but hide full content
+                blogData.content = null;
+                blogData.contentAm = null;
+                blogData.contentOr = null;
+            }
+
+            return blogData;
+        });
 
         const totalPages = Math.ceil(total / limit);
         const hasNext = page < totalPages;
@@ -200,6 +237,7 @@ export class BlogsService {
     async getOne(
         query: TBlogQueryUnique,
         userId?: string,
+        user?: TAuthUser | null,
     ): Promise<TBlogDetail> {
         const where: any = {};
 
@@ -244,7 +282,30 @@ export class BlogsService {
             throw new ForbiddenException('You do not have access to this blog');
         }
 
-        // Increment view count
+        // Check premium access (check subscription)
+        const hasActiveSubscription = user
+            ? await this.subscriptionsService.hasActiveSubscription(user.id)
+            : false;
+        const accessLevel = getContentAccessLevel(user || null, blog.isPremium, hasActiveSubscription);
+
+        // If user doesn't have full access, they can only see preview
+        if (accessLevel === 'preview' && blog.isPremium) {
+            // Return preview version (title, excerpt, featuredImage, but no full content)
+            const blogPreview = {
+                ...blog,
+                content: null,
+                contentAm: null,
+                contentOr: null,
+                medias: blog.medias.map(url => ({
+                    id: '',
+                    url,
+                    alt: undefined,
+                })),
+            };
+            return ZBlogDetail.parse(blogPreview);
+        }
+
+        // Increment view count only if user has full access
         await this.db.blog.update({
             where: { id: blog.id },
             data: { viewCount: blog.viewCount + 1 },
@@ -319,7 +380,7 @@ export class BlogsService {
         if (data.tags !== undefined) updateData.tags = data.tags;
         if (data.status !== undefined) updateData.status = data.status;
         if (data.featured !== undefined) updateData.featured = data.featured;
-        if (data.isFree !== undefined) updateData.isFree = data.isFree;
+        if (data.isPremium !== undefined) updateData.isPremium = data.isPremium;
         if (data.price !== undefined) updateData.price = data.price;
         if (data.publishedAt !== undefined) updateData.publishedAt = data.publishedAt;
         if (data.expiresAt !== undefined) updateData.expiresAt = data.expiresAt;

@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -27,11 +28,12 @@ import {
   Wrench,
   ChevronDown,
   BookOpen,
-  FileText
+  FileText,
+  X,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { SearchSuggestions } from './components/search-suggestions';
 import { NavUser } from './nav-user';
@@ -41,6 +43,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
 
 // Helper function to process backend categories into navigation format
 const processCategoriesForNavigation = (categories: TCategoryBasic[]) => {
@@ -112,20 +115,47 @@ export function Navigation({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
   const router = useRouter();
   const t = useTranslations('navigation');
 
   // Process backend categories for navigation
   const mainCategories = processCategoriesForNavigation(categories);
 
+  // Handle scroll effect for navigation
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
+
   const handleSearch = (query: string) => {
     router.push(`/books?search=${encodeURIComponent(query)}`);
   };
 
+  // Check if a route is active
+  const isActiveRoute = (href: string) => {
+    if (href === '/') {
+      return pathname === '/';
+    }
+    return pathname.startsWith(href);
+  };
+
   return (
-    <nav className='bg-white/80 dark:bg-background/80 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-800/50 sticky top-0 z-50 shadow-sm dark:shadow-gray-900/20'>
+    <nav className={cn(
+      'bg-background/80 backdrop-blur-xl border-b border-border/50 sticky top-0 z-50 transition-all duration-300',
+      scrolled ? 'shadow-lg shadow-primary/5' : 'shadow-sm'
+    )}>
       {/* Top Row - Header */}
-      <div className='bg-transparent border-b border-gray-200/50 dark:border-gray-800/50'>
+      <div className='bg-transparent border-b border-border/50'>
         <div className='mx-auto px-4 sm:px-6 lg:px-8'>
           <div className='flex items-center justify-between h-14 md:h-12'>
             {/* Left Section - Mobile Menu Button + Logo */}
@@ -134,19 +164,23 @@ export function Navigation({
               <Button
                 variant='ghost'
                 size='icon'
-                className='md:hidden h-9 w-9'
+                className='md:hidden h-9 w-9 hover:bg-primary/10 transition-all duration-200'
                 onClick={() => setIsMobileMenuOpen(true)}
                 aria-label='Open menu'
               >
-                <Menu className='h-5 w-5' />
+                <Menu className='h-5 w-5 transition-transform duration-200' />
               </Button>
 
               {/* Logo */}
-              <Link href='/' className='flex items-center space-x-2 flex-shrink-0'>
-                <div className='w-8 h-8 bg-green-600 rounded flex items-center justify-center flex-shrink-0'>
-                  <span className='text-white font-bold text-lg'>U</span>
+              <Link 
+                href='/' 
+                className='flex items-center space-x-2 flex-shrink-0 group transition-transform duration-200 hover:scale-105'
+              >
+                <div className='relative w-8 h-8 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center flex-shrink-0 shadow-md group-hover:shadow-lg transition-all duration-200'>
+                  <span className='text-background font-bold text-lg relative z-10'>U</span>
+                  <div className='absolute inset-0 bg-primary/20 blur-xl rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200'></div>
                 </div>
-                <span className='text-lg md:text-xl font-bold text-gray-900 dark:text-white hidden sm:block'>
+                <span className='text-lg md:text-xl font-bold text-foreground hidden sm:block bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text'>
                   Ustaz Ahmedin Jebel
                 </span>
               </Link>
@@ -174,7 +208,12 @@ export function Navigation({
               {user ? (
                 <div className='flex items-center gap-2 text-sm'>
                   {user?.roles?.length && user.roles.length > 0 && (
-                    <Button variant='outline' size='sm' asChild className='hidden sm:flex'>
+                    <Button 
+                      variant='outline' 
+                      size='sm' 
+                      asChild 
+                      className='hidden sm:flex hover:bg-primary/10 hover:border-primary/50 transition-all duration-200'
+                    >
                       <Link href='/admin'>
                         <Wrench className='h-4 w-4 mr-1' />
                         <span className='hidden lg:inline'>Go to Panel</span>
@@ -185,10 +224,19 @@ export function Navigation({
                 </div>
               ) : (
                 <div className='flex items-center gap-1.5 sm:gap-2 text-sm'>
-                  <Button variant='outline' size='sm' asChild className='hidden sm:inline-flex'>
+                  <Button 
+                    variant='outline' 
+                    size='sm' 
+                    asChild 
+                    className='hidden sm:inline-flex hover:bg-primary/10 hover:border-primary/50 transition-all duration-200'
+                  >
                     <Link href='/auth/signin'>Sign in</Link>
                   </Button>
-                  <Button size='sm' asChild className='text-xs sm:text-sm px-2 sm:px-4'>
+                  <Button 
+                    size='sm' 
+                    asChild 
+                    className='text-xs sm:text-sm px-2 sm:px-4 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-md hover:shadow-lg transition-all duration-200'
+                  >
                     <Link href='/auth/signup'>
                       <span className='hidden sm:inline'>Sign up</span>
                       <span className='sm:hidden'>Sign up</span>
@@ -212,59 +260,59 @@ export function Navigation({
             }}
           >
             {/* Main Navigation Links */}
-            <div className='flex items-center space-x-4 lg:space-x-6 min-w-max'>
-              <Link
-                href='/'
-                className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors whitespace-nowrap'
-              >
-                {t('home')}
-              </Link>
-              <Link
-                href='/about'
-                className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors whitespace-nowrap'
-              >
-                {t('about')}
-              </Link>
+            <div className='flex items-center space-x-1 lg:space-x-2 min-w-max'>
+              <NavLink href='/' label={t('home')} pathname={pathname} />
+              <NavLink href='/about' label={t('about')} pathname={pathname} />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors whitespace-nowrap flex items-center gap-1'>
+                  <button className={cn(
+                    'text-sm font-medium whitespace-nowrap flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all duration-200 relative group',
+                    isActiveRoute('/publications') || isActiveRoute('/blogs')
+                      ? 'text-primary bg-primary/10'
+                      : 'text-muted-foreground hover:text-primary hover:bg-primary/5'
+                  )}>
                     Publications
-                    <ChevronDown className='h-4 w-4' />
+                    <ChevronDown className={cn(
+                      'h-4 w-4 transition-transform duration-200',
+                      isCategoryDropdownOpen && 'rotate-180'
+                    )} />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align='start' className='w-48'>
+                <DropdownMenuContent 
+                  align='start' 
+                  className='w-48 rounded-xl shadow-lg border border-border/50 bg-background/95 backdrop-blur-sm'
+                  onOpenChange={setIsCategoryDropdownOpen}
+                >
                   <DropdownMenuItem asChild>
-                    <Link href='/publications' className='flex items-center gap-2'>
+                    <Link 
+                      href='/publications' 
+                      className={cn(
+                        'flex items-center gap-2 cursor-pointer transition-colors',
+                        isActiveRoute('/publications') && 'bg-primary/10 text-primary'
+                      )}
+                    >
                       <BookOpen className='h-4 w-4' />
                       Publications
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href='/blogs' className='flex items-center gap-2'>
+                    <Link 
+                      href='/blogs' 
+                      className={cn(
+                        'flex items-center gap-2 cursor-pointer transition-colors',
+                        isActiveRoute('/blogs') && 'bg-primary/10 text-primary'
+                      )}
+                    >
                       <FileText className='h-4 w-4' />
                       Blogs
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Link
-                href='/media'
-                className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors whitespace-nowrap'
-              >
-                {t('media')}
-              </Link>
-              <Link
-                href='/contact'
-                className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors whitespace-nowrap'
-              >
-                {t('contact')}
-              </Link>
-              <Link
-                href='/books'
-                className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors whitespace-nowrap'
-              >
-                {t('book')}
-              </Link>
+              <NavLink href='/media' label={t('media')} pathname={pathname} />
+              <NavLink href='/contact' label={t('contact')} pathname={pathname} />
+              <NavLink href='/subscriptions' label={t('pricing')} pathname={pathname} />
+              <NavLink href='/books' label={t('book')} pathname={pathname} />
             </div>
           </div>
         </div>
@@ -274,20 +322,30 @@ export function Navigation({
       <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
         <SheetContent
           side='left'
-          className='w-[85vw] sm:w-80 bg-white dark:bg-gray-900 border-r dark:border-gray-800 overflow-y-auto'
+          className='w-[85vw] sm:w-80 bg-background/95 backdrop-blur-xl border-r border-border overflow-y-auto p-0'
         >
-          <SheetHeader className='pb-4 border-b dark:border-gray-800'>
-            <SheetTitle className='flex items-center space-x-2 text-left'>
-              <div className='w-8 h-8 bg-green-600 rounded flex items-center justify-center flex-shrink-0'>
-                <span className='text-white font-bold text-base'>U</span>
-              </div>
-              <span className='text-base font-semibold text-gray-900 dark:text-white'>
-                Ustaz Ahmedin Jebel
-              </span>
-            </SheetTitle>
+          <SheetHeader className='pb-4 border-b border-border px-6 pt-6'>
+            <div className='flex items-center justify-between'>
+              <SheetTitle className='flex items-center space-x-2 text-left'>
+                <div className='w-8 h-8 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center flex-shrink-0 shadow-md'>
+                  <span className='text-background font-bold text-base'>U</span>
+                </div>
+                <span className='text-base font-semibold text-foreground'>
+                  Ustaz Ahmedin Jebel
+                </span>
+              </SheetTitle>
+              <Button
+                variant='ghost'
+                size='icon'
+                className='h-8 w-8'
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <X className='h-5 w-5' />
+              </Button>
+            </div>
           </SheetHeader>
 
-          <div className='mt-6 space-y-6 pb-6'>
+          <div className='mt-6 space-y-6 pb-6 px-6'>
             {/* Mobile Search */}
             <div className='px-1'>
               <SearchSuggestions
@@ -299,146 +357,138 @@ export function Navigation({
 
             {/* Mobile Navigation Links */}
             <div className='space-y-1'>
-              <h3 className='text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-3 mb-2'>
+              <h3 className='text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-3'>
                 Navigation
               </h3>
               <nav className='space-y-1'>
-                <Link
+                <MobileNavLink
                   href='/'
-                  className='flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary dark:hover:text-primary transition-colors'
+                  label={t('home')}
+                  pathname={pathname}
                   onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {t('home')}
-                </Link>
-                <Link
+                  index={0}
+                />
+                <MobileNavLink
                   href='/about'
-                  className='flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary dark:hover:text-primary transition-colors'
+                  label={t('about')}
+                  pathname={pathname}
                   onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {t('about')}
-                </Link>
-                <div className='px-3'>
-                  <div className='text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1'>
+                  index={1}
+                />
+                <div className='px-3 space-y-1'>
+                  <div className='text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2'>
                     Publications
                   </div>
-                  <Link
+                  <MobileNavLink
                     href='/publications'
-                    className='flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary dark:hover:text-primary transition-colors'
+                    label='Publications'
+                    pathname={pathname}
                     onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <BookOpen className='h-4 w-4 mr-2' />
-                    Publications
-                  </Link>
-                  <Link
+                    icon={<BookOpen className='h-4 w-4 mr-2' />}
+                    index={2}
+                  />
+                  <MobileNavLink
                     href='/blogs'
-                    className='flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary dark:hover:text-primary transition-colors'
+                    label='Blogs'
+                    pathname={pathname}
                     onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <FileText className='h-4 w-4 mr-2' />
-                    Blogs
-                  </Link>
+                    icon={<FileText className='h-4 w-4 mr-2' />}
+                    index={3}
+                  />
                 </div>
-                <Link
+                <MobileNavLink
                   href='/media'
-                  className='flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary dark:hover:text-primary transition-colors'
+                  label={t('media')}
+                  pathname={pathname}
                   onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {t('media')}
-                </Link>
-                <Link
+                  index={4}
+                />
+                <MobileNavLink
                   href='/contact'
-                  className='flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary dark:hover:text-primary transition-colors'
+                  label={t('contact')}
+                  pathname={pathname}
                   onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {t('contact')}
-                </Link>
-                <Link
+                  index={5}
+                />
+                <MobileNavLink
+                  href='/subscriptions'
+                  label={t('subscriptions')}
+                  pathname={pathname}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  index={6}
+                />
+                <MobileNavLink
                   href='/books'
-                  className='flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary dark:hover:text-primary transition-colors'
+                  label={t('book')}
+                  pathname={pathname}
                   onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {t('book')}
-                </Link>
+                  index={7}
+                />
               </nav>
             </div>
 
             {/* Mobile Actions */}
-            <div className='space-y-1 pt-4 border-t dark:border-gray-800'>
-              <h3 className='text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-3 mb-2'>
+            <div className='space-y-1 pt-4 border-t border-border'>
+              <h3 className='text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-3'>
                 Quick Actions
               </h3>
               <div className='space-y-1'>
-                <Link
+                <MobileActionLink
                   href='/books/wishlist'
-                  className='flex items-center justify-between px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors'
+                  label='Wishlist'
+                  icon={<Heart className='h-4 w-4 mr-3' />}
+                  badge={<Badge variant='secondary' className='text-xs'>0</Badge>}
                   onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <div className='flex items-center'>
-                    <Heart className='h-4 w-4 mr-3' />
-                    Wishlist
-                  </div>
-                  <Badge variant='secondary' className='text-xs'>
-                    0
-                  </Badge>
-                </Link>
-
-                <Link
+                  index={8}
+                />
+                <MobileActionLink
                   href='/books/cart'
-                  className='flex items-center justify-between px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors'
+                  label='Cart'
+                  icon={<ShoppingCart className='h-4 w-4 mr-3' />}
+                  badge={<Badge className='text-xs bg-orange-500'>0</Badge>}
                   onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <div className='flex items-center'>
-                    <ShoppingCart className='h-4 w-4 mr-3' />
-                    Cart
-                  </div>
-                  <Badge className='text-xs bg-orange-500'>0</Badge>
-                </Link>
-
-                <Link
+                  index={9}
+                />
+                <MobileActionLink
                   href='/profile'
-                  className='flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors'
+                  label='Profile'
+                  icon={<UserIcon className='h-4 w-4 mr-3' />}
                   onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <UserIcon className='h-4 w-4 mr-3' />
-                  Profile
-                </Link>
-
+                  index={10}
+                />
                 {user?.roles?.length && user.roles.length > 0 && (
-                  <Link
+                  <MobileActionLink
                     href='/admin'
-                    className='flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors'
+                    label='Admin Panel'
+                    icon={<Wrench className='h-4 w-4 mr-3' />}
                     onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <Wrench className='h-4 w-4 mr-3' />
-                    Admin Panel
-                  </Link>
+                    index={11}
+                  />
                 )}
-
-                <Link
+                <MobileActionLink
                   href='/vendor/dashboard'
-                  className='flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors'
+                  label='Vendor Dashboard'
+                  icon={<Store className='h-4 w-4 mr-3' />}
                   onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <Store className='h-4 w-4 mr-3' />
-                  Vendor Dashboard
-                </Link>
+                  index={12}
+                />
               </div>
             </div>
 
             {/* Mobile Utilities */}
-            <div className='pt-4 border-t dark:border-gray-800'>
+            <div className='pt-4 border-t border-border'>
               <div className='flex items-center justify-between px-3 mb-3'>
-                <span className='text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider'>
+                <span className='text-xs font-semibold text-muted-foreground uppercase tracking-wider'>
                   Settings
                 </span>
               </div>
               <div className='space-y-2 px-3'>
                 <div className='flex items-center justify-between'>
-                  <span className='text-sm text-gray-700 dark:text-gray-300'>Language</span>
+                  <span className='text-sm text-muted-foreground'>Language</span>
                   <LanguageSwitcher />
                 </div>
                 <div className='flex items-center justify-between'>
-                  <span className='text-sm text-gray-700 dark:text-gray-300'>Theme</span>
+                  <span className='text-sm text-muted-foreground'>Theme</span>
                   <ThemeToggle />
                 </div>
                 <Button
@@ -455,5 +505,103 @@ export function Navigation({
         </SheetContent>
       </Sheet>
     </nav >
+  );
+}
+
+// Navigation Link Component with Active State
+function NavLink({ href, label, pathname }: { href: string; label: string; pathname: string }) {
+  const isActive = href === '/' ? pathname === '/' : pathname.startsWith(href);
+  
+  return (
+    <Link
+      href={href}
+      className={cn(
+        'text-sm font-medium whitespace-nowrap px-3 py-1.5 rounded-md transition-all duration-200 relative group',
+        isActive
+          ? 'text-primary bg-primary/10'
+          : 'text-muted-foreground hover:text-primary hover:bg-primary/5'
+      )}
+    >
+      <span className='relative z-10'>{label}</span>
+      {isActive && (
+        <span className='absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full'></span>
+      )}
+    </Link>
+  );
+}
+
+// Mobile Navigation Link Component with Animation
+function MobileNavLink({
+  href,
+  label,
+  pathname,
+  onClick,
+  icon,
+  index = 0,
+}: {
+  href: string;
+  label: string;
+  pathname: string;
+  onClick: () => void;
+  icon?: React.ReactNode;
+  index?: number;
+}) {
+  const isActive = href === '/' ? pathname === '/' : pathname.startsWith(href);
+  
+  return (
+    <Link
+      href={href}
+      className={cn(
+        'flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200',
+        'hover:bg-primary/10 hover:text-primary',
+        isActive && 'bg-primary/10 text-primary border-l-2 border-primary',
+        'opacity-0 translate-x-[-10px]'
+      )}
+      style={{
+        animation: `fadeInUp 0.4s ease-out ${index * 50}ms forwards`,
+      }}
+      onClick={onClick}
+    >
+      {icon}
+      <span>{label}</span>
+    </Link>
+  );
+}
+
+// Mobile Action Link Component with Animation
+function MobileActionLink({
+  href,
+  label,
+  icon,
+  badge,
+  onClick,
+  index = 0,
+}: {
+  href: string;
+  label: string;
+  icon: React.ReactNode;
+  badge?: React.ReactNode;
+  onClick: () => void;
+  index?: number;
+}) {
+  return (
+    <Link
+      href={href}
+      className={cn(
+        'flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg',
+        'text-muted-foreground hover:bg-primary/10 hover:text-primary transition-all duration-200',
+        'opacity-0 translate-x-[-10px]'
+      )}
+      style={{
+        animation: `fadeInUp 0.4s ease-out ${index * 50}ms forwards`,
+      }}
+      onClick={onClick}
+    >
+      <div className='flex items-center'>
+        {icon}
+        {label}
+      </div>
+      {badge}
+    </Link>
   );
 }

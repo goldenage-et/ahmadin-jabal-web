@@ -30,9 +30,16 @@ import {
   ZSearchAnalyticsEvent,
 } from '@repo/common';
 import { PrismaClient } from '@repo/prisma';
+import { getContentAccessLevel, isPremiumUser } from '@/helpers/premium-access.helper';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service';
+import { TAuthUser } from '@repo/common';
+
 @Injectable()
 export class BooksService {
-  constructor(@Inject(PRISMA_CLIENT) private readonly db: PrismaClient) { }
+  constructor(
+    @Inject(PRISMA_CLIENT) private readonly db: PrismaClient,
+    private readonly subscriptionsService: SubscriptionsService,
+  ) { }
 
   // Helper to validate UUID format
   private isValidUUID(str: string): boolean {
@@ -79,6 +86,7 @@ export class BooksService {
         inventoryLowStockThreshold: data.inventoryLowStockThreshold,
         tags: data.tags || [],
         specifications: specificationsJson,
+        isPremium: data.isPremium || false,
       },
     });
 
@@ -96,9 +104,10 @@ export class BooksService {
   }
 
   async getMany(
-    query: TBookQueryFilter & { userId?: string },
+    query: TBookQueryFilter & { userId?: string; user?: TAuthUser | null },
   ): Promise<TBookListResponse> {
     const where: any = {};
+    let hasActiveSubscription = false;
 
     if (query.categoryName) {
       const decodedCategoryName = decodeURIComponent(query.categoryName);
@@ -120,6 +129,23 @@ export class BooksService {
 
     if (typeof query.featured === 'boolean') {
       where.featured = query.featured;
+    }
+
+    if (typeof query.isPremium === 'boolean') {
+      where.isPremium = query.isPremium;
+    }
+
+    // Filter premium content based on user status (check subscription)
+    hasActiveSubscription = query.user
+      ? await this.subscriptionsService.hasActiveSubscription(query.user.id)
+      : false;
+    const userIsPremium = isPremiumUser(query.user || null, hasActiveSubscription);
+    if (!userIsPremium) {
+      // Non-premium users can see all content (we'll show preview for premium)
+      // But if they specifically filter for premium, show only non-premium
+      if (query.isPremium === true) {
+        where.isPremium = false;
+      }
     }
 
     if (typeof query.minPrice === 'number') {
@@ -287,14 +313,28 @@ export class BooksService {
     }
 
     // Convert images and specifications JSON back to arrays for schema validation
-    // Filter out specifications with invalid UUID format to prevent validation errors
-    const booksWithImages = books.map(book => ({
-      ...book,
-      images: Array.isArray(book.images) ? book.images : [],
-      specifications: Array.isArray(book.specifications)
-        ? this.filterValidSpecifications(book.specifications)
-        : [],
-    }));
+    // Apply premium access control - hide full content for non-premium users
+    const booksWithImages = books.map(book => {
+      const accessLevel = getContentAccessLevel(query.user || null, book.isPremium, hasActiveSubscription);
+      const bookData: any = {
+        ...book,
+        images: Array.isArray(book.images) ? book.images : [],
+        specifications: Array.isArray(book.specifications)
+          ? this.filterValidSpecifications(book.specifications)
+          : [],
+      };
+
+      // If user doesn't have full access to premium content, hide full content
+      if (accessLevel === 'preview' && book.isPremium) {
+        // Keep title, description, images, but hide full content details
+        bookData.description = null;
+        bookData.descriptionAm = null;
+        bookData.descriptionOr = null;
+        // Could also limit images or other premium content
+      }
+
+      return bookData;
+    });
 
     return ZBookListResponse.parse({
       data: booksWithImages,
@@ -309,7 +349,7 @@ export class BooksService {
     });
   }
 
-  async getOne(query: TBookQueryUnique): Promise<TBookDetail> {
+  async getOne(query: TBookQueryUnique, user?: TAuthUser | null): Promise<TBookDetail> {
     const where: any = {};
 
     if (query.id) {
@@ -328,15 +368,33 @@ export class BooksService {
       throw new NotFoundException('Book not found');
     }
 
+    // Check premium access (check subscription)
+    const hasActiveSubscription = user
+      ? await this.subscriptionsService.hasActiveSubscription(user.id)
+      : false;
+    const accessLevel = getContentAccessLevel(user || null, book.isPremium, hasActiveSubscription);
+
     // Convert images and specifications JSON back to arrays for schema validation
     // Filter out specifications with invalid UUID format to prevent validation errors
-    const bookWithImages = {
+    let bookWithImages: any = {
       ...book,
       images: Array.isArray(book.images) ? book.images : [],
       specifications: Array.isArray(book.specifications)
         ? this.filterValidSpecifications(book.specifications)
         : [],
     };
+
+    // If user doesn't have full access, they can only see preview
+    if (accessLevel === 'preview' && book.isPremium) {
+      // Return preview version (title, images, but limited description)
+      bookWithImages = {
+        ...bookWithImages,
+        description: null,
+        descriptionAm: null,
+        descriptionOr: null,
+        // Could also limit other premium content
+      };
+    }
 
     return ZBookDetail.parse(bookWithImages);
   }
@@ -385,6 +443,7 @@ export class BooksService {
     if (data.inventoryLowStockThreshold !== undefined) updateData.inventoryLowStockThreshold = data.inventoryLowStockThreshold;
     if (data.status !== undefined) updateData.status = data.status;
     if (data.featured !== undefined) updateData.featured = data.featured;
+    if (data.isPremium !== undefined) updateData.isPremium = data.isPremium;
     if (data.tags !== undefined) updateData.tags = data.tags;
     if (data.sku !== undefined) updateData.sku = data.sku;
     if (data.barcode !== undefined) updateData.barcode = data.barcode;

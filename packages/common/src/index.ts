@@ -39,6 +39,9 @@ export * from './schemas/global.schema';
 export * from './schemas/roles.schema'
 export * from './libs/role-engine'
 
+export * from './schemas/plans/plan.schema';
+export * from './schemas/subscriptions/subscription.schema';
+
 export * from './utils/generate-code';
 export * from './utils/formatDateTime';
 export * from './utils/formatText';

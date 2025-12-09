@@ -4,6 +4,7 @@ import { EPublicationStatus, EBlogStatus } from '@repo/common';
 import { PublicationsClient } from './publications-client';
 
 type PublicationsPageProps = {
+    params: Promise<{ locale: string }>;
     searchParams: Promise<{
         page?: string;
         limit?: string;
@@ -16,7 +17,11 @@ type PublicationsPageProps = {
     }>;
 };
 
-export default async function PublicationsPage({ searchParams: searchParamsPromise }: PublicationsPageProps) {
+export default async function PublicationsPage({
+    params: paramsPromise,
+    searchParams: searchParamsPromise
+}: PublicationsPageProps) {
+    const { locale } = await paramsPromise;
     const searchParams = await searchParamsPromise;
 
     // Build query parameters from search params
@@ -62,6 +67,7 @@ export default async function PublicationsPage({ searchParams: searchParamsPromi
             publications={publications}
             publicationsMeta={publicationsMeta}
             featuredBlogs={featuredBlogs}
+            locale={locale as 'en' | 'am' | 'om'}
         />
     );
 }

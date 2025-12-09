@@ -54,12 +54,14 @@ export class BlogsController {
     @UseGuards(UserAuthGuard)
     @UsePipes(QueryPipe(ZBlogQueryFilter))
     async getMany(
+        @CurrentUser() user: TAuthUser | null,
         @CurrentSession() session: TSessionBasic | null,
         @Query() query: TBlogQueryFilter,
     ): Promise<{ data: TBlogBasic[]; meta: any }> {
         return this.blogsService.getMany({
             ...query,
             userId: session?.userId,
+            user: user,
         });
     }
 
@@ -74,6 +76,7 @@ export class BlogsController {
             ...query,
             authorId: user.id,
             userId: user.id,
+            user: user,
         });
     }
 
@@ -82,20 +85,22 @@ export class BlogsController {
     @UseGuards(UserAuthGuard)
     @UsePipes(QueryPipe(ZBlogQueryUnique))
     async getOne(
+        @CurrentUser() user: TAuthUser | null,
         @CurrentSession() session: TSessionBasic | null,
         @Param('id') id: string,
     ): Promise<TBlogDetail> {
-        return this.blogsService.getOne({ id }, session?.userId);
+        return this.blogsService.getOne({ id }, session?.userId, user);
     }
 
     @Get('slug/:slug')
     @UserAuthOptions({ safeAuth: true })
     @UseGuards(UserAuthGuard)
     async getOneBySlug(
+        @CurrentUser() user: TAuthUser | null,
         @CurrentSession() session: TSessionBasic | null,
         @Param('slug') slug: string,
     ): Promise<TBlogDetail> {
-        return this.blogsService.getOne({ slug }, session?.userId);
+        return this.blogsService.getOne({ slug }, session?.userId, user);
     }
 
     @Put(':id')

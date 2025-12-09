@@ -19,6 +19,15 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { format } from 'date-fns';
+import { CalendarIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
 import { useApiMutation } from '@/hooks/use-api-mutation';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -26,6 +35,7 @@ import {
   TCreateVideo,
   ZCreateVideo,
   EMediaStatus,
+  EMediaSource,
 } from '@repo/common';
 import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -40,13 +50,26 @@ export default function CreateVideoForm() {
     resolver: zodResolver(ZCreateVideo) as any,
     defaultValues: {
       title: '',
-      titleEn: '',
-      description: '',
+      titleAm: null,
+      titleOr: null,
+      description: null,
+      descriptionAm: null,
+      descriptionOr: null,
+      category: null,
       url: '',
-      duration: '',
+      thumbnail: null,
+      duration: null,
+      fileSize: null,
+      mimeType: null,
+      width: null,
+      height: null,
+      source: EMediaSource.upload,
+      externalId: null,
       featured: false,
       status: EMediaStatus.draft,
-      publishedAt: undefined,
+      metadata: null,
+      mediaId: null,
+      publishedAt: null,
     },
   });
 
@@ -88,15 +111,35 @@ export default function CreateVideoForm() {
 
               <FormField
                 control={form.control}
-                name='titleEn'
+                name='titleAm'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>English Title</FormLabel>
+                    <FormLabel>Amharic Title</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder='Enter English title (optional)'
+                        placeholder='Enter Amharic title (optional)'
                         {...field}
                         value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='titleOr'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Oromo Title</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='Enter Oromo title (optional)'
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
                       />
                     </FormControl>
                     <FormMessage />
@@ -116,6 +159,66 @@ export default function CreateVideoForm() {
                         rows={4}
                         {...field}
                         value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='descriptionAm'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Amharic Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder='Amharic description (optional)'
+                        rows={3}
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='descriptionOr'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Oromo Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder='Oromo description (optional)'
+                        rows={3}
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='category'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='Video category (optional)'
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
                       />
                     </FormControl>
                     <FormMessage />
@@ -142,17 +245,72 @@ export default function CreateVideoForm() {
 
               <FormField
                 control={form.control}
+                name='thumbnail'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Thumbnail URL</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='https://example.com/thumbnail.jpg'
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name='duration'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Duration</FormLabel>
+                    <FormLabel>Duration (seconds)</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder='e.g., 45:30'
+                        type='number'
+                        placeholder='e.g., 2730 for 45:30'
                         {...field}
-                        value={field.value || ''}
+                        value={field.value ?? ''}
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value ? parseInt(e.target.value) : null
+                          )
+                        }
                       />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='source'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Source</FormLabel>
+                    <Select
+                      onValueChange={(value) =>
+                        field.onChange(value as EMediaSource)
+                      }
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value={EMediaSource.upload}>Upload</SelectItem>
+                        <SelectItem value={EMediaSource.youtube}>YouTube</SelectItem>
+                        <SelectItem value={EMediaSource.external}>
+                          External
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -212,6 +370,48 @@ export default function CreateVideoForm() {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name='publishedAt'
+                render={({ field }) => (
+                  <FormItem className='flex flex-col'>
+                    <FormLabel>Published Date</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={'outline'}
+                            className={cn(
+                              'w-full pl-3 text-left font-normal',
+                              !field.value && 'text-muted-foreground'
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, 'PPP')
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className='w-auto p-0' align='start'>
+                        <Calendar
+                          mode='single'
+                          selected={field.value || undefined}
+                          onSelect={(date) => field.onChange(date || null)}
+                          disabled={(date) =>
+                            date > new Date() || date < new Date('1900-01-01')
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </CardContent>
           </Card>
 
@@ -233,4 +433,5 @@ export default function CreateVideoForm() {
     </div>
   );
 }
+
 

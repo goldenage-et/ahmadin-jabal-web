@@ -5,6 +5,7 @@ import {
   TFetcherResponse,
   TOrderBasic,
   TUserBasic,
+  isErrorResponse,
 } from '@repo/common';
 import { redirect } from 'next/navigation';
 import { getAuth } from '@/actions/auth.action';
@@ -71,7 +72,7 @@ export async function ProfileLayoutWrapper({
       getMyProfile(),
       getMyOrders(),
     ]);
-    initialAddresses = addresses;
+    initialAddresses = (addresses && !isErrorResponse(addresses)) ? ('data' in addresses ? addresses.data : null) : null;
     profileData = profile;
     orders = userOrders.orders;
   } catch (err) {

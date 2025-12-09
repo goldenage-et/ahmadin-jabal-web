@@ -3,7 +3,6 @@ import {
   Building2,
   LayoutDashboard,
   LayoutGrid,
-  Package,
   Settings,
   ShoppingCart,
   Users,
@@ -12,6 +11,8 @@ import {
   Image,
   Newspaper,
   BookOpen,
+  Book,
+  CreditCard,
 } from 'lucide-react';
 import { Route } from '../types';
 
@@ -46,6 +47,13 @@ export const settingTabs = () => [
     icon: <Users className="h-4 w-4" />,
     url: `/admin/settings/roles`,
   },
+  {
+    label: 'Plans',
+    value: 'plans',
+    description: 'Manage subscription plans and pricing',
+    icon: <CreditCard className="h-4 w-4" />,
+    url: `/admin/settings/plans`,
+  },
 ];
 
 export const createMainRoutes = (): Route[] => [
@@ -58,7 +66,7 @@ export const createMainRoutes = (): Route[] => [
   {
     title: 'Books',
     url: `/admin/books`,
-    icon: <Package className='h-4 w-4' />,
+    icon: <Book className='h-4 w-4' />,
     isActive: (path: string) => path.startsWith(`/admin/books`),
   },
   {
@@ -96,6 +104,12 @@ export const createMainRoutes = (): Route[] => [
     url: `/admin/orders`,
     icon: <ShoppingCart className='h-4 w-4' />,
     isActive: (path: string) => path.startsWith(`/admin/orders`),
+  },
+  {
+    title: 'Subscriptions',
+    url: `/admin/subscriptions`,
+    icon: <CreditCard className='h-4 w-4' />,
+    isActive: (path: string) => path.startsWith(`/admin/subscriptions`),
   },
   {
     title: 'Settings',

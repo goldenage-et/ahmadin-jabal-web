@@ -1,17 +1,35 @@
 import { getBanks } from '@/actions/bank-transfer.action';
 import { getMyOrderDetails } from '@/actions/profile.action';
+import { getAuth } from '@/actions/auth.action';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { EPaymentMethod, EPaymentStatus, TBankAccount, TBankInfo, type TOrderDetail } from '@repo/common';
+import { EPaymentMethod, EPaymentStatus, ErrorType, TBankAccount, TBankInfo, type TOrderDetail, isErrorResponse } from '@repo/common';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { PaymentMethodSelector } from './_components/payment-method-selector';
 import { getBankAccounts } from '@/actions/bank-account.action';
 
-export default async function PaymentMethodSelectionPage({ params }: { params: Promise<{ orderId: string }> }) {
-    const { orderId } = await params;
+export default async function PaymentMethodSelectionPage({
+    params
+}: {
+    params: Promise<{ orderId: string; locale: string }>
+}) {
+    const { orderId, locale } = await params;
+    const { user, session, error } = await getAuth();
+
+    // Check if there's no session or invalid session
+    const hasError = error && isErrorResponse(error) &&
+        (error.errorType === ErrorType.NOT_ACCESS_SESSION ||
+            error.errorType === ErrorType.INVALID_SESSION ||
+            error.errorType === ErrorType.EXPIRED_SESSION);
+
+    if (!user || !session || hasError) {
+        const loginUrl = `/${locale}/auth/signin`;
+        const callbackUrl = `/${locale}/checkout/${orderId}/payment`;
+        redirect(`${loginUrl}?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+    }
 
     const response = await getMyOrderDetails(orderId);
 
@@ -79,8 +97,13 @@ export default async function PaymentMethodSelectionPage({ params }: { params: P
                         <div className="flex justify-between items-center">
                             <div>
                                 <p className="text-2xl font-bold text-foreground dark:text-foreground">{order.total.toFixed(2)} {order.currency || 'ETB'}</p>
+                                {order.notes && typeof order.notes === 'string' && order.notes.toLowerCase().includes('subscription') && (
+                                    <p className="text-sm text-muted-foreground mt-1">
+                                        Subscription Order
+                                    </p>
+                                )}
                             </div>
-                            <Badge className="bg-yellow-100 text-yellow-800">
+                            <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100">
                                 Payment Pending
                             </Badge>
                         </div>

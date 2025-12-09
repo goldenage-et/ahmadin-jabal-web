@@ -1,12 +1,18 @@
 'use client';
 import {
+  Book,
   CreditCard,
+  FileText,
   LayoutDashboard,
   LayoutGrid,
   LifeBuoy,
+  Mail,
+  Newspaper,
   Settings,
+  ShoppingCart,
   Store,
   Users,
+  Video,
   X
 } from 'lucide-react';
 import Link from 'next/link';
@@ -34,9 +40,15 @@ export function AdminSidebar({
   const nav = [
     { href: '/admin/', label: 'Dashboard', Icon: LayoutDashboard },
     { href: '/admin/users', label: 'Users', Icon: Users },
-    { href: '/admin/stores', label: 'Stores', Icon: Store },
+    { href: '/admin/books', label: 'Books', Icon: Book },
     { href: '/admin/categories', label: 'Categories', Icon: LayoutGrid },
     { href: '/admin/payment-methods', label: 'Payment Methods', Icon: CreditCard },
+    { href: '/admin/subscriptions', label: 'Subscriptions', Icon: CreditCard },
+    { href: '/admin/orders', label: 'Orders', Icon: ShoppingCart },
+    { href: '/admin/publications', label: 'Publications', Icon: Newspaper },
+    { href: '/admin/blogs', label: 'Blogs', Icon: FileText },
+    { href: '/admin/media', label: 'Media', Icon: Video },
+    { href: '/admin/newsletters', label: 'Newsletters', Icon: Mail },
     { href: '/admin/settings', label: 'Settings', Icon: Settings },
     { href: '/admin/support', label: 'Support', Icon: LifeBuoy },
   ];

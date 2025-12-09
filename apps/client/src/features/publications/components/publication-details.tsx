@@ -15,6 +15,10 @@ import {
     Share2,
     ArrowLeft,
     MessageSquare,
+    Play,
+    File,
+    Image as ImageIcon,
+    ExternalLink,
 } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
@@ -23,19 +27,36 @@ import { useRouter } from 'next/navigation';
 import { likePublication, downloadPublication } from '@/actions/publication.action';
 import { useApiMutation } from '@/hooks/use-api-mutation';
 import { toast } from 'sonner';
+import { getContentAccessLevel } from '@/lib/premium';
+import { PremiumContentPreview } from '@/components/premium-content-preview';
+import { useAuth } from '@/providers/storage';
+import { Lock, Crown } from 'lucide-react';
+import {
+    getLocalizedPublicationTitle,
+    getLocalizedPublicationExcerpt,
+    getLocalizedPublicationContent,
+    getLocalizedCategoryName,
+} from '@/lib/locale-utils';
 
 interface PublicationDetailsProps {
     publication: TPublicationDetail;
     user: TUserBasic | null;
+    locale: 'en' | 'am' | 'om';
 }
 
 export default function PublicationDetails({
     publication,
     user,
+    locale,
 }: PublicationDetailsProps) {
     const router = useRouter();
     const { mutate: likeMutate } = useApiMutation();
     const { mutate: downloadMutate } = useApiMutation();
+    const { user: authUser } = useAuth();
+
+    // Check premium access
+    const accessLevel = getContentAccessLevel(authUser, publication.isPremium);
+    const hasFullAccess = accessLevel === 'full';
 
     const handleLike = () => {
         if (!user) {
@@ -44,7 +65,7 @@ export default function PublicationDetails({
         }
         likeMutate(async () => await likePublication(publication.id), {
             onSuccess: (data) => {
-                if (data?.data) {
+                if (data) {
                     toast.success('Publication liked!');
                 }
             },
@@ -59,7 +80,7 @@ export default function PublicationDetails({
         }
         downloadMutate(async () => await downloadPublication(publication.id), {
             onSuccess: (data) => {
-                if (data?.data) {
+                if (data) {
                     toast.success('Download started!');
                 }
             },
@@ -94,7 +115,7 @@ export default function PublicationDetails({
                         <div className='relative w-full h-96 rounded-lg overflow-hidden'>
                             <Image
                                 src={publication.featuredImage}
-                                alt={publication.title}
+                                alt={getLocalizedPublicationTitle(publication, locale)}
                                 fill
                                 className='object-cover'
                                 priority
@@ -107,7 +128,7 @@ export default function PublicationDetails({
                         <div className='flex items-center gap-2 flex-wrap'>
                             {publication.category && (
                                 <Badge className={getCategoryColor(publication.category.name)}>
-                                    {publication.category.name}
+                                    {getLocalizedCategoryName(publication.category, locale)}
                                 </Badge>
                             )}
                             {publication.featured && (
@@ -116,20 +137,17 @@ export default function PublicationDetails({
                                 </Badge>
                             )}
                             {publication.isPremium && (
-                                <Badge variant='outline' className='bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-300'>
+                                <Badge variant='outline' className='bg-yellow-500/90 text-white border-yellow-400'>
+                                    <Crown className='h-3 w-3 mr-1' />
                                     Premium
                                 </Badge>
                             )}
                         </div>
 
                         <h1 className='text-4xl font-bold text-foreground'>
-                            {publication.title}
+                            {getLocalizedPublicationTitle(publication, locale)}
                         </h1>
-                        {publication.titleEn && (
-                            <p className='text-xl text-muted-foreground italic'>
-                                {publication.titleEn}
-                            </p>
-                        )}
+
 
                         {/* Meta Information */}
                         <div className='flex items-center gap-6 text-sm text-muted-foreground'>
@@ -158,55 +176,147 @@ export default function PublicationDetails({
                     <Separator />
 
                     {/* Excerpt */}
-                    {publication.excerpt && (
-                        <div className='space-y-2'>
-                            <h2 className='text-2xl font-semibold'>Summary</h2>
-                            <div
-                                className='text-lg text-muted-foreground leading-relaxed prose dark:prose-invert'
-                                dangerouslySetInnerHTML={{
-                                    __html:
-                                        typeof publication.excerpt === 'string'
-                                            ? publication.excerpt
-                                            : JSON.stringify(publication.excerpt),
-                                }}
-                            />
-                        </div>
-                    )}
+                    {(() => {
+                        const excerpt = getLocalizedPublicationExcerpt(publication, locale);
+                        return excerpt ? (
+                            <div className='space-y-2'>
+                                <h2 className='text-2xl font-semibold'>Summary</h2>
+                                <div
+                                    className='text-lg text-muted-foreground leading-relaxed prose dark:prose-invert'
+                                    dangerouslySetInnerHTML={{
+                                        __html: excerpt,
+                                    }}
+                                />
+                            </div>
+                        ) : null;
+                    })()}
 
                     {/* Content */}
-                    {publication.content && (
-                        <div className='space-y-4'>
-                            <h2 className='text-2xl font-semibold'>Content</h2>
-                            <div
-                                className='prose dark:prose-invert max-w-none prose-lg'
-                                dangerouslySetInnerHTML={{
-                                    __html:
-                                        typeof publication.content === 'string'
-                                            ? publication.content
-                                            : JSON.stringify(publication.content),
-                                }}
-                            />
-                        </div>
-                    )}
+                    {(() => {
+                        const content = getLocalizedPublicationContent(publication, locale);
+                        if (content && hasFullAccess) {
+                            return (
+                                <div className='space-y-4'>
+                                    <h2 className='text-2xl font-semibold'>Content</h2>
+                                    <div
+                                        className='prose dark:prose-invert max-w-none prose-lg'
+                                        dangerouslySetInnerHTML={{
+                                            __html: content,
+                                        }}
+                                    />
+                                </div>
+                            );
+                        } else if (publication.isPremium && !hasFullAccess) {
+                            return (
+                                <div className='space-y-4'>
+                                    <div className='flex items-center gap-2 text-muted-foreground mb-4'>
+                                        <Lock className='h-5 w-5' />
+                                        <h2 className='text-2xl font-semibold'>Premium Content</h2>
+                                    </div>
+                                    <PremiumContentPreview
+                                        title={getLocalizedPublicationTitle(publication, locale)}
+                                        titleAm={publication.titleAm}
+                                        titleOr={publication.titleOr}
+                                        excerpt={getLocalizedPublicationExcerpt(publication, locale)}
+                                        excerptAm={publication.excerptAm}
+                                        excerptOr={publication.excerptOr}
+                                        featuredImage={publication.featuredImage}
+                                        user={authUser}
+                                        contentType='publication'
+                                        contentId={publication.id}
+                                        contentSlug={publication.slug}
+                                    />
+                                </div>
+                            );
+                        }
+                        return null;
+                    })()}
 
                     {/* Media Gallery */}
                     {publication.media && publication.media.length > 0 && (
                         <div className='space-y-4'>
                             <h2 className='text-2xl font-semibold'>Media</h2>
-                            <div className='grid grid-cols-2 md:grid-cols-3 gap-4'>
-                                {publication.media.map((mediaItem) => (
-                                    <div
-                                        key={mediaItem.id}
-                                        className='relative aspect-square rounded-lg overflow-hidden'
-                                    >
-                                        <Image
-                                            src={mediaItem.url}
-                                            alt={mediaItem.alt || publication.title}
-                                            fill
-                                            className='object-cover'
-                                        />
-                                    </div>
-                                ))}
+                            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4'>
+                                {publication.media.map((mediaItem) => {
+                                    const isImage = mediaItem.type === 'image' || !mediaItem.type;
+                                    const isVideo = mediaItem.type === 'video';
+                                    const isDocument = mediaItem.type === 'document';
+
+                                    if (isImage) {
+                                        return (
+                                            <div
+                                                key={mediaItem.id}
+                                                className='relative aspect-square rounded-lg overflow-hidden group cursor-pointer'
+                                                onClick={() => window.open(mediaItem.url, '_blank')}
+                                            >
+                                                <Image
+                                                    src={mediaItem.url}
+                                                    alt={mediaItem.alt || getLocalizedPublicationTitle(publication, locale)}
+                                                    fill
+                                                    className='object-cover group-hover:scale-105 transition-transform duration-300'
+                                                />
+                                                <div className='absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center'>
+                                                    <ImageIcon className='h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity' />
+                                                </div>
+                                            </div>
+                                        );
+                                    }
+
+                                    if (isVideo) {
+                                        return (
+                                            <div
+                                                key={mediaItem.id}
+                                                className='relative aspect-video rounded-lg overflow-hidden group cursor-pointer bg-black'
+                                                onClick={() => window.open(mediaItem.url, '_blank')}
+                                            >
+                                                <video
+                                                    src={mediaItem.url}
+                                                    className='w-full h-full object-cover'
+                                                    controls={false}
+                                                    preload='metadata'
+                                                />
+                                                <div className='absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/40 transition-colors'>
+                                                    <div className='rounded-full w-16 h-16 bg-white/90 group-hover:bg-white transition-colors flex items-center justify-center'>
+                                                        <Play className='h-6 w-6 text-gray-900 ml-1' />
+                                                    </div>
+                                                </div>
+                                                <div className='absolute top-2 right-2'>
+                                                    <Badge variant='secondary' className='bg-black/60 text-white backdrop-blur-sm'>
+                                                        <Play className='h-3 w-3 mr-1' />
+                                                        Video
+                                                    </Badge>
+                                                </div>
+                                            </div>
+                                        );
+                                    }
+
+                                    if (isDocument) {
+                                        return (
+                                            <Card
+                                                key={mediaItem.id}
+                                                className='relative aspect-square rounded-lg overflow-hidden group cursor-pointer hover:shadow-lg transition-shadow'
+                                            >
+                                                <CardContent className='p-6 h-full flex flex-col items-center justify-center'>
+                                                    <File className='h-12 w-12 text-muted-foreground mb-3' />
+                                                    <p className='text-sm font-medium text-center line-clamp-2 mb-2'>
+                                                        {mediaItem.alt || 'Document'}
+                                                    </p>
+                                                    <Button
+                                                        variant='outline'
+                                                        size='sm'
+                                                        className='w-full'
+                                                        onClick={() => window.open(mediaItem.url, '_blank')}
+                                                    >
+                                                        <ExternalLink className='h-4 w-4 mr-2' />
+                                                        Open Document
+                                                    </Button>
+                                                </CardContent>
+                                            </Card>
+                                        );
+                                    }
+
+                                    return null;
+                                })}
                             </div>
                         </div>
                     )}

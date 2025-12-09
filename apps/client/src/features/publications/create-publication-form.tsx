@@ -55,13 +55,20 @@ export default function CreatePublicationForm({
   const { mutate, isLoading } = useApiMutation();
 
   const form = useForm<TCreatePublication>({
+    // @ts-ignore - Complex Zod schema causes deep type instantiation
     resolver: zodResolver(ZCreatePublication) as any,
     defaultValues: {
       title: '',
-      titleEn: '',
+      titleAm: undefined,
+      titleOr: undefined,
       slug: '',
-      excerpt: '',
-      content: '',
+      excerpt: undefined,
+      excerptAm: undefined,
+      excerptOr: undefined,
+      content: undefined,
+      contentAm: undefined,
+      contentOr: undefined,
+      media: [],
       tags: [],
       status: EPublicationStatus.draft,
       featured: false,
@@ -131,7 +138,7 @@ export default function CreatePublicationForm({
   };
 
   return (
-    <div className='space-y-6 p-6 mx-auto bg-linear-to-br from-background via-card to-card dark:from-background dark:via-card dark:to-card'>
+    <div className='space-y-6'>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit((data) => {
@@ -168,15 +175,56 @@ export default function CreatePublicationForm({
 
               <FormField
                 control={form.control}
-                name='titleEn'
+                name='slug'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>English Title</FormLabel>
+                    <FormLabel>Slug *</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder='Enter English title (optional)'
+                        placeholder='Enter URL slug'
+                        {...field}
+                        onChange={(e) => handleSlugChange(e.target.value)}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      URL-friendly version of the title
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='titleAm'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Amharic Title</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='Enter Amharic title (optional)'
                         {...field}
                         value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || undefined)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='titleOr'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Oromo Title</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='Enter Oromo title (optional)'
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || undefined)}
                       />
                     </FormControl>
                     <FormMessage />
@@ -196,6 +244,47 @@ export default function CreatePublicationForm({
                         rows={3}
                         {...field}
                         value={typeof field.value === 'string' ? field.value : ''}
+                        onChange={(e) => field.onChange(e.target.value || undefined)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='excerptAm'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Amharic Excerpt</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder='Brief description in Amharic (optional)'
+                        rows={3}
+                        {...field}
+                        value={typeof field.value === 'string' ? field.value : ''}
+                        onChange={(e) => field.onChange(e.target.value || undefined)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='excerptOr'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Oromo Excerpt</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder='Brief description in Oromo (optional)'
+                        rows={3}
+                        {...field}
+                        value={typeof field.value === 'string' ? field.value : ''}
+                        onChange={(e) => field.onChange(e.target.value || undefined)}
                       />
                     </FormControl>
                     <FormMessage />
@@ -211,9 +300,45 @@ export default function CreatePublicationForm({
                     <FormLabel>Content</FormLabel>
                     <FormControl>
                       <RichTextEditor
-                        content={typeof field.value === 'string' ? field.value || '' : ''}
-                        onChange={field.onChange}
+                        content={typeof field.value === 'string' ? field.value || '' : typeof field.value === 'object' ? JSON.stringify(field.value) : ''}
+                        onChange={(value) => field.onChange(value || undefined)}
                         placeholder='Start writing your publication...'
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='contentAm'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Amharic Content</FormLabel>
+                    <FormControl>
+                      <RichTextEditor
+                        content={typeof field.value === 'string' ? field.value || '' : typeof field.value === 'object' ? JSON.stringify(field.value) : ''}
+                        onChange={(value) => field.onChange(value || undefined)}
+                        placeholder='Start writing in Amharic (optional)...'
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='contentOr'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Oromo Content</FormLabel>
+                    <FormControl>
+                      <RichTextEditor
+                        content={typeof field.value === 'string' ? field.value || '' : typeof field.value === 'object' ? JSON.stringify(field.value) : ''}
+                        onChange={(value) => field.onChange(value || undefined)}
+                        placeholder='Start writing in Oromo (optional)...'
                       />
                     </FormControl>
                     <FormMessage />
@@ -280,6 +405,9 @@ export default function CreatePublicationForm({
                         <SelectItem value={EPublicationStatus.published}>
                           Published
                         </SelectItem>
+                        <SelectItem value={EPublicationStatus.scheduled}>
+                          Scheduled
+                        </SelectItem>
                         <SelectItem value={EPublicationStatus.archived}>
                           Archived
                         </SelectItem>
@@ -289,6 +417,66 @@ export default function CreatePublicationForm({
                   </FormItem>
                 )}
               />
+
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                <FormField
+                  control={form.control}
+                  name='publishedAt'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Published At</FormLabel>
+                      <FormControl>
+                        <Input
+                          type='datetime-local'
+                          value={
+                            field.value
+                              ? new Date(field.value).toISOString().slice(0, 16)
+                              : ''
+                          }
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value ? new Date(e.target.value) : undefined,
+                            )
+                          }
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Schedule publication date (optional)
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='expiresAt'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Expires At</FormLabel>
+                      <FormControl>
+                        <Input
+                          type='datetime-local'
+                          value={
+                            field.value
+                              ? new Date(field.value).toISOString().slice(0, 16)
+                              : ''
+                          }
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value ? new Date(e.target.value) : undefined,
+                            )
+                          }
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Publication expiration date (optional)
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <div className='flex items-center gap-4'>
                 <FormField

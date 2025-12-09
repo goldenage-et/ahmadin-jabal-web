@@ -60,17 +60,28 @@ export class NewsletterController {
     }
 
     @Get()
+    @UserAuthOptions({ safeAuth: true })
+    @UseGuards(UserAuthGuard)
     @UsePipes(QueryPipe(ZNewsletterQueryFilter as any))
     async getManyNewsletters(
+        @CurrentUser() user: TAuthUser | null,
         @Query() query: TNewsletterQueryFilter,
     ): Promise<TNewsletterListResponse> {
-        return this.newsletterService.getManyNewsletters(query);
+        return this.newsletterService.getManyNewsletters({
+            ...query,
+            user: user,
+        });
     }
 
     @Get(':id')
+    @UserAuthOptions({ safeAuth: true })
+    @UseGuards(UserAuthGuard)
     @UsePipes(QueryPipe(ZNewsletterQueryUnique as any))
-    async getOneNewsletter(@Param('id') id: string): Promise<TNewsletterDetail> {
-        return this.newsletterService.getOneNewsletter({ id });
+    async getOneNewsletter(
+        @CurrentUser() user: TAuthUser | null,
+        @Param('id') id: string,
+    ): Promise<TNewsletterDetail> {
+        return this.newsletterService.getOneNewsletter({ id }, user);
     }
 
     @Put(':id')

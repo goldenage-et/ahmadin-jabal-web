@@ -225,3 +225,12 @@ export enum EContactSubmissionStatus {
     replied = 'replied',
     archived = 'archived',
 }
+
+// ========================================
+// Subscription Related Enums
+// ========================================
+export enum ESubscriptionStatus {
+    active = 'active',
+    expired = 'expired',
+    cancelled = 'cancelled',
+}

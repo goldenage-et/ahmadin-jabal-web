@@ -14,6 +14,7 @@ import {
 import { ChevronRight, MapPin, Minus, Plus, Star } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -29,6 +30,9 @@ export default function BookDetails({
   analytics: TReviewAnalytics | null;
 }) {
   const router = useRouter();
+  const params = useParams();
+  const pathname = usePathname();
+  const locale = params?.locale as string;
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [activeSection, setActiveSection] = useState('reviews');
@@ -61,6 +65,15 @@ export default function BookDetails({
 
   // Buy now handler - goes directly to checkout WITHOUT adding to cart
   const handleBuyNow = async () => {
+    // Check if user is authenticated
+    if (!user) {
+      const loginUrl = `/${locale}/auth/signin`;
+      const callbackUrl = pathname;
+      router.push(`${loginUrl}?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+      toast.info('Please sign in to continue with your purchase');
+      return;
+    }
+
     // Check stock availability
     const stockQuantity = book.inventoryQuantity;
     if (stockQuantity !== null && stockQuantity !== undefined && stockQuantity < quantity) {

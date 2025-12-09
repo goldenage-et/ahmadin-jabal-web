@@ -6,7 +6,12 @@ export enum EResources {
   ORDER = "order",
   PAYMENT = "payment",
   ROLE = "role",
+  BLOG = "blog",
+  NEWSLETTER = "newsletter",
+  PUBLICATION = "publication",
+  MEDIA = "media",
   SETTING = "setting",
+  PLAN = "plan",
 }
 
 export const ZRole = z.object({
@@ -21,6 +26,34 @@ export const ZRole = z.object({
       viewMany: z.boolean(),
       delete: z.boolean(),
       active: z.boolean(),
+    }),
+    [EResources.BLOG]: z.object({
+      create: z.boolean(),
+      update: z.boolean(),
+      viewOne: z.boolean(),
+      viewMany: z.boolean(),
+      delete: z.boolean(),
+    }),
+    [EResources.NEWSLETTER]: z.object({
+      create: z.boolean(),
+      update: z.boolean(),
+      viewOne: z.boolean(),
+      viewMany: z.boolean(),
+      delete: z.boolean(),
+    }),
+    [EResources.PUBLICATION]: z.object({
+      create: z.boolean(),
+      update: z.boolean(),
+      viewOne: z.boolean(),
+      viewMany: z.boolean(),
+      delete: z.boolean(),
+    }),
+    [EResources.MEDIA]: z.object({
+      create: z.boolean(),
+      update: z.boolean(),
+      viewOne: z.boolean(),
+      viewMany: z.boolean(),
+      delete: z.boolean(),
     }),
     [EResources.SETTING]: z.object({
       update: z.boolean(),
@@ -54,6 +87,13 @@ export const ZRole = z.object({
       update: z.boolean(),
       viewOne: z.boolean(),
       viewMany: z.boolean(),
+    }),
+    [EResources.PLAN]: z.object({
+      create: z.boolean(),
+      update: z.boolean(),
+      viewOne: z.boolean(),
+      viewMany: z.boolean(),
+      delete: z.boolean(),
     }),
   })
 })

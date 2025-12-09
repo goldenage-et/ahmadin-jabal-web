@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { CreditCard, Building2, CheckCircle, AlertCircle, ArrowRight } from 'lucide-react';
+import { CheckCircle, AlertCircle, ArrowRight } from 'lucide-react';
 import { useRouter } from '@/i18n/routing';
 import { EPaymentMethod, TBankAccount, TBankInfo, TOrderBasic } from '@repo/common';
 import { Separator } from '@/components/ui/separator';
@@ -218,7 +218,7 @@ export function PaymentMethodSelector({ order, bankAccounts, banks }: PaymentMet
                                 <p className="font-medium mb-1">How Bank Transfer Works</p>
                                 <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
                                     <li>Select your bank from the list above</li>
-                                    <li>You'll see the store's account details to transfer to</li>
+                                    <li>You'll see the bank account details to transfer to</li>
                                     <li>Complete the transfer using your bank's app or branch</li>
                                     <li>Enter your transfer reference number for verification</li>
                                     <li>We'll confirm your payment and process your order</li>

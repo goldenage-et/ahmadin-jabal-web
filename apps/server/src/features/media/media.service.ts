@@ -15,6 +15,7 @@ import {
     ZMediaBasic,
     ZMediaListResponse,
     ZMediaDetail,
+    TAuthUser,
     TCreateVideo,
     TUpdateVideo,
     TVideoBasic,
@@ -58,10 +59,26 @@ import {
     EMediaStatus,
 } from '@repo/common';
 import { PrismaClient } from '@repo/prisma';
+import { getContentAccessLevel, isPremiumUser } from '@/helpers/premium-access.helper';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service';
 
 @Injectable()
 export class MediaService {
-    constructor(@Inject(PRISMA_CLIENT) private readonly db: PrismaClient) { }
+    constructor(
+        @Inject(PRISMA_CLIENT) private readonly db: PrismaClient,
+        private readonly subscriptionsService: SubscriptionsService,
+    ) { }
+
+    // Helper to get content access level with subscription check
+    private async getAccessLevel(
+        user: TAuthUser | null,
+        contentIsPremium: boolean,
+    ) {
+        const hasActiveSubscription = user
+            ? await this.subscriptionsService.hasActiveSubscription(user.id)
+            : false;
+        return getContentAccessLevel(user, contentIsPremium, hasActiveSubscription);
+    }
 
     // ==================== MEDIA CRUD ====================
 
@@ -76,7 +93,7 @@ export class MediaService {
         return ZMediaBasic.parse(media);
     }
 
-    async getManyMedia(query: TMediaQueryFilter): Promise<TMediaListResponse> {
+    async getManyMedia(query: TMediaQueryFilter & { user?: TAuthUser | null }): Promise<TMediaListResponse> {
         const where: any = {};
 
         if (query.type) {
@@ -149,12 +166,28 @@ export class MediaService {
             take: limit,
         });
 
+        // Apply premium access control - hide full content for non-premium users
+        const hasActiveSubscription = query.user
+            ? await this.subscriptionsService.hasActiveSubscription(query.user.id)
+            : false;
+        const mediaWithAccessControl = media.map(item => {
+            const accessLevel = getContentAccessLevel(query.user || null, item.isPremium, hasActiveSubscription);
+            if (accessLevel === 'preview' && item.isPremium) {
+                // For preview, hide the actual URL but keep metadata
+                return {
+                    ...item,
+                    url: item.thumbnail || item.url, // Show thumbnail instead of full URL
+                };
+            }
+            return item;
+        });
+
         const totalPages = Math.ceil(total / limit);
         const hasNext = page < totalPages;
         const hasPrev = page > 1;
 
         return ZMediaListResponse.parse({
-            data: media,
+            data: mediaWithAccessControl,
             meta: {
                 page,
                 limit,
@@ -166,7 +199,7 @@ export class MediaService {
         });
     }
 
-    async getOneMedia(query: TMediaQueryUnique): Promise<TMediaDetail> {
+    async getOneMedia(query: TMediaQueryUnique, user?: TAuthUser | null): Promise<TMediaDetail> {
         const media = await this.db.media.findUnique({
             where: { id: query.id },
             include: {
@@ -185,6 +218,20 @@ export class MediaService {
 
         if (!media) {
             throw new NotFoundException('Media not found');
+        }
+
+        // Check premium access (check subscription)
+        const hasActiveSubscription = user
+            ? await this.subscriptionsService.hasActiveSubscription(user.id)
+            : false;
+        const accessLevel = getContentAccessLevel(user || null, media.isPremium, hasActiveSubscription);
+        if (accessLevel === 'preview' && media.isPremium) {
+            // Return preview version (metadata but limited URL access)
+            const mediaPreview = {
+                ...media,
+                url: media.thumbnail || media.url, // Show thumbnail instead of full URL
+            };
+            return ZMediaDetail.parse(mediaPreview);
         }
 
         return ZMediaDetail.parse(media);
@@ -231,7 +278,7 @@ export class MediaService {
         return ZVideoBasic.parse(video);
     }
 
-    async getManyVideos(query: TVideoQueryFilter): Promise<TVideoListResponse> {
+    async getManyVideos(query: TVideoQueryFilter & { user?: TAuthUser | null }): Promise<TVideoListResponse> {
         const where: any = {};
 
         if (query.category) {
@@ -300,12 +347,28 @@ export class MediaService {
             take: limit,
         });
 
+        // Apply premium access control - hide full content for non-premium users
+        const hasActiveSubscription = query.user
+            ? await this.subscriptionsService.hasActiveSubscription(query.user.id)
+            : false;
+        const videosWithAccessControl = videos.map(item => {
+            const accessLevel = getContentAccessLevel(query.user || null, item.isPremium, hasActiveSubscription);
+            if (accessLevel === 'preview' && item.isPremium) {
+                // For preview, hide the actual URL but keep metadata
+                return {
+                    ...item,
+                    url: item.thumbnail || item.url, // Show thumbnail instead of full URL
+                };
+            }
+            return item;
+        });
+
         const totalPages = Math.ceil(total / limit);
         const hasNext = page < totalPages;
         const hasPrev = page > 1;
 
         return ZVideoListResponse.parse({
-            data: videos,
+            data: videosWithAccessControl,
             meta: {
                 page,
                 limit,
@@ -317,7 +380,7 @@ export class MediaService {
         });
     }
 
-    async getOneVideo(query: TVideoQueryUnique): Promise<TVideoDetail> {
+    async getOneVideo(query: TVideoQueryUnique, user?: TAuthUser | null): Promise<TVideoDetail> {
         const video = await this.db.video.findUnique({
             where: { id: query.id },
             include: {
@@ -336,6 +399,20 @@ export class MediaService {
 
         if (!video) {
             throw new NotFoundException('Video not found');
+        }
+
+        // Check premium access (check subscription)
+        const hasActiveSubscription = user
+            ? await this.subscriptionsService.hasActiveSubscription(user.id)
+            : false;
+        const accessLevel = getContentAccessLevel(user || null, video.isPremium, hasActiveSubscription);
+        if (accessLevel === 'preview' && video.isPremium) {
+            // Return preview version (metadata but limited URL access)
+            const videoPreview = {
+                ...video,
+                url: video.thumbnail || video.url, // Show thumbnail instead of full URL
+            };
+            return ZVideoDetail.parse(videoPreview);
         }
 
         return ZVideoDetail.parse(video);
@@ -382,7 +459,7 @@ export class MediaService {
         return ZAudioBasic.parse(audio);
     }
 
-    async getManyAudios(query: TAudioQueryFilter): Promise<TAudioListResponse> {
+    async getManyAudios(query: TAudioQueryFilter & { user?: TAuthUser | null }): Promise<TAudioListResponse> {
         const where: any = {};
 
         if (query.category) {
@@ -455,12 +532,28 @@ export class MediaService {
             take: limit,
         });
 
+        // Apply premium access control - hide full content for non-premium users
+        const hasActiveSubscription = query.user
+            ? await this.subscriptionsService.hasActiveSubscription(query.user.id)
+            : false;
+        const audiosWithAccessControl = audios.map(item => {
+            const accessLevel = getContentAccessLevel(query.user || null, item.isPremium, hasActiveSubscription);
+            if (accessLevel === 'preview' && item.isPremium) {
+                // For preview, hide the actual URL but keep metadata
+                return {
+                    ...item,
+                    url: item.thumbnail || item.url, // Show thumbnail instead of full URL
+                };
+            }
+            return item;
+        });
+
         const totalPages = Math.ceil(total / limit);
         const hasNext = page < totalPages;
         const hasPrev = page > 1;
 
         return ZAudioListResponse.parse({
-            data: audios,
+            data: audiosWithAccessControl,
             meta: {
                 page,
                 limit,
@@ -472,7 +565,7 @@ export class MediaService {
         });
     }
 
-    async getOneAudio(query: TAudioQueryUnique): Promise<TAudioDetail> {
+    async getOneAudio(query: TAudioQueryUnique, user?: TAuthUser | null): Promise<TAudioDetail> {
         const audio = await this.db.audio.findUnique({
             where: { id: query.id },
             include: {
@@ -491,6 +584,20 @@ export class MediaService {
 
         if (!audio) {
             throw new NotFoundException('Audio not found');
+        }
+
+        // Check premium access (check subscription)
+        const hasActiveSubscription = user
+            ? await this.subscriptionsService.hasActiveSubscription(user.id)
+            : false;
+        const accessLevel = getContentAccessLevel(user || null, audio.isPremium, hasActiveSubscription);
+        if (accessLevel === 'preview' && audio.isPremium) {
+            // Return preview version (metadata but limited URL access)
+            const audioPreview = {
+                ...audio,
+                url: audio.thumbnail || audio.url, // Show thumbnail instead of full URL
+            };
+            return ZAudioDetail.parse(audioPreview);
         }
 
         return ZAudioDetail.parse(audio);
@@ -537,7 +644,7 @@ export class MediaService {
         return ZPhotoBasic.parse(photo);
     }
 
-    async getManyPhotos(query: TPhotoQueryFilter): Promise<TPhotoListResponse> {
+    async getManyPhotos(query: TPhotoQueryFilter & { user?: TAuthUser | null }): Promise<TPhotoListResponse> {
         const where: any = {};
 
         if (query.category) {
@@ -604,12 +711,28 @@ export class MediaService {
             take: limit,
         });
 
+        // Apply premium access control - hide full content for non-premium users
+        const hasActiveSubscription = query.user
+            ? await this.subscriptionsService.hasActiveSubscription(query.user.id)
+            : false;
+        const photosWithAccessControl = photos.map(item => {
+            const accessLevel = getContentAccessLevel(query.user || null, item.isPremium, hasActiveSubscription);
+            if (accessLevel === 'preview' && item.isPremium) {
+                // For preview, hide the actual URL but keep metadata
+                return {
+                    ...item,
+                    url: item.thumbnail || item.url, // Show thumbnail instead of full URL
+                };
+            }
+            return item;
+        });
+
         const totalPages = Math.ceil(total / limit);
         const hasNext = page < totalPages;
         const hasPrev = page > 1;
 
         return ZPhotoListResponse.parse({
-            data: photos,
+            data: photosWithAccessControl,
             meta: {
                 page,
                 limit,
@@ -621,7 +744,7 @@ export class MediaService {
         });
     }
 
-    async getOnePhoto(query: TPhotoQueryUnique): Promise<TPhotoDetail> {
+    async getOnePhoto(query: TPhotoQueryUnique, user?: TAuthUser | null): Promise<TPhotoDetail> {
         const photo = await this.db.photo.findUnique({
             where: { id: query.id },
             include: {
@@ -640,6 +763,20 @@ export class MediaService {
 
         if (!photo) {
             throw new NotFoundException('Photo not found');
+        }
+
+        // Check premium access (check subscription)
+        const hasActiveSubscription = user
+            ? await this.subscriptionsService.hasActiveSubscription(user.id)
+            : false;
+        const accessLevel = getContentAccessLevel(user || null, photo.isPremium, hasActiveSubscription);
+        if (accessLevel === 'preview' && photo.isPremium) {
+            // Return preview version (metadata but limited URL access)
+            const photoPreview = {
+                ...photo,
+                url: photo.thumbnail || photo.url, // Show thumbnail instead of full URL
+            };
+            return ZPhotoDetail.parse(photoPreview);
         }
 
         return ZPhotoDetail.parse(photo);
@@ -686,7 +823,7 @@ export class MediaService {
         return ZGalleryBasic.parse(gallery);
     }
 
-    async getManyGalleries(query: TGalleryQueryFilter): Promise<TGalleryListResponse> {
+    async getManyGalleries(query: TGalleryQueryFilter & { user?: TAuthUser | null }): Promise<TGalleryListResponse> {
         const where: any = {};
 
         if (query.category) {
@@ -743,12 +880,23 @@ export class MediaService {
             take: limit,
         });
 
+        // Apply premium access control - galleries with premium photos will show limited preview
+        // Note: Gallery access is based on gallery.isPremium, individual photos within may also be premium
+        const hasActiveSubscription = query.user
+            ? await this.subscriptionsService.hasActiveSubscription(query.user.id)
+            : false;
+        const galleriesWithAccessControl = galleries.map(item => {
+            const accessLevel = getContentAccessLevel(query.user || null, item.isPremium, hasActiveSubscription);
+            // For galleries, we keep the full gallery data but may filter photos in the detail view
+            return item;
+        });
+
         const totalPages = Math.ceil(total / limit);
         const hasNext = page < totalPages;
         const hasPrev = page > 1;
 
         return ZGalleryListResponse.parse({
-            data: galleries,
+            data: galleriesWithAccessControl,
             meta: {
                 page,
                 limit,
@@ -760,7 +908,7 @@ export class MediaService {
         });
     }
 
-    async getOneGallery(query: TGalleryQueryUnique): Promise<TGalleryDetail> {
+    async getOneGallery(query: TGalleryQueryUnique, user?: TAuthUser | null): Promise<TGalleryDetail> {
         const gallery = await this.db.gallery.findUnique({
             where: query.id ? { id: query.id } : { slug: query.slug },
             include: {
@@ -789,16 +937,53 @@ export class MediaService {
             throw new NotFoundException('Gallery not found');
         }
 
-        // Transform galleryPhotos to match schema
+        // Check premium access for gallery (check subscription)
+        const hasActiveSubscription = user
+            ? await this.subscriptionsService.hasActiveSubscription(user.id)
+            : false;
+        const galleryAccessLevel = getContentAccessLevel(user || null, gallery.isPremium, hasActiveSubscription);
+
+        // Transform galleryPhotos to match schema and apply premium access control
         const transformedGallery = {
             ...gallery,
-            photos: gallery.galleryPhotos.map((gp) => ({
-                id: gp.id,
-                photoId: gp.photoId,
-                order: gp.order,
-                photo: gp.photo ? ZPhotoBasic.parse(gp.photo) : undefined,
-            })),
+            photos: gallery.galleryPhotos
+                .map((gp) => {
+                    if (!gp.photo) return null;
+
+                    // Check premium access for individual photos
+                    const photoAccessLevel = getContentAccessLevel(user || null, gp.photo.isPremium, hasActiveSubscription);
+
+                    // If user doesn't have full access to premium photo, show preview
+                    if (photoAccessLevel === 'preview' && gp.photo.isPremium) {
+                        return {
+                            id: gp.id,
+                            photoId: gp.photoId,
+                            order: gp.order,
+                            photo: {
+                                ...ZPhotoBasic.parse(gp.photo),
+                                url: gp.photo.thumbnail || gp.photo.url, // Show thumbnail instead
+                            },
+                        };
+                    }
+
+                    return {
+                        id: gp.id,
+                        photoId: gp.photoId,
+                        order: gp.order,
+                        photo: gp.photo ? ZPhotoBasic.parse(gp.photo) : undefined,
+                    };
+                })
+                .filter(Boolean),
         };
+
+        // If gallery itself is premium and user doesn't have access, return preview
+        if (galleryAccessLevel === 'preview' && gallery.isPremium) {
+            // Return gallery with limited data
+            return ZGalleryDetail.parse({
+                ...transformedGallery,
+                description: null, // Hide full description for preview
+            });
+        }
 
         return ZGalleryDetail.parse(transformedGallery);
     }

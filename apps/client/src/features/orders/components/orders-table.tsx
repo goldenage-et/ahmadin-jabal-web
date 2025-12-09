@@ -27,6 +27,7 @@ import {
   AlertCircle,
   Package,
   Truck,
+  Sparkles,
 } from 'lucide-react';
 import { TOrderBasic, EOrderStatus, EPaymentStatus } from '@repo/common';
 import Link from 'next/link';
@@ -38,20 +39,20 @@ interface OrdersTableProps {
 }
 
 const statusColors = {
-  [EOrderStatus.pending]: 'bg-yellow-100 text-yellow-800',
-  [EOrderStatus.confirmed]: 'bg-blue-100 text-blue-800',
-  [EOrderStatus.processing]: 'bg-purple-100 text-purple-800',
-  [EOrderStatus.shipped]: 'bg-indigo-100 text-indigo-800',
-  [EOrderStatus.delivered]: 'bg-green-100 text-green-800',
-  [EOrderStatus.cancelled]: 'bg-red-100 text-red-800',
-  [EOrderStatus.refunded]: 'bg-gray-100 text-gray-800',
+  [EOrderStatus.pending]: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100',
+  [EOrderStatus.confirmed]: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100',
+  [EOrderStatus.processing]: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100',
+  [EOrderStatus.shipped]: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-100',
+  [EOrderStatus.delivered]: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100',
+  [EOrderStatus.cancelled]: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100',
+  [EOrderStatus.refunded]: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100',
 };
 
 const paymentStatusColors = {
-  [EPaymentStatus.pending]: 'bg-yellow-100 text-yellow-800',
-  [EPaymentStatus.paid]: 'bg-green-100 text-green-800',
-  [EPaymentStatus.failed]: 'bg-red-100 text-red-800',
-  [EPaymentStatus.refunded]: 'bg-gray-100 text-gray-800',
+  [EPaymentStatus.pending]: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100',
+  [EPaymentStatus.paid]: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100',
+  [EPaymentStatus.failed]: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100',
+  [EPaymentStatus.refunded]: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100',
 };
 
 const statusIcons = {
@@ -101,9 +102,17 @@ export function OrdersTable({ orders, total }: OrdersTableProps) {
                 <TableRow key={order.id}>
                   <TableCell>
                     <div>
-                      <p className='font-medium'>{order.orderNumber}</p>
-                      <p className='text-sm text-gray-500'>
-                        {/* {order.items.length} item{order.items.length !== 1 ? 's' : ''} */}
+                      <div className='flex items-center gap-2'>
+                        <p className='font-medium'>{order.orderNumber}</p>
+                        {order.planId && (
+                          <Badge variant='outline' className='text-xs'>
+                            <Sparkles className='h-3 w-3 mr-1' />
+                            Subscription
+                          </Badge>
+                        )}
+                      </div>
+                      <p className='text-sm text-muted-foreground'>
+                        {order.planId ? 'Subscription order' : 'Book order'}
                       </p>
                     </div>
                   </TableCell>
@@ -112,7 +121,7 @@ export function OrdersTable({ orders, total }: OrdersTableProps) {
                       <p className='font-medium'>
                         {order.user?.firstName} {order.user?.lastName}
                       </p>
-                      <p className='text-sm text-gray-500'>
+                      <p className='text-sm text-muted-foreground'>
                         {order.user?.email}
                       </p>
                     </div>
@@ -138,7 +147,7 @@ export function OrdersTable({ orders, total }: OrdersTableProps) {
                     </p>
                   </TableCell>
                   <TableCell>
-                    <div className='flex items-center text-sm text-gray-500'>
+                    <div className='flex items-center text-sm text-muted-foreground'>
                       <Calendar className='h-4 w-4 mr-1' />
                       {format(new Date(order.createdAt), 'MMM dd, yyyy')}
                     </div>

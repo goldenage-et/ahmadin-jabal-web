@@ -105,9 +105,9 @@ export default function PhotoList({ photos }: PhotoListProps) {
                       </Badge>
                     )}
                   </div>
-                  {photo.description && (
+                  {(photo.descriptionAm || photo.descriptionOr) && (
                     <p className='text-sm text-muted-foreground line-clamp-2'>
-                      {photo.description}
+                      {photo.descriptionAm || photo.descriptionOr}
                     </p>
                   )}
                   <div className='flex items-center gap-4 text-xs text-muted-foreground'>
@@ -167,4 +167,5 @@ export default function PhotoList({ photos }: PhotoListProps) {
     </div>
   );
 }
+
 

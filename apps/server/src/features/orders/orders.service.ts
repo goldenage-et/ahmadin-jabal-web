@@ -39,16 +39,18 @@ export class OrdersService {
     const orderNumber = generateCode('ORD');
     this.logger.log(`Order number: ${orderNumber}`);
     const orderPromises = data.map(async (orderData) => {
-      const subtotal = orderData.quantity * orderData.price;
+      const quantity = orderData.quantity || 1;
+      const subtotal = quantity * orderData.price;
       const tax = orderData.tax || 0;
-      const shipping = orderData.shipping || 0;
+      // For subscription orders, shipping is 0
+      const shipping = orderData.planId ? 0 : (orderData.shipping || 0);
       const discount = orderData.discount || 0;
       const total = subtotal + tax + shipping - discount;
 
       const statusHistory: TOrderStatusHistory = {
         id: createId(),
         status: EOrderStatus.pending,
-        notes: 'Order created',
+        notes: orderData.planId ? 'Subscription order created' : 'Order created',
         updatedBy: {
           id: user.id,
           firstName: user.firstName,
@@ -58,33 +60,38 @@ export class OrdersService {
         createdAt: new Date(),
       };
       // Log shipping address data for debugging
-      this.logger.log(`Shipping address data: ${JSON.stringify(orderData.shippingAddress)}`);
+      if (orderData.shippingAddress) {
+        this.logger.log(`Shipping address data: ${JSON.stringify(orderData.shippingAddress)}`);
+      }
       const paymentMethod = orderData.paymentMethod as unknown as PaymentMethod;
       // Create order
       const order = await this.db.order.create({
         data: {
           userId: user.id,
-          quantity: orderData.quantity,
-          bookId: orderData.bookId,
+          quantity: quantity,
+          bookId: orderData.bookId || null,
+          planId: orderData.planId || null,
           orderNumber: orderNumber,
           status: orderData.status || EOrderStatus.pending,
           paymentStatus: orderData.paymentStatus || EPaymentStatus.pending,
           paymentMethod: paymentMethod,
-          shippingAddress: orderData.shippingAddress,
+          shippingAddress: orderData.shippingAddress || null,
           subtotal: subtotal,
           tax: tax,
           shipping: shipping,
           discount: discount,
           total: total,
           currency: orderData.currency || 'ETB',
-          shippingMethod: orderData.shippingMethod || EShippingMethod.standard,
+          shippingMethod: orderData.planId ? null : (orderData.shippingMethod || EShippingMethod.standard),
           notes: orderData.notes,
           customerNotes: orderData.customerNotes,
           statusHistory: [statusHistory],
         }
       });
 
-      this.logger.log(`Created order shipping address: ${JSON.stringify(order.shippingAddress)}`);
+      if (order.shippingAddress) {
+        this.logger.log(`Created order shipping address: ${JSON.stringify(order.shippingAddress)}`);
+      }
 
       return order
     });
@@ -176,6 +183,7 @@ export class OrdersService {
       include: {
         user: true,
         book: true,
+        plan: true,
       },
       orderBy: {
         createdAt: 'desc',
@@ -187,6 +195,30 @@ export class OrdersService {
     }
 
     return ZOrderDetail.parse(order);;
+  }
+
+  async getOneById(
+    orderId: string,
+  ): Promise<TOrderDetail> {
+    const order = await this.db.order.findFirst({
+      where: {
+        id: orderId,
+      },
+      include: {
+        user: true,
+        book: true,
+        plan: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    return ZOrderDetail.parse(order);
   }
 
   async update(

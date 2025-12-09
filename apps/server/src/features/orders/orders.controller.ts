@@ -123,7 +123,15 @@ export class OrdersController {
     @Param('id') id: string,
     @CurrentUser() user: TAuthUser,
   ): Promise<TOrderDetail> {
-    return this.ordersService.getOne(user.id, id);
+    // Check if user has admin permission to view any order
+    const canViewMany = this.rolesService.can(user, 'order', 'viewMany');
+    
+    // If admin, allow viewing any order; otherwise, only own orders
+    if (canViewMany) {
+      return this.ordersService.getOneById(id);
+    } else {
+      return this.ordersService.getOne(user.id, id);
+    }
   }
 
   @Put(':id')

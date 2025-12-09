@@ -47,19 +47,27 @@ export default function PublicationDetail({
     switch (status) {
       case EPublicationStatus.published:
         return (
-          <Badge variant='default' className='bg-green-500'>
+          <Badge variant='default' className='bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'>
             Published
           </Badge>
         );
       case EPublicationStatus.draft:
         return (
-          <Badge variant='secondary' className='bg-gray-500'>
+          <Badge variant='secondary' className='bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'>
             Draft
+          </Badge>
+        );
+      case EPublicationStatus.scheduled:
+        return (
+          <Badge variant='secondary' className='bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'>
+            Scheduled
           </Badge>
         );
       case EPublicationStatus.archived:
         return (
-          <Badge variant='outline'>Archived</Badge>
+          <Badge variant='outline' className='bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'>
+            Archived
+          </Badge>
         );
       default:
         return <Badge variant='outline'>{status}</Badge>;
@@ -132,8 +140,15 @@ export default function PublicationDetail({
                 )}
               </div>
               <CardTitle className='text-3xl'>{publication.title}</CardTitle>
-              {publication.titleEn && (
-                <p className='text-muted-foreground mt-2'>{publication.titleEn}</p>
+              {(publication.titleAm || publication.titleOr) && (
+                <div className='mt-2 space-y-1'>
+                  {publication.titleAm && (
+                    <p className='text-muted-foreground'>Amharic: {publication.titleAm}</p>
+                  )}
+                  {publication.titleOr && (
+                    <p className='text-muted-foreground'>Oromo: {publication.titleOr}</p>
+                  )}
+                </div>
               )}
             </div>
           </div>
@@ -156,6 +171,24 @@ export default function PublicationDetail({
             </div>
           )}
 
+          {(publication.excerptAm || publication.excerptOr) && (
+            <div>
+              <h3 className='font-semibold mb-2'>Multilingual Excerpts</h3>
+              {publication.excerptAm && (
+                <div className='mb-2'>
+                  <p className='text-sm font-medium text-muted-foreground'>Amharic:</p>
+                  <p className='text-muted-foreground'>{publication.excerptAm}</p>
+                </div>
+              )}
+              {publication.excerptOr && (
+                <div>
+                  <p className='text-sm font-medium text-muted-foreground'>Oromo:</p>
+                  <p className='text-muted-foreground'>{publication.excerptOr}</p>
+                </div>
+              )}
+            </div>
+          )}
+
           {publication.content && (
             <div>
               <h3 className='font-semibold mb-2'>Content</h3>
@@ -165,9 +198,49 @@ export default function PublicationDetail({
                   __html:
                     typeof publication.content === 'string'
                       ? publication.content
-                      : JSON.stringify(publication.content),
+                      : typeof publication.content === 'object'
+                        ? JSON.stringify(publication.content)
+                        : '',
                 }}
               />
+            </div>
+          )}
+
+          {(publication.contentAm || publication.contentOr) && (
+            <div>
+              <h3 className='font-semibold mb-2'>Multilingual Content</h3>
+              {publication.contentAm && (
+                <div className='mb-4'>
+                  <p className='text-sm font-medium text-muted-foreground mb-2'>Amharic:</p>
+                  <div
+                    className='prose dark:prose-invert max-w-none'
+                    dangerouslySetInnerHTML={{
+                      __html:
+                        typeof publication.contentAm === 'string'
+                          ? publication.contentAm
+                          : typeof publication.contentAm === 'object'
+                            ? JSON.stringify(publication.contentAm)
+                            : '',
+                    }}
+                  />
+                </div>
+              )}
+              {publication.contentOr && (
+                <div>
+                  <p className='text-sm font-medium text-muted-foreground mb-2'>Oromo:</p>
+                  <div
+                    className='prose dark:prose-invert max-w-none'
+                    dangerouslySetInnerHTML={{
+                      __html:
+                        typeof publication.contentOr === 'string'
+                          ? publication.contentOr
+                          : typeof publication.contentOr === 'object'
+                            ? JSON.stringify(publication.contentOr)
+                            : '',
+                    }}
+                  />
+                </div>
+              )}
             </div>
           )}
 
@@ -202,6 +275,17 @@ export default function PublicationDetail({
                   <p className='text-sm text-muted-foreground'>Published</p>
                   <p className='font-semibold text-xs'>
                     {format(new Date(publication.publishedAt), 'PP')}
+                  </p>
+                </div>
+              </div>
+            )}
+            {publication.expiresAt && (
+              <div className='flex items-center gap-2'>
+                <Calendar className='h-4 w-4 text-muted-foreground' />
+                <div>
+                  <p className='text-sm text-muted-foreground'>Expires</p>
+                  <p className='font-semibold text-xs'>
+                    {format(new Date(publication.expiresAt), 'PP')}
                   </p>
                 </div>
               </div>

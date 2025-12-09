@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { EOrderStatus, EPaymentStatus, TOrderDetail, TPayment } from '@repo/common';
+import { EOrderStatus, EPaymentStatus, TOrderDetail, TPayment, isErrorResponse } from '@repo/common';
 import {
   AlertCircle,
   ArrowLeft,
@@ -19,6 +19,7 @@ import {
   Truck,
   User,
   XCircle,
+  Sparkles,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -27,20 +28,20 @@ interface OrderDetailPageProps {
 }
 
 const statusColors = {
-  [EOrderStatus.pending]: 'bg-yellow-100 text-yellow-800',
-  [EOrderStatus.confirmed]: 'bg-blue-100 text-blue-800',
-  [EOrderStatus.processing]: 'bg-purple-100 text-purple-800',
-  [EOrderStatus.shipped]: 'bg-indigo-100 text-indigo-800',
-  [EOrderStatus.delivered]: 'bg-green-100 text-green-800',
-  [EOrderStatus.cancelled]: 'bg-red-100 text-red-800',
-  [EOrderStatus.refunded]: 'bg-gray-100 text-gray-800',
+  [EOrderStatus.pending]: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100',
+  [EOrderStatus.confirmed]: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100',
+  [EOrderStatus.processing]: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100',
+  [EOrderStatus.shipped]: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-100',
+  [EOrderStatus.delivered]: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100',
+  [EOrderStatus.cancelled]: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100',
+  [EOrderStatus.refunded]: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100',
 };
 
 const paymentStatusColors = {
-  [EPaymentStatus.pending]: 'bg-yellow-100 text-yellow-800',
-  [EPaymentStatus.paid]: 'bg-green-100 text-green-800',
-  [EPaymentStatus.failed]: 'bg-red-100 text-red-800',
-  [EPaymentStatus.refunded]: 'bg-gray-100 text-gray-800',
+  [EPaymentStatus.pending]: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100',
+  [EPaymentStatus.paid]: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100',
+  [EPaymentStatus.failed]: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100',
+  [EPaymentStatus.refunded]: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100',
 };
 
 const statusIcons = {
@@ -63,7 +64,7 @@ export default async function OrderDetailPage({
   const paymentResponse = await getPayments({ orderId });
 
   // Handle the response properly
-  if (!orderResponse || orderResponse.error || !paymentResponse || paymentResponse.error) {
+  if (!orderResponse || isErrorResponse(orderResponse) || !paymentResponse || isErrorResponse(paymentResponse)) {
     return (
       <div className='flex items-center justify-center min-h-screen'>
         <div className='text-center'>
@@ -84,6 +85,8 @@ export default async function OrderDetailPage({
   const order: TOrderDetail = orderResponse;
   const payments: TPayment[] = paymentResponse?.payments || [];
 
+  // Check if this is a subscription order
+  const isSubscriptionOrder = !!order.planId;
 
   const formatCurrency = (amount: number, currency: string = 'ETB') => {
     return new Intl.NumberFormat('en-US', {
@@ -151,25 +154,50 @@ export default async function OrderDetailPage({
           </CardContent>
         </Card>
 
-        {/* Shipping Address */}
-        <Card>
-          <CardHeader>
-            <CardTitle className='flex items-center gap-2'>
-              <MapPin className='h-5 w-5' />
-              Shipping Address
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className='text-sm'>
-              <p>{order.shippingAddress.street}</p>
-              <p>
-                {order.shippingAddress.city}, {order.shippingAddress.state}{' '}
-                {order.shippingAddress.zipCode}
-              </p>
-              <p>{order.shippingAddress.country}</p>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Subscription Plan Info - Only show for subscription orders */}
+        {isSubscriptionOrder && (
+          <Card>
+            <CardHeader>
+              <CardTitle className='flex items-center gap-2'>
+                <Sparkles className='h-5 w-5' />
+                Subscription Plan
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className='text-sm'>
+                <p className='font-medium text-foreground'>Subscription Order</p>
+                <p className='text-muted-foreground mt-1'>
+                  Plan ID: <span className='font-mono'>{order.planId}</span>
+                </p>
+                <p className='text-muted-foreground mt-2'>
+                  No physical shipping required. Subscription will be activated after payment confirmation.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Shipping Address - Only show for book orders */}
+        {!isSubscriptionOrder && order.shippingAddress && (
+          <Card>
+            <CardHeader>
+              <CardTitle className='flex items-center gap-2'>
+                <MapPin className='h-5 w-5' />
+                Shipping Address
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className='text-sm'>
+                <p>{order.shippingAddress.street}</p>
+                <p>
+                  {order.shippingAddress.city}, {order.shippingAddress.state}{' '}
+                  {order.shippingAddress.zipCode}
+                </p>
+                <p>{order.shippingAddress.country}</p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Payment Information */}
         <Card>
@@ -198,10 +226,16 @@ export default async function OrderDetailPage({
                   {formatCurrency(order.total, order.currency)}
                 </span>
               </div>
+              {isSubscriptionOrder && (
+                <div className='pt-2 border-t'>
+                  <p className='text-xs text-muted-foreground'>
+                    Subscription payment - activates subscription upon confirmation
+                  </p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
-
         <div className='lg:col-span-2 space-y-6'>
           {/* Payments List */}
           <PaymentsList payments={payments} orderCurrency={order.currency} />
@@ -209,7 +243,7 @@ export default async function OrderDetailPage({
           {/* Order Summary */}
           <Card>
             <CardHeader>
-              <CardTitle>Order Summary</CardTitle>
+              <CardTitle>{isSubscriptionOrder ? 'Subscription Summary' : 'Order Summary'}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className='space-y-3'>
@@ -221,10 +255,12 @@ export default async function OrderDetailPage({
                   <span>Tax</span>
                   <span>{formatCurrency(order.tax, order.currency)}</span>
                 </div>
-                <div className='flex justify-between'>
-                  <span>Shipping</span>
-                  <span>{formatCurrency(order.shipping, order.currency)}</span>
-                </div>
+                {!isSubscriptionOrder && (
+                  <div className='flex justify-between'>
+                    <span>Shipping</span>
+                    <span>{formatCurrency(order.shipping, order.currency)}</span>
+                  </div>
+                )}
                 {order.discount > 0 && (
                   <div className='flex justify-between text-green-600'>
                     <span>Discount</span>
@@ -238,6 +274,13 @@ export default async function OrderDetailPage({
                   <span>Total</span>
                   <span>{formatCurrency(order.total, order.currency)}</span>
                 </div>
+                {isSubscriptionOrder && (
+                  <div className='pt-2 border-t'>
+                    <p className='text-xs text-muted-foreground'>
+                      Subscription orders have no shipping charges
+                    </p>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

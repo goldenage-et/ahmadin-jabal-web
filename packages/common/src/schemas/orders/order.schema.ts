@@ -25,6 +25,8 @@ export const ZOrder = z.object({
   id: z.string(),
   userId: z.uuid(),
   storeId: z.uuid().optional(),
+  bookId: z.string().nullable().optional(),
+  planId: z.string().nullable().optional(),
   orderNumber: z.string(),
   status: z.enum(EOrderStatus),
   quantity: z.coerce.number(),
@@ -38,16 +40,16 @@ export const ZOrder = z.object({
     country: z.string(),
     latitude: z.number().optional(),
     longitude: z.number().optional(),
-  }),
+  }).nullable().optional(),
   subtotal: z.coerce.number(),
   tax: z.coerce.number(),
   shipping: z.coerce.number(),
   discount: z.coerce.number(),
   total: z.coerce.number(),
   currency: z.string(),
-  shippingMethod: z.enum(['standard', 'express', 'pickup']),
+  shippingMethod: z.enum(['standard', 'express', 'pickup']).nullable().optional(),
   trackingNumber: z.string().nullable().optional(),
-  estimatedDelivery: z.coerce.date().optional(),
+  estimatedDelivery: z.coerce.date().nullable().optional(),
   notes: z.string().nullable().optional(),
   customerNotes: z.string().nullable().optional(),
   createdAt: z.coerce.date(),
@@ -92,9 +94,10 @@ export type TOrderDetail = z.infer<typeof ZOrderDetail>;
 
 // Create Order Schema
 export const ZCreateOrder = z.object({
-  bookId: z.string(),
+  bookId: z.string().optional(),
+  planId: z.string().optional(),
   status: z.enum(EOrderStatus).optional(),
-  quantity: z.coerce.number().min(1),
+  quantity: z.coerce.number().min(1).optional().default(1),
   paymentStatus: z.enum(EPaymentStatus).optional(),
   paymentMethod: z.enum(EPaymentMethod),
   shippingAddress: z.object({
@@ -105,7 +108,7 @@ export const ZCreateOrder = z.object({
     country: z.string(),
     latitude: z.number().optional(),
     longitude: z.number().optional(),
-  }),
+  }).optional(),
   price: z.coerce.number().min(0),
   total: z.coerce.number().optional(),
   subtotal: z.coerce.number().optional(),
@@ -116,7 +119,15 @@ export const ZCreateOrder = z.object({
   shippingMethod: z.enum(['standard', 'express', 'pickup']).optional(),
   notes: z.string().nullable().optional(),
   customerNotes: z.string().nullable().optional(),
-});
+}).refine(
+  (data) => {
+    // Either bookId or planId must be provided, but not both
+    return (data.bookId && !data.planId) || (!data.bookId && data.planId);
+  },
+  {
+    message: 'Either bookId or planId must be provided, but not both',
+  }
+);
 export type TCreateOrder = z.infer<typeof ZCreateOrder>;
 
 // Update Order Schema
@@ -132,7 +143,7 @@ export const ZUpdateOrder = z.object({
     country: z.string(),
     latitude: z.number().optional(),
     longitude: z.number().optional(),
-  }).optional(),
+  }).nullable().optional(),
   total: z.coerce.number().optional(),
   subtotal: z.coerce.number().optional(),
   tax: z.coerce.number().optional(),

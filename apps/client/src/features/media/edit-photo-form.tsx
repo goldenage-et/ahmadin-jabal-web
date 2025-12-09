@@ -26,15 +26,24 @@ import {
   TUpdatePhoto,
   ZUpdatePhoto,
   EMediaStatus,
+  EMediaSource,
   TPhotoDetail,
 } from '@repo/common';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, CalendarIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { updatePhoto } from '@/actions/media.action';
 import { uploadFile } from '@/lib/file-upload';
 import { toast } from 'sonner';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 interface EditPhotoFormProps {
   photo: TPhotoDetail;
@@ -49,27 +58,61 @@ export default function EditPhotoForm({ photo }: EditPhotoFormProps) {
   const form = useForm<TUpdatePhoto>({
     resolver: zodResolver(ZUpdatePhoto) as any,
     defaultValues: {
-      caption: photo.caption || undefined,
-      description: photo.description || undefined,
+      title: photo.title || null,
+      titleAm: photo.titleAm || null,
+      titleOr: photo.titleOr || null,
+      descriptionAm: photo.descriptionAm || null,
+      descriptionOr: photo.descriptionOr || null,
+      caption: photo.caption || null,
+      captionAm: photo.captionAm || null,
+      captionOr: photo.captionOr || null,
+      alt: photo.alt || null,
+      category: photo.category || null,
       url: photo.url || undefined,
+      thumbnail: photo.thumbnail || null,
+      fileSize: photo.fileSize || null,
+      mimeType: photo.mimeType || null,
+      width: photo.width || null,
+      height: photo.height || null,
+      source: photo.source || undefined,
+      externalId: photo.externalId || null,
       featured: photo.featured,
       status: photo.status,
+      metadata: photo.metadata || null,
+      mediaId: photo.mediaId || null,
       publishedAt: photo.publishedAt
         ? new Date(photo.publishedAt)
-        : undefined,
+        : null,
     },
   });
 
   useEffect(() => {
     form.reset({
-      caption: photo.caption || undefined,
-      description: photo.description || undefined,
+      title: photo.title || null,
+      titleAm: photo.titleAm || null,
+      titleOr: photo.titleOr || null,
+      descriptionAm: photo.descriptionAm || null,
+      descriptionOr: photo.descriptionOr || null,
+      caption: photo.caption || null,
+      captionAm: photo.captionAm || null,
+      captionOr: photo.captionOr || null,
+      alt: photo.alt || null,
+      category: photo.category || null,
       url: photo.url || undefined,
+      thumbnail: photo.thumbnail || null,
+      fileSize: photo.fileSize || null,
+      mimeType: photo.mimeType || null,
+      width: photo.width || null,
+      height: photo.height || null,
+      source: photo.source || undefined,
+      externalId: photo.externalId || null,
       featured: photo.featured,
       status: photo.status,
+      metadata: photo.metadata || null,
+      mediaId: photo.mediaId || null,
       publishedAt: photo.publishedAt
         ? new Date(photo.publishedAt)
-        : undefined,
+        : null,
     });
     setPhotoUrl(photo.url || '');
   }, [photo, form]);
@@ -113,15 +156,16 @@ export default function EditPhotoForm({ photo }: EditPhotoFormProps) {
             <CardContent className='space-y-4'>
               <FormField
                 control={form.control}
-                name='caption'
+                name='title'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Caption</FormLabel>
+                    <FormLabel>Title</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder='Enter photo caption'
+                        placeholder='Enter photo title (optional)'
                         {...field}
                         value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
                       />
                     </FormControl>
                     <FormMessage />
@@ -131,16 +175,170 @@ export default function EditPhotoForm({ photo }: EditPhotoFormProps) {
 
               <FormField
                 control={form.control}
-                name='description'
+                name='titleAm'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>Amharic Title</FormLabel>
                     <FormControl>
-                      <Textarea
-                        placeholder='Brief description of the photo'
-                        rows={4}
+                      <Input
+                        placeholder='Enter Amharic title (optional)'
                         {...field}
                         value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='titleOr'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Oromo Title</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='Enter Oromo title (optional)'
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='caption'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Caption</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='Enter photo caption (optional)'
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='captionAm'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Amharic Caption</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='Enter Amharic caption (optional)'
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='captionOr'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Oromo Caption</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='Enter Oromo caption (optional)'
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='alt'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Alt Text</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='Alt text for accessibility (optional)'
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='descriptionAm'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Amharic Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder='Amharic description (optional)'
+                        rows={3}
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='descriptionOr'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Oromo Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder='Oromo description (optional)'
+                        rows={3}
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='category'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='Photo category (optional)'
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
                       />
                     </FormControl>
                     <FormMessage />
@@ -185,6 +383,55 @@ export default function EditPhotoForm({ photo }: EditPhotoFormProps) {
                         )}
                       </div>
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='thumbnail'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Thumbnail URL</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='https://example.com/thumbnail.jpg'
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='source'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Source</FormLabel>
+                    <Select
+                      onValueChange={(value) =>
+                        field.onChange(value as EMediaSource)
+                      }
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value={EMediaSource.upload}>Upload</SelectItem>
+                        <SelectItem value={EMediaSource.youtube}>YouTube</SelectItem>
+                        <SelectItem value={EMediaSource.external}>
+                          External
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -244,6 +491,48 @@ export default function EditPhotoForm({ photo }: EditPhotoFormProps) {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name='publishedAt'
+                render={({ field }) => (
+                  <FormItem className='flex flex-col'>
+                    <FormLabel>Published Date</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={'outline'}
+                            className={cn(
+                              'w-full pl-3 text-left font-normal',
+                              !field.value && 'text-muted-foreground'
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, 'PPP')
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className='w-auto p-0' align='start'>
+                        <Calendar
+                          mode='single'
+                          selected={field.value || undefined}
+                          onSelect={(date) => field.onChange(date || null)}
+                          disabled={(date) =>
+                            date > new Date() || date < new Date('1900-01-01')
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </CardContent>
           </Card>
 
@@ -265,4 +554,3 @@ export default function EditPhotoForm({ photo }: EditPhotoFormProps) {
     </div>
   );
 }
-

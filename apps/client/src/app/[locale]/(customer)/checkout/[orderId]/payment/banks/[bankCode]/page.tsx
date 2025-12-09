@@ -1,9 +1,10 @@
 import { getBanks } from '@/actions/bank-transfer.action';
 import { getMyOrderDetails } from '@/actions/profile.action';
+import { getAuth } from '@/actions/auth.action';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { EPaymentStatus, type TBankAccount, type TOrderDetail } from '@repo/common';
+import { EPaymentStatus, ErrorType, type TBankAccount, type TOrderDetail, isErrorResponse } from '@repo/common';
 import {
     AlertCircle,
     ArrowLeft,
@@ -19,9 +20,24 @@ import { getBankAccounts } from '@/actions/bank-account.action';
 export default async function BankTransferPaymentPage({
     params
 }: {
-    params: Promise<{ orderId: string; bankCode: string }>
+    params: Promise<{ orderId: string; bankCode: string; locale: string }>
 }) {
-    const { orderId, bankCode } = await params;
+    const { orderId, bankCode, locale } = await params;
+    const { user, session, error } = await getAuth();
+
+    // Check if there's no session or invalid session
+    if (
+        !user ||
+        !session ||
+        (error && isErrorResponse(error) &&
+            (error.errorType === ErrorType.NOT_ACCESS_SESSION ||
+                error.errorType === ErrorType.INVALID_SESSION ||
+                error.errorType === ErrorType.EXPIRED_SESSION))
+    ) {
+        const loginUrl = `/${locale}/auth/signin`;
+        const callbackUrl = `/${locale}/checkout/${orderId}/payment/banks/${bankCode}`;
+        redirect(`${loginUrl}?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+    }
 
     const [orderResponse, banksResponse] = await Promise.all([
         getMyOrderDetails(orderId),

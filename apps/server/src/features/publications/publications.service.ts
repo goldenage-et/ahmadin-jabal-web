@@ -17,6 +17,7 @@ import type {
     TPublicationQueryUnique,
     TUpdatePublication,
     TUpdatePublicationComment,
+    TAuthUser,
 } from '@repo/common';
 import {
     EPublicationStatus,
@@ -27,10 +28,15 @@ import {
     ZPublicationListResponse,
 } from '@repo/common';
 import { PrismaClient } from '@repo/prisma';
+import { getContentAccessLevel, isPremiumUser } from '@/helpers/premium-access.helper';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service';
 
 @Injectable()
 export class PublicationsService {
-    constructor(@Inject(PRISMA_CLIENT) private readonly db: PrismaClient) { }
+    constructor(
+        @Inject(PRISMA_CLIENT) private readonly db: PrismaClient,
+        private readonly subscriptionsService: SubscriptionsService,
+    ) { }
 
     async create(
         authorId: string,
@@ -60,9 +66,10 @@ export class PublicationsService {
     }
 
     async getMany(
-        query: TPublicationQueryFilter & { userId?: string },
+        query: TPublicationQueryFilter & { userId?: string; user?: TAuthUser | null },
     ): Promise<TPublicationListResponse> {
         const where: any = {};
+        let hasActiveSubscription = false;
 
         if (query.status) {
             where.status = query.status;
@@ -85,6 +92,19 @@ export class PublicationsService {
 
         if (typeof query.isPremium === 'boolean') {
             where.isPremium = query.isPremium;
+        }
+
+        // Filter premium content based on user status (check subscription)
+        hasActiveSubscription = query.user
+            ? await this.subscriptionsService.hasActiveSubscription(query.user.id)
+            : false;
+        const userIsPremium = isPremiumUser(query.user || null, hasActiveSubscription);
+        if (!userIsPremium) {
+            // Non-premium users can see all content (we'll show preview for premium)
+            // But if they specifically filter for premium, show only non-premium
+            if (query.isPremium === true) {
+                where.isPremium = false;
+            }
         }
 
         if (typeof query.allowComments === 'boolean') {
@@ -162,12 +182,30 @@ export class PublicationsService {
             },
         });
 
+        // Apply premium access control - hide full content for non-premium users
+        hasActiveSubscription = query.user
+            ? await this.subscriptionsService.hasActiveSubscription(query.user.id)
+            : false;
+        const publicationsWithAccessControl = publications.map(publication => {
+            const accessLevel = getContentAccessLevel(query.user || null, publication.isPremium, hasActiveSubscription);
+            if (accessLevel === 'preview' && publication.isPremium) {
+                // For preview, hide full content but keep title, excerpt, featuredImage
+                return {
+                    ...publication,
+                    content: null,
+                    contentAm: null,
+                    contentOr: null,
+                };
+            }
+            return publication;
+        });
+
         const totalPages = Math.ceil(total / limit);
         const hasNext = page < totalPages;
         const hasPrev = page > 1;
 
         return ZPublicationListResponse.parse({
-            data: ZPublicationBasic.array().parse(publications),
+            data: ZPublicationBasic.array().parse(publicationsWithAccessControl),
             meta: {
                 page,
                 limit,
@@ -182,6 +220,7 @@ export class PublicationsService {
     async getOne(
         query: TPublicationQueryUnique,
         userId?: string,
+        user?: TAuthUser | null,
     ): Promise<TPublicationDetail> {
         const where: any = {};
 
@@ -228,7 +267,23 @@ export class PublicationsService {
             );
         }
 
-        // Increment view count
+        // Check premium access (check subscription)
+        const hasActiveSubscription = user
+            ? await this.subscriptionsService.hasActiveSubscription(user.id)
+            : false;
+        const accessLevel = getContentAccessLevel(user || null, publication.isPremium, hasActiveSubscription);
+        if (accessLevel === 'preview' && publication.isPremium) {
+            // Return preview version (title, excerpt, featuredImage, but no full content)
+            const publicationPreview = {
+                ...publication,
+                content: null,
+                contentAm: null,
+                contentOr: null,
+            };
+            return ZPublicationDetail.parse(publicationPreview);
+        }
+
+        // Increment view count only if user has full access
         await this.db.publication.update({
             where: { id: publication.id },
             data: { viewCount: publication.viewCount + 1 },

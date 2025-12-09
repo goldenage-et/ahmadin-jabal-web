@@ -1,4 +1,4 @@
-import { EResources, TCreateRole, TRegister } from '@repo/common';
+import { EResources, TCreateRole, TRegister, TCreatePlan } from '@repo/common';
 
 export const initialUsers: TRegister[] = [
   {
@@ -58,6 +58,41 @@ export const initialRoles: Omit<TCreateRole, 'id'>[] = [
         viewMany: true,
         delete: true,
       },
+      [EResources.BLOG]: {
+        create: true,
+        update: true,
+        viewOne: true,
+        viewMany: true,
+        delete: true,
+      },
+      [EResources.NEWSLETTER]: {
+        create: true,
+        update: true,
+        viewOne: true,
+        viewMany: true,
+        delete: true,
+      },
+      [EResources.PUBLICATION]: {
+        create: true,
+        update: true,
+        viewOne: true,
+        viewMany: true,
+        delete: true,
+      },
+      [EResources.MEDIA]: {
+        create: true,
+        update: true,
+        viewOne: true,
+        viewMany: true,
+        delete: true,
+      },
+      [EResources.PLAN]: {
+        create: true,
+        update: true,
+        viewOne: true,
+        viewMany: true,
+        delete: true,
+      },
     },
   },
   {
@@ -105,6 +140,59 @@ export const initialRoles: Omit<TCreateRole, 'id'>[] = [
         viewOne: true,
         viewMany: true,
       },
+      [EResources.BLOG]: {
+        create: true,
+        update: true,
+        viewOne: true,
+        viewMany: true,
+        delete: true,
+      },
+      [EResources.NEWSLETTER]: {
+        create: true,
+        update: true,
+        viewOne: true,
+        viewMany: true,
+        delete: true,
+      },
+      [EResources.PUBLICATION]: {
+        create: true,
+        update: true,
+        viewOne: true,
+        viewMany: true,
+        delete: true,
+      },
+      [EResources.MEDIA]: {
+        create: true,
+        update: true,
+        viewOne: true,
+        viewMany: true,
+        delete: true,
+      },
+      [EResources.PLAN]: {
+        create: true,
+        update: true,
+        viewOne: true,
+        viewMany: true,
+        delete: true,
+      },
     },
+  },
+];
+
+export const initialPlans: Omit<TCreatePlan, 'id'>[] = [
+  // Legacy Premium - Lifetime plan for existing premium users
+  {
+    name: 'Legacy Premium',
+    description: 'Lifetime premium access for existing premium users',
+    price: 0,
+    currency: 'ETB',
+    durationDays: null,
+    isLifetime: true,
+    features: {
+      accessToPremiumContent: true,
+      unlimitedAccess: true,
+      prioritySupport: false,
+    },
+    active: true,
   },
 ];

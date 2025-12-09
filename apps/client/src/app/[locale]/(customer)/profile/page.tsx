@@ -1,5 +1,5 @@
-import { OverviewContent } from '../components/overview-content';
+import { OverviewContent } from "@/features/portfolio/overview-content";
 
-export default function OverviewPage() {
+export default function OveriewPage() {
   return <OverviewContent />;
 }

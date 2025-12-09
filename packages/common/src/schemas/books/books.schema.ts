@@ -73,6 +73,7 @@ export const ZBook = z.object({
   inventoryLowStockThreshold: z.number().int().optional().nullable(),
   status: z.enum(EBookStatus).default(EBookStatus.active),
   featured: z.boolean().default(false),
+  isPremium: z.boolean().default(false),
   rating: z.number().default(0),
   reviewCount: z.number().int().default(0),
   viewCount: z.number().int().default(0),
@@ -116,6 +117,7 @@ export const ZBookBasic = ZBook.pick({
   tags: true,
   status: true,
   featured: true,
+  isPremium: true,
   rating: true,
   reviewCount: true,
   viewCount: true,
@@ -200,6 +202,7 @@ export const ZCreateBook = z.object({
   specifications: z.array(ZBookSpecification).optional(),
   status: z.enum(EBookStatus).default(EBookStatus.active),
   featured: z.boolean().default(false),
+  isPremium: z.boolean().default(false),
   tags: z
     .array(z.string().min(1, 'Tag cannot be empty').max(TAG_MAX_LENGTH, `Tag must be less than ${TAG_MAX_LENGTH} characters`))
     .max(20, 'Maximum 20 tags allowed')
@@ -255,6 +258,7 @@ export const ZUpdateBook = z.object({
     })
     .optional(),
   featured: z.boolean().optional(),
+  isPremium: z.boolean().optional(),
   sku: z
     .string()
     .min(1, 'SKU is required')
@@ -329,6 +333,7 @@ export const ZBookQueryFilter = z.object({
     .optional()
     .nullable(),
   featured: z.coerce.boolean().optional(),
+  isPremium: z.coerce.boolean().optional(),
 
   // Price type filters
   priceType: z.enum(['free', 'paid', 'all']).optional(),

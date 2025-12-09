@@ -25,6 +25,10 @@ import { useApiMutation } from '@/hooks/use-api-mutation';
 import { toast } from 'sonner';
 import { formatPrice } from '@/lib/format';
 import { getLocalizedTitle, getLocalizedExcerpt, getLocalizedContent } from '@/lib/locale-utils';
+import { getContentAccessLevel } from '@/lib/premium';
+import { PremiumContentPreview } from '@/components/premium-content-preview';
+import { useAuth } from '@/providers/storage';
+import { Crown, Lock } from 'lucide-react';
 
 interface BlogDetailsProps {
     blog: TBlogDetail;
@@ -42,6 +46,11 @@ export default function BlogDetails({
     const content = getLocalizedContent(blog, locale);
     const router = useRouter();
     const { mutate: likeMutate } = useApiMutation();
+    const { user: authUser } = useAuth();
+    
+    // Check premium access
+    const accessLevel = getContentAccessLevel(authUser, blog.isPremium);
+    const hasFullAccess = accessLevel === 'full';
 
     const handleLike = () => {
         if (!user) {
@@ -107,14 +116,15 @@ export default function BlogDetails({
                                     Featured
                                 </Badge>
                             )}
-                            {!blog.isFree && blog.price && (
-                                <Badge variant='outline'>
-                                    {formatPrice(blog.price)}
+                            {blog.isPremium && (
+                                <Badge variant='outline' className='bg-yellow-500/90 text-white border-yellow-400'>
+                                    <Crown className='h-3 w-3 mr-1' />
+                                    Premium
                                 </Badge>
                             )}
-                            {blog.isFree && (
-                                <Badge variant='default' className='bg-green-600'>
-                                    Free
+                            {blog.price && (
+                                <Badge variant='outline'>
+                                    {formatPrice(blog.price)}
                                 </Badge>
                             )}
                         </div>
@@ -171,7 +181,7 @@ export default function BlogDetails({
                     )}
 
                     {/* Content */}
-                    {content && (
+                    {content && hasFullAccess ? (
                         <div className='space-y-4'>
                             <h2 className='text-2xl font-semibold'>Blog Content</h2>
                             <div
@@ -179,7 +189,27 @@ export default function BlogDetails({
                                 dangerouslySetInnerHTML={{ __html: content }}
                             />
                         </div>
-                    )}
+                    ) : blog.isPremium && !hasFullAccess ? (
+                        <div className='space-y-4'>
+                            <div className='flex items-center gap-2 text-muted-foreground mb-4'>
+                                <Lock className='h-5 w-5' />
+                                <h2 className='text-2xl font-semibold'>Premium Content</h2>
+                            </div>
+                            <PremiumContentPreview
+                                title={title}
+                                titleAm={blog.titleAm}
+                                titleOr={blog.titleOr}
+                                excerpt={excerpt}
+                                excerptAm={blog.excerptAm}
+                                excerptOr={blog.excerptOr}
+                                featuredImage={blog.featuredImage}
+                                user={authUser}
+                                contentType='blog'
+                                contentId={blog.id}
+                                contentSlug={blog.slug}
+                            />
+                        </div>
+                    ) : null}
 
                     {/* Tags */}
                     {blog.tags && blog.tags.length > 0 && (
@@ -245,7 +275,7 @@ export default function BlogDetails({
                                         <Heart className='h-4 w-4 mr-2' />
                                         Like Blog
                                     </Button>
-                                    {blog.isFree && (
+                                    {!blog.isPremium && (
                                         <Button className='w-full' variant='outline'>
                                             <Download className='h-4 w-4 mr-2' />
                                             Download PDF

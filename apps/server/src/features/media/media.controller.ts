@@ -1,5 +1,5 @@
 import { CurrentUser } from '@/decorators/current-user.decorator';
-import { UserAuthGuard } from '@/guards/auth.guard';
+import { UserAuthGuard, UserAuthOptions } from '@/guards/auth.guard';
 import { BodyPipe } from '@/pipes/body.pipe';
 import { QueryPipe } from '@/pipes/query.pipe';
 import {
@@ -88,15 +88,25 @@ export class MediaController {
     }
 
     @Get()
+    @UserAuthOptions({ safeAuth: true })
+    @UseGuards(UserAuthGuard)
     @UsePipes(QueryPipe(ZMediaQueryFilter as any))
-    async getManyMedia(@Query() query: TMediaQueryFilter): Promise<TMediaListResponse> {
-        return this.mediaService.getManyMedia(query);
+    async getManyMedia(
+        @CurrentUser() user: TAuthUser | null,
+        @Query() query: TMediaQueryFilter,
+    ): Promise<TMediaListResponse> {
+        return this.mediaService.getManyMedia({ ...query, user });
     }
 
     @Get(':id')
+    @UserAuthOptions({ safeAuth: true })
+    @UseGuards(UserAuthGuard)
     @UsePipes(QueryPipe(ZMediaQueryUnique as any))
-    async getOneMedia(@Param('id') id: string): Promise<TMediaDetail> {
-        return this.mediaService.getOneMedia({ id });
+    async getOneMedia(
+        @CurrentUser() user: TAuthUser | null,
+        @Param('id') id: string,
+    ): Promise<TMediaDetail> {
+        return this.mediaService.getOneMedia({ id }, user);
     }
 
     @Put(':id')
@@ -130,15 +140,25 @@ export class MediaController {
     }
 
     @Get('videos')
+    @UserAuthOptions({ safeAuth: true })
+    @UseGuards(UserAuthGuard)
     @UsePipes(QueryPipe(ZVideoQueryFilter as any))
-    async getManyVideos(@Query() query: TVideoQueryFilter): Promise<TVideoListResponse> {
-        return this.mediaService.getManyVideos(query);
+    async getManyVideos(
+        @CurrentUser() user: TAuthUser | null,
+        @Query() query: TVideoQueryFilter,
+    ): Promise<TVideoListResponse> {
+        return this.mediaService.getManyVideos({ ...query, user });
     }
 
     @Get('videos/:id')
+    @UserAuthOptions({ safeAuth: true })
+    @UseGuards(UserAuthGuard)
     @UsePipes(QueryPipe(ZVideoQueryUnique as any))
-    async getOneVideo(@Param('id') id: string): Promise<TVideoDetail> {
-        return this.mediaService.getOneVideo({ id });
+    async getOneVideo(
+        @CurrentUser() user: TAuthUser | null,
+        @Param('id') id: string,
+    ): Promise<TVideoDetail> {
+        return this.mediaService.getOneVideo({ id }, user);
     }
 
     @Put('videos/:id')
@@ -172,15 +192,25 @@ export class MediaController {
     }
 
     @Get('audios')
+    @UserAuthOptions({ safeAuth: true })
+    @UseGuards(UserAuthGuard)
     @UsePipes(QueryPipe(ZAudioQueryFilter as any))
-    async getManyAudios(@Query() query: TAudioQueryFilter): Promise<TAudioListResponse> {
-        return this.mediaService.getManyAudios(query);
+    async getManyAudios(
+        @CurrentUser() user: TAuthUser | null,
+        @Query() query: TAudioQueryFilter,
+    ): Promise<TAudioListResponse> {
+        return this.mediaService.getManyAudios({ ...query, user });
     }
 
     @Get('audios/:id')
+    @UserAuthOptions({ safeAuth: true })
+    @UseGuards(UserAuthGuard)
     @UsePipes(QueryPipe(ZAudioQueryUnique as any))
-    async getOneAudio(@Param('id') id: string): Promise<TAudioDetail> {
-        return this.mediaService.getOneAudio({ id });
+    async getOneAudio(
+        @CurrentUser() user: TAuthUser | null,
+        @Param('id') id: string,
+    ): Promise<TAudioDetail> {
+        return this.mediaService.getOneAudio({ id }, user);
     }
 
     @Put('audios/:id')
@@ -214,15 +244,25 @@ export class MediaController {
     }
 
     @Get('photos')
+    @UserAuthOptions({ safeAuth: true })
+    @UseGuards(UserAuthGuard)
     @UsePipes(QueryPipe(ZPhotoQueryFilter as any))
-    async getManyPhotos(@Query() query: TPhotoQueryFilter): Promise<TPhotoListResponse> {
-        return this.mediaService.getManyPhotos(query);
+    async getManyPhotos(
+        @CurrentUser() user: TAuthUser | null,
+        @Query() query: TPhotoQueryFilter,
+    ): Promise<TPhotoListResponse> {
+        return this.mediaService.getManyPhotos({ ...query, user });
     }
 
     @Get('photos/:id')
+    @UserAuthOptions({ safeAuth: true })
+    @UseGuards(UserAuthGuard)
     @UsePipes(QueryPipe(ZPhotoQueryUnique as any))
-    async getOnePhoto(@Param('id') id: string): Promise<TPhotoDetail> {
-        return this.mediaService.getOnePhoto({ id });
+    async getOnePhoto(
+        @CurrentUser() user: TAuthUser | null,
+        @Param('id') id: string,
+    ): Promise<TPhotoDetail> {
+        return this.mediaService.getOnePhoto({ id }, user);
     }
 
     @Put('photos/:id')
@@ -256,23 +296,36 @@ export class MediaController {
     }
 
     @Get('galleries')
+    @UserAuthOptions({ safeAuth: true })
+    @UseGuards(UserAuthGuard)
     @UsePipes(QueryPipe(ZGalleryQueryFilter as any))
     async getManyGalleries(
+        @CurrentUser() user: TAuthUser | null,
         @Query() query: TGalleryQueryFilter,
     ): Promise<TGalleryListResponse> {
-        return this.mediaService.getManyGalleries(query);
+        return this.mediaService.getManyGalleries({ ...query, user });
     }
 
     @Get('galleries/slug/:slug')
+    @UserAuthOptions({ safeAuth: true })
+    @UseGuards(UserAuthGuard)
     @UsePipes(QueryPipe(ZGalleryQueryUnique as any))
-    async getOneGalleryBySlug(@Param('slug') slug: string): Promise<TGalleryDetail> {
-        return this.mediaService.getOneGallery({ slug });
+    async getOneGalleryBySlug(
+        @CurrentUser() user: TAuthUser | null,
+        @Param('slug') slug: string,
+    ): Promise<TGalleryDetail> {
+        return this.mediaService.getOneGallery({ slug }, user);
     }
 
     @Get('galleries/:id')
+    @UserAuthOptions({ safeAuth: true })
+    @UseGuards(UserAuthGuard)
     @UsePipes(QueryPipe(ZGalleryQueryUnique as any))
-    async getOneGallery(@Param('id') id: string): Promise<TGalleryDetail> {
-        return this.mediaService.getOneGallery({ id });
+    async getOneGallery(
+        @CurrentUser() user: TAuthUser | null,
+        @Param('id') id: string,
+    ): Promise<TGalleryDetail> {
+        return this.mediaService.getOneGallery({ id }, user);
     }
 
     @Put('galleries/:id')

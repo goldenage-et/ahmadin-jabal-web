@@ -155,7 +155,27 @@ export function ProfileClient({
                 <CardHeader className='pb-3'>
                   <CardTitle className='text-sm font-medium'>Total Spent</CardTitle>
                 </CardHeader>
+                <CardContent>
+                  <div className='text-2xl font-bold'>{initialProfileData.totalSpent.toFixed(2)} ETB</div>
+                </CardContent>
               </Card>
+              {user.activeSubscription && (
+                <Card>
+                  <CardHeader className='pb-3'>
+                    <CardTitle className='text-sm font-medium'>Subscription</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className='space-y-2'>
+                      <div className='text-lg font-bold'>{user.activeSubscription.plan.name}</div>
+                      <Link href='/profile/subscription'>
+                        <Button variant='link' className='p-0 h-auto text-xs'>
+                          Manage Subscription →
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </div>
         );

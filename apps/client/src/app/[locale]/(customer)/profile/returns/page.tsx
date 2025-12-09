@@ -1,4 +1,4 @@
-import { ReturnsContent } from '../../components/returns-content';
+import { ReturnsContent } from "@/features/portfolio/returns-content";
 
 export default function ReturnsPage() {
   return <ReturnsContent />;

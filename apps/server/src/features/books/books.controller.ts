@@ -22,6 +22,7 @@ import {
   TAuthUser,
   TBookAnalytics,
   TBookBasic,
+  TBookDetail,
   TBookDetailAnalytics,
   TBookListResponse,
   TBookQueryFilter,
@@ -66,7 +67,8 @@ export class BooksController {
   @UseGuards(UserAuthGuard)
   @UsePipes(QueryPipe(ZBookQueryFilter))
   getMany(
-    @CurrentSession() session: TSessionBasic,
+    @CurrentSession() session: TSessionBasic | null,
+    @CurrentUser() user: TAuthUser | null,
     @Query() query: TBookQueryFilter,
   ): Promise<TBookListResponse> {
     if (session) {
@@ -74,11 +76,13 @@ export class BooksController {
         ...query,
         status: EBookStatus.active,
         userId: session.userId,
+        user: user,
       });
     }
     return this.booksService.getMany({
       ...query,
       status: EBookStatus.active,
+      user: null,
     });
   }
 
@@ -89,7 +93,7 @@ export class BooksController {
     @CurrentUser() user: TAuthUser,
     @Query() query: TBookQueryFilter,
   ): Promise<TBookListResponse> {
-    return this.booksService.getMany({ ...query, userId: user.id });
+    return this.booksService.getMany({ ...query, userId: user.id, user: user });
   }
 
   @Get('analytics')
@@ -124,9 +128,9 @@ export class BooksController {
   @UsePipes(QueryPipe(ZBookQueryUnique))
   getOne(
     @Param('id') id: string,
-  ): Promise<TBookBasic> {
-    console.log({ id });
-    return this.booksService.getOne({ id });
+    @CurrentUser() user: TAuthUser | null,
+  ): Promise<TBookDetail> {
+    return this.booksService.getOne({ id }, user);
   }
 
   @Put(':id')

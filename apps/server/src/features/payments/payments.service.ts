@@ -9,8 +9,12 @@ import {
     EPaymentStatus,
     TPayment,
     TBankClientReceiptData,
+    ESubscriptionStatus,
+    EOrderStatus,
 } from '@repo/common';
 import { BankTransferService } from '../bank-transfer/bank-transfer.service';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service';
+import { v4 as createId } from 'uuid';
 
 @Injectable()
 export class PaymentsService {
@@ -19,6 +23,7 @@ export class PaymentsService {
     constructor(
         @Inject(PRISMA_CLIENT) private readonly prisma: PrismaClient,
         private readonly bankTransferService: BankTransferService,
+        private readonly subscriptionsService: SubscriptionsService,
     ) { }
 
     async create(data: TCreatePayment): Promise<TPayment> {
@@ -178,10 +183,104 @@ export class PaymentsService {
         });
 
         // Also update the related order's payment status
-        await this.prisma.order.update({
-            where: { id: payment.orderId },
-            data: { paymentStatus: status },
+        const order = await this.prisma.order.findUnique({
+            where: { id: payment.orderId || '' },
         });
+
+        if (order) {
+            const updateData: any = { paymentStatus: status };
+
+            // For subscription orders, automatically set order status to confirmed when payment is paid
+            if (status === EPaymentStatus.paid && order.planId) {
+                updateData.status = EOrderStatus.confirmed;
+
+                // Update status history
+                const currentStatusHistory = Array.isArray(order.statusHistory)
+                    ? order.statusHistory
+                    : [];
+                const statusHistory = {
+                    id: createId(),
+                    status: EOrderStatus.confirmed,
+                    notes: 'Subscription order automatically confirmed after payment',
+                    updatedBy: {
+                        id: payment.userId || '',
+                        firstName: '',
+                        lastName: '',
+                        email: '',
+                    },
+                    createdAt: new Date(),
+                };
+                updateData.statusHistory = [...currentStatusHistory, statusHistory];
+            }
+
+            await this.prisma.order.update({
+                where: { id: payment.orderId || '' },
+                data: updateData,
+            });
+
+            // If payment status is paid and this is a subscription order, create or activate subscription
+            if (status === EPaymentStatus.paid && order.planId) {
+                let subscription = await this.prisma.subscription.findFirst({
+                    where: { paymentId: payment.id },
+                });
+
+                if (!subscription) {
+                    subscription = await this.prisma.subscription.findFirst({
+                        where: {
+                            planId: order.planId,
+                            userId: order.userId,
+                            paymentId: null,
+                        },
+                        orderBy: {
+                            createdAt: 'desc',
+                        },
+                    });
+                }
+
+                if (!subscription) {
+                    const plan = await this.prisma.plan.findUnique({
+                        where: { id: order.planId },
+                    });
+
+                    if (plan) {
+                        const startDate = new Date();
+                        let endDate: Date | null = null;
+
+                        if (!plan.isLifetime && plan.durationDays) {
+                            endDate = new Date(startDate);
+                            endDate.setDate(endDate.getDate() + plan.durationDays);
+                        }
+
+                        subscription = await this.prisma.subscription.create({
+                            data: {
+                                userId: order.userId,
+                                planId: order.planId,
+                                status: ESubscriptionStatus.active,
+                                startDate: startDate,
+                                endDate: endDate,
+                                paymentId: payment.id,
+                            },
+                            include: {
+                                plan: true,
+                            },
+                        });
+
+                        this.logger.log(`Subscription created after payment status update: ${subscription.id}`);
+                    }
+                } else {
+                    await this.prisma.subscription.update({
+                        where: { id: subscription.id },
+                        data: { paymentId: payment.id },
+                    });
+
+                    await this.subscriptionsService.activateSubscription(
+                        subscription.id,
+                        payment.id,
+                    );
+                    this.logger.log(`Subscription activated after payment status update: ${subscription.id}`);
+                }
+            }
+        }
 
         this.logger.log(`Payment status updated: ${payment.id}`);
         return payment as TPayment;
@@ -301,11 +400,113 @@ export class PaymentsService {
             });
         }
 
-        // Update order payment status
-        await this.prisma.order.update({
-            where: { id: orderId },
-            data: { paymentStatus: EPaymentStatus.paid },
-        });
+        // Update order payment status and status (if order exists)
+        if (orderId) {
+            const updateData: any = { paymentStatus: EPaymentStatus.paid };
+
+            // For subscription orders, automatically set order status to confirmed when paid
+            if (order.planId) {
+                updateData.status = EOrderStatus.confirmed;
+
+                // Update status history
+                const currentStatusHistory = Array.isArray(order.statusHistory)
+                    ? order.statusHistory
+                    : [];
+                const statusHistory = {
+                    id: createId(),
+                    status: EOrderStatus.confirmed,
+                    notes: 'Subscription order automatically confirmed after payment',
+                    updatedBy: {
+                        id: userId,
+                        firstName: '',
+                        lastName: '',
+                        email: '',
+                    },
+                    createdAt: new Date(),
+                };
+                updateData.statusHistory = [...currentStatusHistory, statusHistory];
+            }
+
+            await this.prisma.order.update({
+                where: { id: orderId },
+                data: updateData,
+            });
+        }
+
+        // Check if this is a subscription order (has planId)
+        // If so, create or activate the subscription
+        if (order.planId) {
+            // Check if subscription already exists (shouldn't for new flow, but handle legacy)
+            let subscription = await this.prisma.subscription.findFirst({
+                where: { paymentId: payment.id },
+            });
+
+            // If not found by paymentId, check if subscription exists by planId and userId
+            if (!subscription) {
+                subscription = await this.prisma.subscription.findFirst({
+                    where: {
+                        planId: order.planId,
+                        userId: order.userId,
+                        paymentId: null, // Not yet linked to a payment
+                    },
+                    orderBy: {
+                        createdAt: 'desc', // Get the most recent subscription
+                    },
+                });
+            }
+
+            // If subscription doesn't exist, create it now (payment is confirmed)
+            if (!subscription) {
+                // Get plan details
+                const plan = await this.prisma.plan.findUnique({
+                    where: { id: order.planId },
+                });
+
+                if (!plan) {
+                    this.logger.error(`Plan ${order.planId} not found for subscription creation`);
+                } else {
+                    // Calculate dates
+                    const startDate = new Date();
+                    let endDate: Date | null = null;
+
+                    if (!plan.isLifetime) {
+                        if (plan.durationDays) {
+                            endDate = new Date(startDate);
+                            endDate.setDate(endDate.getDate() + plan.durationDays);
+                        }
+                    }
+
+                    // Create subscription now that payment is confirmed
+                    subscription = await this.prisma.subscription.create({
+                        data: {
+                            userId: order.userId,
+                            planId: order.planId,
+                            status: ESubscriptionStatus.active,
+                            startDate: startDate,
+                            endDate: endDate,
+                            paymentId: payment.id,
+                        },
+                        include: {
+                            plan: true,
+                        },
+                    });
+
+                    this.logger.log(`Subscription created after payment confirmation: ${subscription.id}`);
+                }
+            } else {
+                // Subscription exists, activate it and link payment
+                await this.prisma.subscription.update({
+                    where: { id: subscription.id },
+                    data: { paymentId: payment.id },
+                });
+
+                await this.subscriptionsService.activateSubscription(
+                    subscription.id,
+                    payment.id,
+                );
+                this.logger.log(`Subscription activated: ${subscription.id}`);
+            }
+        }
 
         this.logger.log(`Payment completed: ${payment.id}`);
         return {
@@ -362,11 +563,111 @@ export class PaymentsService {
             });
         }
 
-        // Update order payment status
+        // Get order to check if it's a subscription order
+        const order = await this.prisma.order.findUnique({
+            where: { id: orderId },
+        });
+
+        if (!order) {
+            throw new NotFoundException('Order not found');
+        }
+
+        // Update order payment status and status
+        const updateData: any = { paymentStatus: EPaymentStatus.paid };
+
+        // For subscription orders, automatically set order status to confirmed when paid
+        if (order.planId) {
+            updateData.status = EOrderStatus.confirmed;
+
+            // Update status history
+            const currentStatusHistory = Array.isArray(order.statusHistory)
+                ? order.statusHistory
+                : [];
+            const statusHistory = {
+                id: createId(),
+                status: EOrderStatus.confirmed,
+                notes: 'Subscription order automatically confirmed after payment',
+                updatedBy: {
+                    id: userId,
+                    firstName: '',
+                    lastName: '',
+                    email: '',
+                },
+                createdAt: new Date(),
+            };
+            updateData.statusHistory = [...currentStatusHistory, statusHistory];
+        }
+
         await this.prisma.order.update({
             where: { id: orderId },
-            data: { paymentStatus: EPaymentStatus.paid },
+            data: updateData,
         });
+
+        // If this is a subscription order, create or activate subscription
+        if (order.planId) {
+            // Check if subscription already exists
+            let subscription = await this.prisma.subscription.findFirst({
+                where: { paymentId: payment.id },
+            });
+
+            if (!subscription) {
+                subscription = await this.prisma.subscription.findFirst({
+                    where: {
+                        planId: order.planId,
+                        userId: order.userId,
+                        paymentId: null,
+                    },
+                    orderBy: {
+                        createdAt: 'desc',
+                    },
+                });
+            }
+
+            // If subscription doesn't exist, create it now (payment is confirmed)
+            if (!subscription) {
+                const plan = await this.prisma.plan.findUnique({
+                    where: { id: order.planId },
+                });
+
+                if (plan) {
+                    const startDate = new Date();
+                    let endDate: Date | null = null;
+
+                    if (!plan.isLifetime && plan.durationDays) {
+                        endDate = new Date(startDate);
+                        endDate.setDate(endDate.getDate() + plan.durationDays);
+                    }
+
+                    subscription = await this.prisma.subscription.create({
+                        data: {
+                            userId: order.userId,
+                            planId: order.planId,
+                            status: ESubscriptionStatus.active,
+                            startDate: startDate,
+                            endDate: endDate,
+                            paymentId: payment.id,
+                        },
+                        include: {
+                            plan: true,
+                        },
+                    });
+
+                    this.logger.log(`Subscription created after bank transfer confirmation: ${subscription.id}`);
+                }
+            } else {
+                // Subscription exists, activate it and link payment
+                await this.prisma.subscription.update({
+                    where: { id: subscription.id },
+                    data: { paymentId: payment.id },
+                });
+
+                await this.subscriptionsService.activateSubscription(
+                    subscription.id,
+                    payment.id,
+                );
+                this.logger.log(`Subscription activated after bank transfer: ${subscription.id}`);
+            }
+        }
 
         this.logger.log(`Bank transfer confirmed: ${payment.id}`);
         return payment as TPayment;
